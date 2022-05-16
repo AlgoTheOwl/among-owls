@@ -1,0 +1,21 @@
+{
+  "name": "aowl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^0.4.1",
+    "axios": "^0.27.2",
+    "discord.js": "^13.7.0",
+    "nodemon": "^2.0.16"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.4"
+  }
+}
