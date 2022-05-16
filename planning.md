@@ -2,8 +2,8 @@
 
 ## Plan
 
-1. Complete planning document
-2. Set up repo - copy in boilerplate
+1. Complete planning document ✓
+2. Set up repo with code boilerplate ✓
 3. Set up Bot and test server on Discord
 4. Create types for game
 5. Add mock data
