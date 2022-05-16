@@ -6,8 +6,13 @@
 2. Set up repo - copy in boilerplate
 3. Set up Bot and test server on Discord
 4. Create types for game
-5. Create game logic
-6. Hook up registration and verification functionality
+5. Add mock data
+6. Add game logic
+7. Add message/embed logic
+8. Hook up registration and verification functionality
+9. Live testing
+10. Onboarding to app with AOWL team
+11. Release
 
 ## Concept
 
@@ -26,11 +31,23 @@
 - MongoDB
 - TypeScript
 
-## Technical Requirements
+### MVP
+
+- Complete short-running version of the game
+- Render players entered NFT in gameplay
+- Have registration and verification functionality
+- Functions with up to 10 players
+
+## Next Steps
+
+- Add long-play passive mode
+- Add image manipulation
+- Increase support for number of players
 
 ## Problems to solve
 
-- Can we visualize players attacking in time? Cooldown could be longer
-- Can we get server data in our deployCommands?
-- Game master will have to set the number of registrants in the deploycommands - we can also do error handling for
-  players not in the game
+q: Can we visualize players attacking in time?
+a: Utilize a longer cooldown
+
+q: Can we get server data in our deployCommands?
+a: No, we can have a set of 10 options that map to a players number in the embed
