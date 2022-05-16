@@ -1,6 +1,7 @@
+import { findPlayer, addPlayer } from '../services/operations';
 import { Asset } from '../types/user';
-import algosdk, { Indexer } from 'algosdk';
-import AlgodClient from 'algosdk/dist/types/src/client/v2/algod/algod';
+import algosdk from 'algosdk';
+import { determineOwnership, findAsset } from './helpers';
 
 const algoNode: string = process.env.ALGO_NODE;
 const pureStakeApi: string = process.env.PURESTAKE_API;
@@ -61,86 +62,38 @@ const processRegistration = async (
         unitName,
       };
 
-      if (player) {
-        const assetCount = player.assets.length + 1;
-        if (assetCount >= 5) {
-          return {
-            status: `You've added 5 or more assets already`,
-            asset: null,
-            registeredUser: user,
-          };
-        }
-        await addPlayerAsset(discordId, assetEntry);
+      if (!player) {
+        // Player doesn't exist, add to db
+        await addPlayer({
+          discordId,
+          username,
+          address: address,
+          asset: assetEntry,
+        });
         return {
-          status: `Added ${unitName} for melting - this asset number ${assetCount} out of 5`,
+          status: `Added ${unitName} for melting - you can add up to 4 more assets`,
           asset: assetEntry,
           registeredUser: user,
         };
+      } else {
+        // you can only register once
       }
-      // Player doesn't exist, add to db
-      await addPlayer({
-        discordId,
-        username,
-        address: address,
-        assets: [assetEntry],
-      });
+      // Either wallet isn't owned or asset is not owned by wallet
+      const status = walletOwned
+        ? `Looks like the wallet address entered doesn't hold this asset, please try again!`
+        : `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`;
       return {
-        status: `Added ${unitName} for melting - you can add up to 4 more assets`,
-        asset: assetEntry,
+        status,
+        asset: null,
         registeredUser: user,
       };
     }
-    // Either wallet isn't owned or asset is not owned by wallet
-    const status = walletOwned
-      ? `Looks like the wallet address entered doesn't hold this asset, please try again!`
-      : `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`;
-    return {
-      status,
-      asset: null,
-      registeredUser: user,
-    };
   } catch (error) {
     return {
       status: 'Something went wrong during registration, please try again',
       asset: null,
       registeredUser: user,
     };
-  }
-};
-
-const findAsset = async (assetId: number, indexer: Indexer) => {
-  try {
-    return await indexer.searchForAssets().index(assetId).do();
-  } catch (error) {
-    throw new Error('Error finding asset');
-  }
-};
-
-const determineOwnership = async function (
-  algodclient: AlgodClient,
-  address: string,
-  assetId: number
-): Promise<any> {
-  try {
-    let accountInfo = await algodclient.accountInformation(address).do();
-    let assetOwned = false;
-    let walletOwned = false;
-    accountInfo.assets.forEach((asset: any) => {
-      // Check for opt-in asset
-      if (asset[`asset-id`] === optInAssetId && !asset.amount) {
-        walletOwned = true;
-      }
-      // Check for entered asset
-      if (asset['asset-id'] === assetId) {
-        assetOwned = true;
-      }
-    });
-    return {
-      assetOwned,
-      walletOwned,
-    };
-  } catch (error) {
-    throw new Error('error determening ownership');
   }
 };
 

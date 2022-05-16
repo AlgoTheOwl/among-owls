@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node -r dotenv/config dist/index.js",
+    "dev": "nodemon -r dotenv/config dist/index.js",
+    "commands": "node -r dotenv/config dist/deployCommands.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,8 @@
     "algosdk": "^1.16.0",
     "axios": "^0.27.2",
     "discord.js": "^13.7.0",
+    "dotenv": "^16.0.1",
+    "mongodb": "^4.6.0",
     "nodemon": "^2.0.16"
   },
   "devDependencies": {

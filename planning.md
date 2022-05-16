@@ -4,15 +4,16 @@
 
 1. Complete planning document ✓
 2. Set up repo with code boilerplate ✓
-3. Set up Bot and test server on Discord
-4. Create types for game
-5. Add mock data
-6. Add game logic
-7. Add message/embed logic
-8. Hook up registration and verification functionality
-9. Live testing
-10. Onboarding to app with AOWL team
-11. Release
+3. Set up Bot and test server on Discord ✓
+4. Set up MongoDB instance to hold player/game state
+5. Create types for game
+6. Add mock data
+7. Add game logic
+8. Add message/embed logic
+9. Hook up registration and verification functionality
+10. Live testing
+11. Onboarding to app with AOWL team
+12. Release
 
 ## Concept
 

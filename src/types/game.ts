@@ -1,3 +1,3 @@
-export type GameState {
-  // main game logic goes here
+export interface GameState {
+  players: string;
 }
