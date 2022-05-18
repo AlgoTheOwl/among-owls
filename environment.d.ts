@@ -11,6 +11,7 @@ declare global {
       OPT_IN_ASSET_ID: string;
       DB_CONN_STRING: string;
       GAMES_COLLECTION_NAME: string;
+      UNIT_NAME: string;
     }
   }
 }

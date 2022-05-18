@@ -18,7 +18,7 @@ const determineOwnership = function (algodclient, address, assetId) {
             let walletOwned = false;
             accountInfo.assets.forEach((asset) => {
                 // Check for opt-in asset
-                if (asset[`asset-id`] === process.env.OPT_IN_ASSET_ID && !asset.amount) {
+                if (asset[`asset-id`] === Number(process.env.OPT_IN_ASSET_ID)) {
                     walletOwned = true;
                 }
                 // Check for entered asset
@@ -32,6 +32,7 @@ const determineOwnership = function (algodclient, address, assetId) {
             };
         }
         catch (error) {
+            console.log(error);
             throw new Error('error determening ownership');
         }
     });

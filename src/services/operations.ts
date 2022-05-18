@@ -1,6 +1,6 @@
-import { db } from './database.service';
+import { connectToDatabase, db } from './database.service';
 import { Collection } from 'mongodb';
-import User from '../models/game';
+import User from '../models/user';
 
 const addPlayer = async (playerData: User) => {
   const collection: Collection = db.collection('users');

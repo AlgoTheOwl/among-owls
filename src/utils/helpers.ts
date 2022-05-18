@@ -8,11 +8,12 @@ const determineOwnership = async function (
 ): Promise<any> {
   try {
     let accountInfo = await algodclient.accountInformation(address).do();
+
     let assetOwned = false;
     let walletOwned = false;
     accountInfo.assets.forEach((asset: any) => {
       // Check for opt-in asset
-      if (asset[`asset-id`] === process.env.OPT_IN_ASSET_ID && !asset.amount) {
+      if (asset[`asset-id`] === Number(process.env.OPT_IN_ASSET_ID)) {
         walletOwned = true;
       }
       // Check for entered asset
@@ -25,6 +26,7 @@ const determineOwnership = async function (
       walletOwned,
     };
   } catch (error) {
+    console.log(error);
     throw new Error('error determening ownership');
   }
 };

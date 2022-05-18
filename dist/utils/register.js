@@ -20,6 +20,7 @@ const algoNode = process.env.ALGO_NODE;
 const pureStakeApi = process.env.PURESTAKE_API;
 const algoIndexerNode = process.env.ALGO_INDEXER_NODE;
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
+const unitPrefix = process.env.UNIT_NAME;
 const token = {
     'X-API-Key': pureStakeApi,
 };
@@ -30,7 +31,7 @@ const processRegistration = (user, address, assetId) => __awaiter(void 0, void 0
     try {
         const algodClient = new algosdk_1.default.Algodv2(token, server, port);
         const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
-        const { id: discordId, username } = user;
+        const { discordId, username } = user;
         // Check if asset is owned and wallet has opt-in asset
         const { walletOwned, assetOwned } = yield (0, helpers_1.determineOwnership)(algodClient, address, assetId);
         const isOwned = walletOwned && assetOwned;
@@ -39,11 +40,12 @@ const processRegistration = (user, address, assetId) => __awaiter(void 0, void 0
             const player = yield (0, operations_1.findPlayer)(discordId);
             const asset = yield (0, helpers_1.findAsset)(assetId, algoIndexer);
             const { name: assetName, url: assetUrl, 'unit-name': unitName, } = asset === null || asset === void 0 ? void 0 : asset.assets[0].params;
+            console.log('unit prefix:', unitPrefix);
+            console.log('unit name', unitName);
             // Check if it's a Randy Cone
-            if (unitName.slice(0, 5) !== 'RCONE') {
+            if (unitName.slice(0, unitPrefix.length) !== unitPrefix) {
                 return {
-                    status: 'This asset is not a randy cone, please try again with a meltable NFT',
-                    asset: null,
+                    status: 'This asset is not a AOWL, please try again',
                     registeredUser: user,
                 };
             }
@@ -62,13 +64,10 @@ const processRegistration = (user, address, assetId) => __awaiter(void 0, void 0
                     asset: assetEntry,
                 });
                 return {
-                    status: `Added ${unitName} for melting - you can add up to 4 more assets`,
+                    status: `Added ${unitName} - Prepare to attack!`,
                     asset: assetEntry,
                     registeredUser: user,
                 };
-            }
-            else {
-                // you can only register once
             }
             // Either wallet isn't owned or asset is not owned by wallet
             const status = walletOwned
@@ -76,15 +75,18 @@ const processRegistration = (user, address, assetId) => __awaiter(void 0, void 0
                 : `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`;
             return {
                 status,
-                asset: null,
                 registeredUser: user,
             };
         }
+        return {
+            status: "Looks like you don't own this NFT, try again with one in your possession.",
+            registeredUser: user,
+        };
     }
     catch (error) {
+        console.log('ERROR::', error);
         return {
             status: 'Something went wrong during registration, please try again',
-            asset: null,
             registeredUser: user,
         };
     }
