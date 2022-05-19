@@ -5,7 +5,7 @@
 1. Complete planning document ✓
 2. Set up repo with code boilerplate ✓
 3. Set up Bot and test server on Discord ✓
-4. Set up MongoDB instance to hold player/game state
+4. Set up MongoDB instance to hold player/game state ✓
 5. Create types for game
 6. Add mock data
 7. Add game logic

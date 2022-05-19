@@ -12,6 +12,7 @@ declare global {
       DB_CONN_STRING: string;
       GAMES_COLLECTION_NAME: string;
       UNIT_NAME: string;
+      IPFS_GATEWAY: string;
     }
   }
 }

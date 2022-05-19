@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findPlayer = exports.deletePlayer = exports.addPlayer = void 0;
+exports.fetchPlayers = exports.findPlayer = exports.deletePlayer = exports.addPlayer = void 0;
 const database_service_1 = require("./database.service");
 const addPlayer = (playerData) => __awaiter(void 0, void 0, void 0, function* () {
     const collection = database_service_1.db.collection('users');
@@ -26,3 +26,8 @@ const findPlayer = (discordId) => __awaiter(void 0, void 0, void 0, function* ()
     return yield collection.findOne({ discordId });
 });
 exports.findPlayer = findPlayer;
+const fetchPlayers = () => __awaiter(void 0, void 0, void 0, function* () {
+    const collection = database_service_1.db.collection('users');
+    return yield collection.find().toArray();
+});
+exports.fetchPlayers = fetchPlayers;

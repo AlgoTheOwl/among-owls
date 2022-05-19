@@ -7,6 +7,7 @@ export default class User {
     public discordId: string,
     public address: string,
     public asset: Asset,
+    public hp: number,
     public id?: ObjectId
   ) {}
 }

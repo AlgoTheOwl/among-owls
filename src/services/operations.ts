@@ -16,4 +16,9 @@ const findPlayer = async (discordId: string) => {
   const collection: Collection = db.collection('users');
   return await collection.findOne({ discordId });
 };
-export { addPlayer, deletePlayer, findPlayer };
+
+const fetchPlayers = async (): Promise<any> => {
+  const collection: Collection = db.collection('users');
+  return await collection.find().toArray();
+};
+export { addPlayer, deletePlayer, findPlayer, fetchPlayers };

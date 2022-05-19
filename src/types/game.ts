@@ -1,8 +1,4 @@
 import { ColorResolvable, MessageEmbed } from 'discord.js';
-export interface GameState {
-  players: string;
-}
-
 export interface EmbedData {
   title?: string;
   description?: string;
@@ -12,10 +8,10 @@ export interface EmbedData {
   fields?: Field[];
 }
 
-interface Field {
+type Field = {
   name: string;
   value: string;
-}
+};
 
 export interface EmbedReply {
   embeds: [MessageEmbed];

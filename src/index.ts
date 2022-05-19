@@ -1,16 +1,17 @@
 import User from './models/user';
 import doEmbed from './services/embeds';
-import {
-  Client,
-  Intents,
-  User as Player,
-  Interaction,
-  ColorResolvable,
-} from 'discord.js';
+import { Client, Intents, Interaction, ColorResolvable } from 'discord.js';
 import { processRegistration } from './utils/register';
-import { RegistrationResult } from './types/user';
 import { connectToDatabase } from './services/database.service';
+import { fetchPlayers } from './services/operations';
+import Game from './models/game';
+import { EmbedData } from './types/game';
+
 const token: string = process.env.DISCORD_TOKEN;
+
+const hp = 1000;
+
+export let game: Game | undefined;
 
 const client: Client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS],
@@ -25,25 +26,55 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   if (!interaction.isCommand()) return;
 
   const { commandName, options, user } = interaction;
+
   if (commandName === 'start') {
-    // start game with options
+    // grab players
+    const players: User[] = await fetchPlayers();
+    const gamePlayers: { [key: string]: User } = {};
+    players.forEach((player) => {
+      const { username, discordId, address, asset } = player;
+      gamePlayers[username] = new User(
+        username,
+        discordId,
+        address,
+        asset,
+        hp,
+        undefined
+      );
+    });
+
+    // instansiate new game
+    game = new Game(gamePlayers, true, false, 1000);
+    // send back game embed
+    const embedData: EmbedData = {
+      title: 'When Owls Attack',
+      description: 'Test description',
+      color: 'DARK_AQUA',
+      fields: Object.values(gamePlayers).map((player) => ({
+        name: player.username,
+        value: `HP: ${player.hp}`,
+      })),
+    };
+    // if lose, remove loser from players and play game again
+    game.embed = await interaction.reply(doEmbed(embedData));
   }
 
   if (commandName === 'register') {
-    // interaction.deferReply();
-
     const address = options.getString('address');
     const assetId = options.getNumber('assetid');
 
-    const { username, id } = interaction.user;
+    const { username, id } = user;
 
     if (address && assetId) {
-      const registrant = new User(username, id, address, { assetId });
+      const registrant = new User(username, id, address, { assetId }, hp);
 
-      const { status, asset, registeredUser }: RegistrationResult =
-        await processRegistration(registrant, address, assetId);
+      const { status, asset } = await processRegistration(
+        registrant,
+        address,
+        assetId
+      );
 
-      const embedData = {
+      const embedData: EmbedData = {
         title: 'Register',
         description: status,
         image: asset?.assetUrl,
@@ -55,7 +86,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   }
 
   if (commandName === 'attack') {
-    // const player = options.getOption('player');
+    const user = options.getUser('victim');
+    // reduce hp from other player chosen
+    // send back message with image of nft with damage
+    interaction.reply('attacked');
   }
 
   /*

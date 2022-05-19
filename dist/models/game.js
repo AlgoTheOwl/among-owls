@@ -1,12 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class User {
-    constructor(username, discordId, address, asset, id) {
-        this.username = username;
-        this.discordId = discordId;
-        this.address = address;
-        this.asset = asset;
-        this.id = id;
+class Game {
+    constructor(players, active, win, coolDown, embed) {
+        this.players = players;
+        this.active = active;
+        this.win = win;
+        this.coolDown = coolDown;
+        this.embed = embed;
+        this.players = players;
+        this.active = true;
+        this.win = false;
+        this.coolDown = coolDown;
+        this.embed = embed;
     }
 }
-exports.default = User;
+exports.default = Game;

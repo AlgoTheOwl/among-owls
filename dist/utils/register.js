@@ -31,7 +31,7 @@ const processRegistration = (user, address, assetId) => __awaiter(void 0, void 0
     try {
         const algodClient = new algosdk_1.default.Algodv2(token, server, port);
         const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
-        const { discordId, username } = user;
+        const { discordId, username, hp } = user;
         // Check if asset is owned and wallet has opt-in asset
         const { walletOwned, assetOwned } = yield (0, helpers_1.determineOwnership)(algodClient, address, assetId);
         const isOwned = walletOwned && assetOwned;
@@ -40,9 +40,7 @@ const processRegistration = (user, address, assetId) => __awaiter(void 0, void 0
             const player = yield (0, operations_1.findPlayer)(discordId);
             const asset = yield (0, helpers_1.findAsset)(assetId, algoIndexer);
             const { name: assetName, url: assetUrl, 'unit-name': unitName, } = asset === null || asset === void 0 ? void 0 : asset.assets[0].params;
-            console.log('unit prefix:', unitPrefix);
-            console.log('unit name', unitName);
-            // Check if it's a Randy Cone
+            // Check if it's a the right asset
             if (unitName.slice(0, unitPrefix.length) !== unitPrefix) {
                 return {
                     status: 'This asset is not a AOWL, please try again',
@@ -62,6 +60,7 @@ const processRegistration = (user, address, assetId) => __awaiter(void 0, void 0
                     username,
                     address: address,
                     asset: assetEntry,
+                    hp,
                 });
                 return {
                     status: `Added ${unitName} - Prepare to attack!`,

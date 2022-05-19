@@ -3,6 +3,7 @@ import { Asset, RegistrationResult } from '../types/user';
 import algosdk from 'algosdk';
 import { determineOwnership, findAsset } from './helpers';
 import User from '../models/user';
+import { state } from '../game';
 
 const algoNode: string = process.env.ALGO_NODE;
 const pureStakeApi: string = process.env.PURESTAKE_API;
@@ -25,7 +26,7 @@ const processRegistration = async (
   try {
     const algodClient = new algosdk.Algodv2(token, server, port);
     const algoIndexer = new algosdk.Indexer(token, indexerServer, port);
-    const { discordId, username } = user;
+    const { discordId, username, hp } = user;
 
     // Check if asset is owned and wallet has opt-in asset
     const { walletOwned, assetOwned } = await determineOwnership(
@@ -46,9 +47,7 @@ const processRegistration = async (
         'unit-name': unitName,
       } = asset?.assets[0].params;
 
-      console.log('unit prefix:', unitPrefix);
-      console.log('unit name', unitName);
-      // Check if it's a Randy Cone
+      // Check if it's a the right asset
       if (unitName.slice(0, unitPrefix.length) !== unitPrefix) {
         return {
           status: 'This asset is not a AOWL, please try again',
@@ -70,6 +69,7 @@ const processRegistration = async (
           username,
           address: address,
           asset: assetEntry,
+          hp,
         });
         return {
           status: `Added ${unitName} - Prepare to attack!`,

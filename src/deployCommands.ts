@@ -1,6 +1,8 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
+import { game } from '.';
+import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
 const clientId: string = process.env.DISCORD_CLIENT_ID;
 const guildId: string = process.env.DISCORD_GUILD_ID;
@@ -27,10 +29,13 @@ const commands = [
     ),
   new SlashCommandBuilder()
     .setName('attack')
-    .setDescription('set up test users'),
-  new SlashCommandBuilder()
-    .setName('setup-test')
-    .setDescription('set up test users'),
+    .setDescription('Attack another user!')
+    .addUserOption((option) => {
+      return option
+        .setName('victim')
+        .setDescription('The user')
+        .setRequired(true);
+    }),
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: '9' }).setToken(token);
