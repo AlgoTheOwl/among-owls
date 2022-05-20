@@ -30,6 +30,9 @@ const commands = [
             .setDescription('The user')
             .setRequired(true);
     }),
+    new builders_1.SlashCommandBuilder()
+        .setName('stop')
+        .setDescription('Stop the current game'),
 ].map((command) => command.toJSON());
 const rest = new rest_1.REST({ version: '9' }).setToken(token);
 rest

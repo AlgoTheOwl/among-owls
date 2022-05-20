@@ -18,15 +18,17 @@ const server: string = algoNode;
 const indexerServer: string = algoIndexerNode;
 const port = '';
 
-const processRegistration = async (
-  user: User,
-  address: string,
-  assetId: number
-): Promise<RegistrationResult> => {
+const processRegistration = async (user: User): Promise<RegistrationResult> => {
   try {
     const algodClient = new algosdk.Algodv2(token, server, port);
     const algoIndexer = new algosdk.Indexer(token, indexerServer, port);
-    const { discordId, username, hp } = user;
+    const {
+      discordId,
+      username,
+      hp,
+      address,
+      asset: { assetId },
+    } = user;
 
     // Check if asset is owned and wallet has opt-in asset
     const { walletOwned, assetOwned } = await determineOwnership(

@@ -27,11 +27,11 @@ const token = {
 const server = algoNode;
 const indexerServer = algoIndexerNode;
 const port = '';
-const processRegistration = (user, address, assetId) => __awaiter(void 0, void 0, void 0, function* () {
+const processRegistration = (user) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const algodClient = new algosdk_1.default.Algodv2(token, server, port);
         const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
-        const { discordId, username, hp } = user;
+        const { discordId, username, hp, address, asset: { assetId }, } = user;
         // Check if asset is owned and wallet has opt-in asset
         const { walletOwned, assetOwned } = yield (0, helpers_1.determineOwnership)(algodClient, address, assetId);
         const isOwned = walletOwned && assetOwned;

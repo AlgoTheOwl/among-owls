@@ -8,8 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findAsset = exports.determineOwnership = void 0;
+exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = void 0;
+const fs_1 = __importDefault(require("fs"));
+const axios_1 = __importDefault(require("axios"));
+const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/';
+const asyncForEach = (array, callback) => __awaiter(void 0, void 0, void 0, function* () {
+    for (let index = 0; index < array.length; index++) {
+        try {
+            yield callback(array[index], index, array);
+        }
+        catch (error) {
+            console.log('ERROR', error);
+        }
+    }
+});
+exports.asyncForEach = asyncForEach;
 const determineOwnership = function (algodclient, address, assetId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -47,3 +64,35 @@ const findAsset = (assetId, indexer) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.findAsset = findAsset;
+const downloadFile = (asset, directory, username) => __awaiter(void 0, void 0, void 0, function* () {
+    const { assetUrl } = asset;
+    if (assetUrl) {
+        const url = (0, exports.normalizeLink)(assetUrl);
+        console.log('url', url);
+        const path = `${directory}/${username}.jpg`;
+        const writer = fs_1.default.createWriteStream(path);
+        const res = yield axios_1.default.get(url, {
+            responseType: 'stream',
+        });
+        res.data.pipe(writer);
+        return new Promise((resolve, reject) => {
+            writer.on('finish', () => {
+                return resolve(path);
+            });
+            writer.on('error', reject);
+        });
+    }
+    else {
+        // error
+    }
+});
+exports.downloadFile = downloadFile;
+const normalizeLink = (imageUrl) => {
+    if ((imageUrl === null || imageUrl === void 0 ? void 0 : imageUrl.slice(0, 4)) === 'ipfs') {
+        const ifpsHash = imageUrl.slice(7);
+        console.log('IPFS GATEWAY', ipfsGateway);
+        imageUrl = `${ipfsGateway}${ifpsHash}`;
+    }
+    return imageUrl;
+};
+exports.normalizeLink = normalizeLink;

@@ -16,12 +16,19 @@ exports.game = void 0;
 const user_1 = __importDefault(require("./models/user"));
 const embeds_1 = __importDefault(require("./services/embeds"));
 const discord_js_1 = require("discord.js");
+const helpers_1 = require("./utils/helpers");
 const register_1 = require("./utils/register");
 const database_service_1 = require("./services/database.service");
 const operations_1 = require("./services/operations");
 const game_1 = __importDefault(require("./models/game"));
+const users_1 = __importDefault(require("./mocks/users"));
+const attackCanvas_1 = __importDefault(require("./canvas/attackCanvas"));
+let queInterval;
+// Settings
 const token = process.env.DISCORD_TOKEN;
 const hp = 1000;
+const eventQue = [];
+const imageDir = 'dist/images';
 const client = new discord_js_1.Client({
     intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS],
 });
@@ -34,13 +41,32 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
         return;
     const { commandName, options, user } = interaction;
     if (commandName === 'start') {
+        interaction.deferReply();
         // grab players
         const players = yield (0, operations_1.fetchPlayers)();
         const gamePlayers = {};
-        players.forEach((player) => {
+        yield (0, helpers_1.asyncForEach)(players, (player) => __awaiter(void 0, void 0, void 0, function* () {
             const { username, discordId, address, asset } = player;
-            gamePlayers[username] = new user_1.default(username, discordId, address, asset, hp, undefined);
-        });
+            // save each image locally for use later
+            const localPath = yield (0, helpers_1.downloadFile)(asset, imageDir, username);
+            if (localPath) {
+                const assetWithLocalPath = Object.assign(Object.assign({}, asset), { localPath });
+                gamePlayers[discordId] = new user_1.default(username, discordId, address, assetWithLocalPath, hp, undefined);
+            }
+            else {
+                // error downloading
+            }
+            // loop through event que and show attacks
+            queInterval = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+                if (eventQue.length) {
+                    const { victim: { asset }, attacker: { username }, damage, } = eventQue[0];
+                    // do canvas with attacker, hp drained and victim
+                    const canvas = (0, attackCanvas_1.default)(damage, asset, username);
+                    const attachment = new discord_js_1.MessageAttachment(canvas.toBuffer('image/png'), 'test-melt.png');
+                    yield interaction.reply({ files: [attachment] });
+                }
+            }), 3000);
+        }));
         // instansiate new game
         exports.game = new game_1.default(gamePlayers, true, false, 1000);
         // send back game embed
@@ -62,7 +88,7 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
         const { username, id } = user;
         if (address && assetId) {
             const registrant = new user_1.default(username, id, address, { assetId }, hp);
-            const { status, asset } = yield (0, register_1.processRegistration)(registrant, address, assetId);
+            const { status, asset } = yield (0, register_1.processRegistration)(registrant);
             const embedData = {
                 title: 'Register',
                 description: status,
@@ -73,10 +99,41 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
         }
     }
     if (commandName === 'attack') {
-        const user = options.getUser('victim');
-        // reduce hp from other player chosen
-        // send back message with image of nft with damage
-        interaction.reply('attacked');
+        const { id: attackerId } = user;
+        if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
+            return interaction.reply(`The game hasn't started yet, please register if you haven't already and try again later`);
+        const { id: victimId } = options.getUser('victim');
+        const victim = exports.game.players[victimId] ? null : exports.game.players[victimId];
+        const attacker = exports.game.players[attackerId] ? null : exports.game.players[attackerId];
+        if (victim && attacker) {
+            const damage = Math.floor(Math.random() * (hp / 2));
+            victim.hp -= damage;
+            // if victim is dead, delete from game
+            if (victim.hp <= 0) {
+                delete exports.game.players[victimId];
+            }
+            // if there is only one player left, the game has been won
+            if (Object.values(exports.game.players).length === 1) {
+                // handle win
+                exports.game.active = false;
+                interaction.reply('winner');
+            }
+            // push event to the eventQue
+            eventQue.push({
+                attacker,
+                victim,
+                damage,
+            });
+            return;
+        }
+        // either victom or attacker doesn't exist
+        return interaction.reply('Please register by using the /register slash command to attack');
+    }
+    if (commandName === 'stop') {
+        if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
+            return interaction.reply('Game is not currently running');
+        exports.game.active = false;
+        return interaction.reply('game stopped');
     }
     /*
      *****************
@@ -85,7 +142,10 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
      */
     // test registring and selecting players
     if (commandName === 'setup-test') {
+        yield (0, helpers_1.asyncForEach)(users_1.default, (user, i) => __awaiter(void 0, void 0, void 0, function* () {
+            yield (0, register_1.processRegistration)(user);
+            console.log(`test user ${i + 1} added`);
+        }));
     }
-    // for testing purposes
 }));
 client.login(token);
