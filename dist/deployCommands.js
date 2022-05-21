@@ -33,6 +33,9 @@ const commands = [
     new builders_1.SlashCommandBuilder()
         .setName('stop')
         .setDescription('Stop the current game'),
+    new builders_1.SlashCommandBuilder()
+        .setName('attack-test')
+        .setDescription('test attacking'),
 ].map((command) => command.toJSON());
 const rest = new rest_1.REST({ version: '9' }).setToken(token);
 rest

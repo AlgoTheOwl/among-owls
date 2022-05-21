@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processRegistration = void 0;
-const operations_1 = require("../services/operations");
+const operations_1 = require("../database/operations");
 const algosdk_1 = __importDefault(require("algosdk"));
 const helpers_1 = require("./helpers");
 const algoNode = process.env.ALGO_NODE;
@@ -35,40 +35,7 @@ const processRegistration = (user) => __awaiter(void 0, void 0, void 0, function
         // Check if asset is owned and wallet has opt-in asset
         const { walletOwned, assetOwned } = yield (0, helpers_1.determineOwnership)(algodClient, address, assetId);
         const isOwned = walletOwned && assetOwned;
-        if (isOwned) {
-            // If owned, find full player and asset data
-            const player = yield (0, operations_1.findPlayer)(discordId);
-            const asset = yield (0, helpers_1.findAsset)(assetId, algoIndexer);
-            const { name: assetName, url: assetUrl, 'unit-name': unitName, } = asset === null || asset === void 0 ? void 0 : asset.assets[0].params;
-            // Check if it's a the right asset
-            if (unitName.slice(0, unitPrefix.length) !== unitPrefix) {
-                return {
-                    status: 'This asset is not a AOWL, please try again',
-                    registeredUser: user,
-                };
-            }
-            const assetEntry = {
-                assetUrl,
-                assetName,
-                assetId: assetId,
-                unitName,
-            };
-            if (!player) {
-                // Player doesn't exist, add to db
-                yield (0, operations_1.addPlayer)({
-                    discordId,
-                    username,
-                    address: address,
-                    asset: assetEntry,
-                    hp,
-                });
-                return {
-                    status: `Added ${unitName} - Prepare to attack!`,
-                    asset: assetEntry,
-                    registeredUser: user,
-                };
-            }
-            // Either wallet isn't owned or asset is not owned by wallet
+        if (!isOwned) {
             const status = walletOwned
                 ? `Looks like the wallet address entered doesn't hold this asset, please try again!`
                 : `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`;
@@ -77,8 +44,47 @@ const processRegistration = (user) => __awaiter(void 0, void 0, void 0, function
                 registeredUser: user,
             };
         }
+        // If owned, find full player and asset data
+        const player = yield (0, operations_1.findPlayer)(discordId);
+        const asset = yield (0, helpers_1.findAsset)(assetId, algoIndexer);
+        const { name: assetName, url: assetUrl, 'unit-name': unitName, } = asset === null || asset === void 0 ? void 0 : asset.assets[0].params;
+        const incorrectCollection = unitName.slice(0, unitPrefix.length) !== unitPrefix;
+        if (!asset) {
+            return {
+                status: "Looks like you don't own this NFT, try again with one in your possession.",
+                registeredUser: user,
+            };
+        }
+        if (player) {
+            return {
+                status: "Looks like you've already registered",
+                registeredUser: user,
+            };
+        }
+        // Check to make sure NFT is in correct series
+        if (incorrectCollection) {
+            return {
+                status: 'This asset is not a AOWL, please try again',
+                registeredUser: user,
+            };
+        }
+        const assetEntry = {
+            assetUrl,
+            assetName,
+            assetId: assetId,
+            unitName,
+        };
+        // Player doesn't exist, add to db
+        yield (0, operations_1.addPlayer)({
+            discordId,
+            username,
+            address: address,
+            asset: assetEntry,
+            hp,
+        });
         return {
-            status: "Looks like you don't own this NFT, try again with one in your possession.",
+            status: `Added ${unitName} - Prepare to attack!`,
+            asset: assetEntry,
             registeredUser: user,
         };
     }

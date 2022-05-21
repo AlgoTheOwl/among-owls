@@ -1,12 +1,10 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
-import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v9';
-import { game } from '.';
-import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
+import { SlashCommandBuilder } from '@discordjs/builders'
+import { REST } from '@discordjs/rest'
+import { Routes } from 'discord-api-types/v9'
 
-const clientId: string = process.env.DISCORD_CLIENT_ID;
-const guildId: string = process.env.DISCORD_GUILD_ID;
-const token: string = process.env.DISCORD_TOKEN;
+const clientId: string = process.env.DISCORD_CLIENT_ID
+const guildId: string = process.env.DISCORD_GUILD_ID
+const token: string = process.env.DISCORD_TOKEN
 
 const commands = [
   new SlashCommandBuilder()
@@ -34,16 +32,19 @@ const commands = [
       return option
         .setName('victim')
         .setDescription('The user')
-        .setRequired(true);
+        .setRequired(true)
     }),
   new SlashCommandBuilder()
     .setName('stop')
     .setDescription('Stop the current game'),
-].map((command) => command.toJSON());
+  new SlashCommandBuilder()
+    .setName('attack-test')
+    .setDescription('test attacking'),
+].map((command) => command.toJSON())
 
-const rest = new REST({ version: '9' }).setToken(token);
+const rest = new REST({ version: '9' }).setToken(token)
 
 rest
   .put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
   .then(() => console.log('Successfully registered application commands.'))
-  .catch(console.error);
+  .catch(console.error)

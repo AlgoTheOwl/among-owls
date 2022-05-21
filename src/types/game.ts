@@ -1,7 +1,6 @@
 import { ColorResolvable, MessageEmbed } from 'discord.js'
-import { Asset } from './user'
-import { ClientUser } from 'discord.js'
 import User from '../models/user'
+
 export interface EmbedData {
   title?: string
   description?: string
@@ -19,10 +18,4 @@ type Field = {
 export interface EmbedReply {
   embeds: [MessageEmbed]
   fetchReply: boolean
-}
-
-export interface AttackEvent {
-  attacker: User
-  victim: User
-  damage: number
 }

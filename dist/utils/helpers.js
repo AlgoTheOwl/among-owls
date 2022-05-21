@@ -12,10 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = void 0;
+exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const axios_1 = __importDefault(require("axios"));
-const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/';
+const wait = (duration) => __awaiter(void 0, void 0, void 0, function* () {
+    yield new Promise((res) => {
+        setTimeout(res, duration);
+    });
+});
+exports.wait = wait;
 const asyncForEach = (array, callback) => __awaiter(void 0, void 0, void 0, function* () {
     for (let index = 0; index < array.length; index++) {
         try {
@@ -64,35 +69,43 @@ const findAsset = (assetId, indexer) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.findAsset = findAsset;
+const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/';
 const downloadFile = (asset, directory, username) => __awaiter(void 0, void 0, void 0, function* () {
-    const { assetUrl } = asset;
-    if (assetUrl) {
-        const url = (0, exports.normalizeLink)(assetUrl);
-        console.log('url', url);
-        const path = `${directory}/${username}.jpg`;
-        const writer = fs_1.default.createWriteStream(path);
-        const res = yield axios_1.default.get(url, {
-            responseType: 'stream',
-        });
-        res.data.pipe(writer);
-        return new Promise((resolve, reject) => {
-            writer.on('finish', () => {
-                return resolve(path);
+    try {
+        const { assetUrl } = asset;
+        if (assetUrl) {
+            const url = (0, exports.normalizeLink)(assetUrl);
+            const path = `${directory}/${username}.jpg`;
+            const writer = fs_1.default.createWriteStream(path);
+            const res = yield axios_1.default.get(url, {
+                responseType: 'stream',
             });
-            writer.on('error', reject);
-        });
+            res.data.pipe(writer);
+            return new Promise((resolve, reject) => {
+                writer.on('finish', () => {
+                    return resolve(path);
+                });
+                writer.on('error', reject);
+            });
+        }
     }
-    else {
-        // error
+    catch (error) {
+        console.log(error);
     }
 });
 exports.downloadFile = downloadFile;
 const normalizeLink = (imageUrl) => {
     if ((imageUrl === null || imageUrl === void 0 ? void 0 : imageUrl.slice(0, 4)) === 'ipfs') {
         const ifpsHash = imageUrl.slice(7);
-        console.log('IPFS GATEWAY', ipfsGateway);
         imageUrl = `${ipfsGateway}${ifpsHash}`;
     }
     return imageUrl;
 };
 exports.normalizeLink = normalizeLink;
+const handleRolledRecently = (user, game, coolDownInterval) => {
+    game === null || game === void 0 ? void 0 : game.rolledRecently.add(user.discordId);
+    setTimeout(() => {
+        game === null || game === void 0 ? void 0 : game.rolledRecently.delete(user.discordId);
+    }, coolDownInterval + 1500);
+};
+exports.handleRolledRecently = handleRolledRecently;
