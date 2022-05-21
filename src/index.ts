@@ -5,7 +5,7 @@ import {
   Intents,
   Interaction,
   MessageAttachment,
-  ColorResolvable,
+  Permissions,
 } from 'discord.js'
 import { asyncForEach, wait } from './utils/helpers'
 import { processRegistration } from './utils/register'
@@ -16,7 +16,6 @@ import mockUsers from './mocks/users'
 import doAttackCanvas from './canvas/attackCanvas'
 import startGame from './interactions/start'
 import attack from './interactions/attack'
-import { MembershipScreeningFieldType } from 'discord-api-types/v10'
 
 const token: string = process.env.DISCORD_TOKEN
 
@@ -31,11 +30,13 @@ const messageDeleteInterval = 8000
 
 const client: Client = new Client({
   intents: [
+    Intents.FLAGS.GUILD_MEMBERS,
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Intents.FLAGS.GUILD_MEMBERS,
   ],
 })
+
+// const permissions = new Permissions([Permissions.FLAGS.MANAGE_ROLES])
 
 client.once('ready', async () => {
   await connectToDatabase()
@@ -55,7 +56,11 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   const { commandName, user, options } = interaction
 
   if (commandName === 'start') {
-    game = await startGame(interaction, hp, imageDir)
+    try {
+      game = await startGame(interaction, hp, imageDir)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   if (commandName === 'attack') {
@@ -83,8 +88,8 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       const registrant = new User(username, id, address, { assetId }, hp)
       const { status, registeredUser } = await processRegistration(registrant)
 
+      // add permissions if succesful
       if (registeredUser) {
-        // add permissions
         try {
           const role = interaction.guild?.roles.cache.find(
             (role) => role.name === 'registered'
@@ -163,13 +168,15 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         title: 'When AOWLS Attack',
         description: 'Who will survive?',
         color: 'DARK_AQUA',
+        thumbNail:
+          'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
         fields: Object.values(game.players).map((player) => ({
           name: player.username,
-          value: `${player.asset.unitName} - ${player.hp}`,
+          value: `${player.asset.assetName} - HP: ${player.hp}`,
         })),
       }
 
-      game.embed.edit(doEmbed(embedData))
+      await game.embed.edit(doEmbed(embedData))
       await wait(messageDeleteInterval)
       interaction.deleteReply()
     }

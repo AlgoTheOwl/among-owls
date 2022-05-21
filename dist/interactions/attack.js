@@ -79,13 +79,13 @@ function attack(interaction, game, user, hp) {
             color: 'DARK_AQUA',
             fields: playerArray.map((player) => ({
                 name: player.username,
-                value: `${player.asset.unitName} - ${player.hp}`,
+                value: `${player.asset.unitName} - HP: ${player.hp}`,
             })),
         };
         // if lose, remove loser from players and play game again
-        game.embed.edit((0, embeds_1.default)(embedData));
-        yield (0, helpers_1.wait)(2000);
-        interaction.deleteReply();
+        yield game.embed.edit((0, embeds_1.default)(embedData));
+        yield (0, helpers_1.wait)(5000);
+        yield interaction.deleteReply();
     });
 }
 exports.default = attack;

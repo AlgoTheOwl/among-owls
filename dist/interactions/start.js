@@ -47,12 +47,12 @@ function startGame(interaction, hp, imageDir) {
             title: 'When AOWLS Attack',
             description: 'Who will survive?',
             color: 'DARK_AQUA',
+            thumbNail: 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
             fields: Object.values(gamePlayers).map((player) => ({
                 name: player.username,
-                value: `${player.asset.assetName} HP: ${player.hp}`,
+                value: `${player.asset.unitName} - HP: ${player.hp}`,
             })),
         };
-        // if lose, remove loser from players and play game again
         game.embed = yield interaction.reply((0, embeds_1.default)(embedData));
         return game;
     });

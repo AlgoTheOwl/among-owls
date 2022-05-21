@@ -32,11 +32,12 @@ const coolDownInterval = 1000;
 const messageDeleteInterval = 8000;
 const client = new discord_js_1.Client({
     intents: [
+        discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
         discord_js_1.Intents.FLAGS.GUILDS,
         discord_js_1.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-        discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
     ],
 });
+// const permissions = new Permissions([Permissions.FLAGS.MANAGE_ROLES])
 client.once('ready', () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, database_service_1.connectToDatabase)();
     console.log('When AOWLS Attack - Server ready');
@@ -53,7 +54,12 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
         return;
     const { commandName, user, options } = interaction;
     if (commandName === 'start') {
-        exports.game = yield (0, start_1.default)(interaction, hp, imageDir);
+        try {
+            exports.game = yield (0, start_1.default)(interaction, hp, imageDir);
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
     if (commandName === 'attack') {
         if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
@@ -76,8 +82,8 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
         if (address && assetId) {
             const registrant = new user_1.default(username, id, address, { assetId }, hp);
             const { status, registeredUser } = yield (0, register_1.processRegistration)(registrant);
+            // add permissions if succesful
             if (registeredUser) {
-                // add permissions
                 try {
                     const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.name === 'registered');
                     const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === id);
@@ -133,12 +139,13 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
                 title: 'When AOWLS Attack',
                 description: 'Who will survive?',
                 color: 'DARK_AQUA',
+                thumbNail: 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
                 fields: Object.values(exports.game.players).map((player) => ({
                     name: player.username,
-                    value: `${player.asset.unitName} - ${player.hp}`,
+                    value: `${player.asset.assetName} - HP: ${player.hp}`,
                 })),
             };
-            exports.game.embed.edit((0, embeds_1.default)(embedData));
+            yield exports.game.embed.edit((0, embeds_1.default)(embedData));
             yield (0, helpers_1.wait)(messageDeleteInterval);
             interaction.deleteReply();
         }

@@ -30,7 +30,7 @@ function doAttackCanvas(damage, asset, victimUsername, attackerUsername) {
             // add text
             ctx.font = '45px permanent-marker';
             // Select the style that will be used to fill the text in
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = 'red';
             const randomNumber = Math.floor(Math.random() * 2);
             const text = owlReplies[randomNumber === 1 ? 0 : 1];
             // Actually fill the text with a solid color

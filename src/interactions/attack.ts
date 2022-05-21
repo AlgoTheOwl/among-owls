@@ -96,11 +96,11 @@ export default async function attack(
     color: 'DARK_AQUA',
     fields: playerArray.map((player) => ({
       name: player.username,
-      value: `${player.asset.unitName} - ${player.hp}`,
+      value: `${player.asset.unitName} - HP: ${player.hp}`,
     })),
   }
   // if lose, remove loser from players and play game again
-  game.embed.edit(doEmbed(embedData))
-  await wait(2000)
-  interaction.deleteReply()
+  await game.embed.edit(doEmbed(embedData))
+  await wait(5000)
+  await interaction.deleteReply()
 }
