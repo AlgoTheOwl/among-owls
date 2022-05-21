@@ -6,7 +6,7 @@ import {
 } from 'discord.js'
 import Game from '../models/game'
 import { EmbedData } from '../types/game'
-import doEmbed from '../database/embeds'
+import doEmbed from '../embeds'
 import doAttackCanvas from '../canvas/attackCanvas'
 import { wait, handleRolledRecently } from '../utils/helpers'
 
@@ -49,7 +49,7 @@ export default async function attack(
   }
 
   const playerArray = Object.values(game.players)
-  const damage = Math.floor(Math.random() * (hp / 2))
+  const damage = Math.floor(Math.random() * (hp / 4))
   victim.hp -= damage
 
   // if victim is dead, delete from game
@@ -83,12 +83,15 @@ export default async function attack(
     'attacker.png'
   )
 
-  await interaction.reply({ files: [attachment] })
+  await interaction.reply({
+    files: [attachment],
+    content: 'Test content for attack',
+  })
 
   handleRolledRecently(attacker, game, coolDownInterval)
 
   const embedData: EmbedData = {
-    title: 'When Owls Attack',
+    title: 'When AOWLS Attack',
     description: 'Who will survive?',
     color: 'DARK_AQUA',
     fields: playerArray.map((player) => ({

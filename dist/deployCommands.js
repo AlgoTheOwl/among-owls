@@ -9,10 +9,10 @@ const token = process.env.DISCORD_TOKEN;
 const commands = [
     new builders_1.SlashCommandBuilder()
         .setName('start')
-        .setDescription('start when owls attack'),
+        .setDescription('start When AOWLS Attack'),
     new builders_1.SlashCommandBuilder()
         .setName('register')
-        .setDescription('register for when owls attack')
+        .setDescription('register for When AOWLS Attack')
         .addStringOption((option) => option
         .setName('address')
         .setDescription('enter the your wallet address')

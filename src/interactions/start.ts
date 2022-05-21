@@ -5,7 +5,7 @@ import Game from '../models/game'
 import { asyncForEach, downloadFile } from '../utils/helpers'
 import { EmbedData } from '../types/game'
 import { Asset } from '../types/user'
-import doEmbed from '../database/embeds'
+import doEmbed from '../embeds'
 
 export default async function startGame(
   interaction: Interaction,
@@ -46,12 +46,12 @@ export default async function startGame(
   const game = new Game(new Set(), gamePlayers, true, false, 1000)
   // send back game embed
   const embedData: EmbedData = {
-    title: 'When Owls Attack',
+    title: 'When AOWLS Attack',
     description: 'Who will survive?',
     color: 'DARK_AQUA',
     fields: Object.values(gamePlayers).map((player) => ({
       name: player.username,
-      value: `${player.asset.unitName} - ${player.hp}`,
+      value: `${player.asset.assetName} HP: ${player.hp}`,
     })),
   }
   // if lose, remove loser from players and play game again

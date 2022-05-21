@@ -16,7 +16,7 @@ const operations_1 = require("../database/operations");
 const user_1 = __importDefault(require("../models/user"));
 const game_1 = __importDefault(require("../models/game"));
 const helpers_1 = require("../utils/helpers");
-const embeds_1 = __importDefault(require("../database/embeds"));
+const embeds_1 = __importDefault(require("../embeds"));
 function startGame(interaction, hp, imageDir) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!interaction.isCommand())
@@ -44,12 +44,12 @@ function startGame(interaction, hp, imageDir) {
         const game = new game_1.default(new Set(), gamePlayers, true, false, 1000);
         // send back game embed
         const embedData = {
-            title: 'When Owls Attack',
+            title: 'When AOWLS Attack',
             description: 'Who will survive?',
             color: 'DARK_AQUA',
             fields: Object.values(gamePlayers).map((player) => ({
                 name: player.username,
-                value: `${player.asset.unitName} - ${player.hp}`,
+                value: `${player.asset.assetName} HP: ${player.hp}`,
             })),
         };
         // if lose, remove loser from players and play game again

@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const embeds_1 = __importDefault(require("../database/embeds"));
+const embeds_1 = __importDefault(require("../embeds"));
 const attackCanvas_1 = __importDefault(require("../canvas/attackCanvas"));
 const helpers_1 = require("../utils/helpers");
 const coolDownInterval = 1000;
@@ -45,7 +45,7 @@ function attack(interaction, game, user, hp) {
             });
         }
         const playerArray = Object.values(game.players);
-        const damage = Math.floor(Math.random() * (hp / 2));
+        const damage = Math.floor(Math.random() * (hp / 4));
         victim.hp -= damage;
         // if victim is dead, delete from game
         if (victim.hp <= 0) {
@@ -68,10 +68,13 @@ function attack(interaction, game, user, hp) {
         // do canvas with attacker, hp drained and victim
         const canvas = yield (0, attackCanvas_1.default)(damage, asset, victimName, attackerName);
         const attachment = new discord_js_1.MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png');
-        yield interaction.reply({ files: [attachment] });
+        yield interaction.reply({
+            files: [attachment],
+            content: 'Test content for attack',
+        });
         (0, helpers_1.handleRolledRecently)(attacker, game, coolDownInterval);
         const embedData = {
-            title: 'When Owls Attack',
+            title: 'When AOWLS Attack',
             description: 'Who will survive?',
             color: 'DARK_AQUA',
             fields: playerArray.map((player) => ({

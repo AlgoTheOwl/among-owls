@@ -3,7 +3,7 @@ import { Asset, RegistrationResult } from '../types/user'
 import algosdk from 'algosdk'
 import { determineOwnership, findAsset } from './helpers'
 import User from '../models/user'
-import { state } from '../game'
+import { Permissions } from 'discord.js'
 
 const algoNode: string = process.env.ALGO_NODE
 const pureStakeApi: string = process.env.PURESTAKE_API

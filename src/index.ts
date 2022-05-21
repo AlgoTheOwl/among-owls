@@ -1,6 +1,12 @@
 import User from './models/user'
-import doEmbed from './database/embeds'
-import { Client, Intents, Interaction, MessageAttachment } from 'discord.js'
+import doEmbed from './embeds'
+import {
+  Client,
+  Intents,
+  Interaction,
+  MessageAttachment,
+  ColorResolvable,
+} from 'discord.js'
 import { asyncForEach, wait } from './utils/helpers'
 import { processRegistration } from './utils/register'
 import { connectToDatabase } from './database/database.service'
@@ -10,23 +16,31 @@ import mockUsers from './mocks/users'
 import doAttackCanvas from './canvas/attackCanvas'
 import startGame from './interactions/start'
 import attack from './interactions/attack'
+import { MembershipScreeningFieldType } from 'discord-api-types/v10'
 
 const token: string = process.env.DISCORD_TOKEN
 
 export let game: Game | undefined
+export let emojis = {}
 
 // Settings
 const hp = 1000
 const imageDir = 'dist/images'
 const coolDownInterval = 1000
+const messageDeleteInterval = 8000
 
 const client: Client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS],
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Intents.FLAGS.GUILD_MEMBERS,
+  ],
 })
 
 client.once('ready', async () => {
   await connectToDatabase()
-  console.log('When Owls Attack - Server ready')
+  console.log('When AOWLS Attack - Server ready')
+  // load emojis into game
 })
 
 /*
@@ -38,7 +52,7 @@ client.once('ready', async () => {
 client.on('interactionCreate', async (interaction: Interaction) => {
   if (!interaction.isCommand()) return
 
-  const { commandName, user } = interaction
+  const { commandName, user, options } = interaction
 
   if (commandName === 'start') {
     game = await startGame(interaction, hp, imageDir)
@@ -57,6 +71,35 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     if (!game?.active) return interaction.reply('Game is not currently running')
     game.active = false
     return interaction.reply({ content: 'Game stopped', ephemeral: true })
+  }
+
+  if (commandName === 'register') {
+    const address = options.getString('address')
+    const assetId = options.getNumber('assetid')
+
+    const { username, id } = user
+
+    if (address && assetId) {
+      const registrant = new User(username, id, address, { assetId }, hp)
+      const { status, registeredUser } = await processRegistration(registrant)
+
+      if (registeredUser) {
+        // add permissions
+        try {
+          const role = interaction.guild?.roles.cache.find(
+            (role) => role.name === 'registered'
+          )
+          const member = interaction.guild?.members.cache.find(
+            (member) => member.id === id
+          )
+          role && (await member?.roles.add(role.id))
+        } catch (error) {
+          console.log('ERROR adding role', error)
+        }
+      }
+
+      await interaction.reply({ ephemeral: true, content: status })
+    }
   }
 
   /*
@@ -92,7 +135,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     if (victim && attacker) {
       const { asset, username: victimName } = victim
       const { username: attackerName } = attacker
-      const damage = Math.floor(Math.random() * (hp / 2))
+      const damage = Math.floor(Math.random() * (hp / 4))
       victim.hp -= damage
 
       // do canvas with attacker, hp drained and victim
@@ -108,12 +151,16 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         'attacker.png'
       )
 
-      await interaction.reply({ files: [attachment] })
+      await interaction.reply({
+        files: [attachment],
+        content: `${victim.username} gets wrecked by ${attacker.asset.assetName} for ${damage} damage`,
+        // ephemeral: true,
+      })
 
       handleRolledRecently(attacker)
 
       const embedData: EmbedData = {
-        title: 'When Owls Attack',
+        title: 'When AOWLS Attack',
         description: 'Who will survive?',
         color: 'DARK_AQUA',
         fields: Object.values(game.players).map((player) => ({
@@ -123,7 +170,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       }
 
       game.embed.edit(doEmbed(embedData))
-      await wait(5000)
+      await wait(messageDeleteInterval)
       interaction.deleteReply()
     }
   }

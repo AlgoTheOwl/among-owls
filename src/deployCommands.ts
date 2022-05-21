@@ -9,10 +9,10 @@ const token: string = process.env.DISCORD_TOKEN
 const commands = [
   new SlashCommandBuilder()
     .setName('start')
-    .setDescription('start when owls attack'),
+    .setDescription('start When AOWLS Attack'),
   new SlashCommandBuilder()
     .setName('register')
-    .setDescription('register for when owls attack')
+    .setDescription('register for When AOWLS Attack')
     .addStringOption((option) =>
       option
         .setName('address')

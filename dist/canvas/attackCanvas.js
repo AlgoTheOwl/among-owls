@@ -8,37 +8,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const canvas_1 = __importDefault(require("canvas"));
+const canvas_1 = require("canvas");
 const promises_1 = require("fs/promises");
-const canvas = canvas_1.default.createCanvas(0, 0);
-const ctx = canvas.getContext('2d');
+const owlReplies = ['HOOOOOOT!!!', 'SCREEETCH!!!'];
 function doAttackCanvas(damage, asset, victimUsername, attackerUsername) {
     return __awaiter(this, void 0, void 0, function* () {
         const { localPath } = asset;
+        (0, canvas_1.registerFont)('src/canvas/fonts/permenent-marker.ttf', {
+            family: 'permanent-marker',
+        });
+        const canvas = (0, canvas_1.createCanvas)(300, 300);
         if (localPath) {
+            const ctx = canvas.getContext('2d');
             // download Image
             const nftImage = yield (0, promises_1.readFile)(localPath);
-            const canvasImg = new canvas_1.default.Image();
+            const canvasImg = new canvas_1.Image();
             canvasImg.src = nftImage;
-            // size image
-            canvas.width = 300;
-            canvas.height = 300;
-            // canvas.width = canvasImg.width
-            // canvas.height = canvasImg.height
             // draw Image
             ctx.drawImage(canvasImg, 0, 0, canvas.width, canvas.height);
             // add text
-            ctx.font = '15px sans-serif';
+            ctx.font = '45px permanent-marker';
             // Select the style that will be used to fill the text in
             ctx.fillStyle = 'black';
+            const randomNumber = Math.floor(Math.random() * 2);
+            const text = owlReplies[randomNumber === 1 ? 0 : 1];
             // Actually fill the text with a solid color
-            ctx.fillText(`${victimUsername} takes ${damage} damage`, 75, 30);
+            ctx.fillText(text, 5, 50);
         }
-        // return
         return canvas;
     });
 }
