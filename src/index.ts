@@ -157,9 +157,11 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       const embedData: EmbedData = {
         title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
         description: '💀 Who will survive? 💀',
-        color: '#FF0000',
-        thumbNail:
+        color: 'RED',
+        image:
           'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
+        thumbNail:
+          'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
         fields: Object.values(game.players).map((player) => ({
           name: player.username,
           value: `${player.asset.assetName} - HP: ${player.hp}`,

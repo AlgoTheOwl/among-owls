@@ -4,7 +4,7 @@ import { EmbedData, EmbedReply } from './types/game'
 const ipfsGateway = process.env.IPFS_GATEWAY
 
 export default function doEmbed(data: EmbedData): EmbedReply {
-  let { title, description, color, image, thumbNail, fields } = data
+  let { title, description, color, image, thumbNail, fields, footer } = data
 
   const embed = new MessageEmbed()
 
@@ -19,6 +19,7 @@ export default function doEmbed(data: EmbedData): EmbedReply {
   image && embed.setImage(image)
   thumbNail && embed.setThumbnail(thumbNail)
   fields && embed.addFields(fields)
+  footer && embed.setFooter(footer)
 
   return {
     embeds: [embed],

@@ -8,11 +8,17 @@ export interface EmbedData {
   image?: string
   thumbNail?: string
   fields?: Field[]
+  footer?: Footer
 }
 
 type Field = {
   name: string
   value: string
+}
+
+type Footer = {
+  text: string
+  iconUrl: string
 }
 
 export interface EmbedReply {

@@ -48,7 +48,7 @@ export default async function attack(
     })
   }
 
-  const playerArray = Object.values(game.players)
+  const playerArr = Object.values(game.players)
   const damage = Math.floor(Math.random() * (hp / 4))
   victim.hp -= damage
 
@@ -58,8 +58,8 @@ export default async function attack(
   }
 
   // if there is only one player left, the game has been won
-  if (playerArray.length === 1) {
-    const winner = playerArray[0]
+  if (playerArr.length === 1) {
+    const winner = playerArr[0]
     // handle win
     game.active = false
 
@@ -93,8 +93,11 @@ export default async function attack(
   const embedData: EmbedData = {
     title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
     description: '💀 Who will survive? 💀',
-    color: '#FF0000',
-    fields: playerArray.map((player) => ({
+    color: 'RED',
+    thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+    image:
+      'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
+    fields: playerArr.map((player) => ({
       name: player.username,
       value: `${player.asset.unitName} - HP: ${player.hp}`,
     })),
