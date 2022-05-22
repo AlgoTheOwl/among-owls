@@ -91,9 +91,9 @@ export default async function attack(
   handleRolledRecently(attacker, game, coolDownInterval)
 
   const embedData: EmbedData = {
-    title: 'When AOWLS Attack',
-    description: 'Who will survive?',
-    color: 'DARK_AQUA',
+    title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
+    description: '💀 Who will survive? 💀',
+    color: '#FF0000',
     fields: playerArray.map((player) => ({
       name: player.username,
       value: `${player.asset.unitName} - HP: ${player.hp}`,

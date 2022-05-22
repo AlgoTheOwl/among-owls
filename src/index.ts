@@ -29,14 +29,8 @@ const coolDownInterval = 1000
 const messageDeleteInterval = 8000
 
 const client: Client = new Client({
-  intents: [
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-  ],
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS],
 })
-
-// const permissions = new Permissions([Permissions.FLAGS.MANAGE_ROLES])
 
 client.once('ready', async () => {
   await connectToDatabase()
@@ -56,11 +50,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   const { commandName, user, options } = interaction
 
   if (commandName === 'start') {
-    try {
-      game = await startGame(interaction, hp, imageDir)
-    } catch (error) {
-      console.log(error)
-    }
+    game = await startGame(interaction, hp, imageDir)
   }
 
   if (commandName === 'attack') {
@@ -165,9 +155,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       handleRolledRecently(attacker)
 
       const embedData: EmbedData = {
-        title: 'When AOWLS Attack',
-        description: 'Who will survive?',
-        color: 'DARK_AQUA',
+        title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
+        description: '💀 Who will survive? 💀',
+        color: '#FF0000',
         thumbNail:
           'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
         fields: Object.values(game.players).map((player) => ({

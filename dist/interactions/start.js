@@ -21,6 +21,7 @@ function startGame(interaction, hp, imageDir) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!interaction.isCommand())
             return;
+        yield interaction.deferReply();
         // grab players
         const players = yield (0, operations_1.fetchPlayers)();
         const gamePlayers = {};
@@ -34,26 +35,27 @@ function startGame(interaction, hp, imageDir) {
             }
             else {
                 // error downloading
-                interaction.reply({
-                    content: 'Error downloading asset from the blockchain',
-                    ephemeral: true,
-                });
+                // await interaction.reply({
+                //   content: 'Error downloading asset from the blockchain',
+                //   ephemeral: true,
+                // })
             }
         }));
+        const playerArr = Object.values(gamePlayers);
         // instansiate new game
         const game = new game_1.default(new Set(), gamePlayers, true, false, 1000);
         // send back game embed
         const embedData = {
-            title: 'When AOWLS Attack',
-            description: 'Who will survive?',
+            title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
+            description: '💀 Who will survive? 💀',
             color: 'DARK_AQUA',
             thumbNail: 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
-            fields: Object.values(gamePlayers).map((player) => ({
+            fields: playerArr.map((player) => ({
                 name: player.username,
                 value: `${player.asset.unitName} - HP: ${player.hp}`,
             })),
         };
-        game.embed = yield interaction.reply((0, embeds_1.default)(embedData));
+        game.embed = yield interaction.editReply((0, embeds_1.default)(embedData));
         return game;
     });
 }

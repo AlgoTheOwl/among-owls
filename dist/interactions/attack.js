@@ -74,9 +74,9 @@ function attack(interaction, game, user, hp) {
         });
         (0, helpers_1.handleRolledRecently)(attacker, game, coolDownInterval);
         const embedData = {
-            title: 'When AOWLS Attack',
-            description: 'Who will survive?',
-            color: 'DARK_AQUA',
+            title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
+            description: '💀 Who will survive? 💀',
+            color: '#FF0000',
             fields: playerArray.map((player) => ({
                 name: player.username,
                 value: `${player.asset.unitName} - HP: ${player.hp}`,

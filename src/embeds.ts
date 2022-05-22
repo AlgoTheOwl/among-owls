@@ -18,7 +18,7 @@ export default function doEmbed(data: EmbedData): EmbedReply {
   color && embed.setColor(color)
   image && embed.setImage(image)
   thumbNail && embed.setThumbnail(thumbNail)
-  fields && embed.setFields(fields)
+  fields && embed.addFields(fields)
 
   return {
     embeds: [embed],
