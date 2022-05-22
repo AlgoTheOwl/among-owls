@@ -109,3 +109,9 @@ export const handleRolledRecently = (
     game?.rolledRecently.delete(user.discordId)
   }, coolDownInterval + 1500)
 }
+
+export const mapPlayersForEmbed = (playerArr: User[]) =>
+  playerArr.map((player) => ({
+    name: player.username,
+    value: `${player.asset.assetName} - HP: ${player.hp}`,
+  }))

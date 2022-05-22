@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const axios_1 = __importDefault(require("axios"));
 const wait = (duration) => __awaiter(void 0, void 0, void 0, function* () {
@@ -109,3 +109,8 @@ const handleRolledRecently = (user, game, coolDownInterval) => {
     }, coolDownInterval + 1500);
 };
 exports.handleRolledRecently = handleRolledRecently;
+const mapPlayersForEmbed = (playerArr) => playerArr.map((player) => ({
+    name: player.username,
+    value: `${player.asset.assetName} - HP: ${player.hp}`,
+}));
+exports.mapPlayersForEmbed = mapPlayersForEmbed;

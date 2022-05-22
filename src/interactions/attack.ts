@@ -6,11 +6,17 @@ import {
 } from 'discord.js'
 import Game from '../models/game'
 import { EmbedData } from '../types/game'
-import doEmbed from '../embeds'
+import doEmbed, { defaultEmbedValues } from '../embeds'
 import doAttackCanvas from '../canvas/attackCanvas'
-import { wait, handleRolledRecently } from '../utils/helpers'
+import {
+  wait,
+  handleRolledRecently,
+  mapPlayersForEmbed,
+} from '../utils/helpers'
 
+// Settings
 const coolDownInterval = 1000
+const messageDeleteInterval = 5000
 
 export default async function attack(
   interaction: Interaction,
@@ -91,19 +97,12 @@ export default async function attack(
   handleRolledRecently(attacker, game, coolDownInterval)
 
   const embedData: EmbedData = {
-    title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
-    description: '💀 Who will survive? 💀',
+    ...defaultEmbedValues,
     color: 'RED',
-    thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-    image:
-      'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
-    fields: playerArr.map((player) => ({
-      name: player.username,
-      value: `${player.asset.unitName} - HP: ${player.hp}`,
-    })),
+    fields: mapPlayersForEmbed(playerArr),
   }
   // if lose, remove loser from players and play game again
   await game.embed.edit(doEmbed(embedData))
-  await wait(5000)
+  await wait(messageDeleteInterval)
   await interaction.deleteReply()
 }

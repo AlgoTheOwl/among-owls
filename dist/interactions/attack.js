@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,10 +36,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const embeds_1 = __importDefault(require("../embeds"));
+const embeds_1 = __importStar(require("../embeds"));
 const attackCanvas_1 = __importDefault(require("../canvas/attackCanvas"));
 const helpers_1 = require("../utils/helpers");
+// Settings
 const coolDownInterval = 1000;
+const messageDeleteInterval = 5000;
 function attack(interaction, game, user, hp) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!interaction.isCommand())
@@ -73,20 +98,10 @@ function attack(interaction, game, user, hp) {
             content: 'Test content for attack',
         });
         (0, helpers_1.handleRolledRecently)(attacker, game, coolDownInterval);
-        const embedData = {
-            title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
-            description: '💀 Who will survive? 💀',
-            color: 'RED',
-            thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-            image: 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
-            fields: playerArr.map((player) => ({
-                name: player.username,
-                value: `${player.asset.unitName} - HP: ${player.hp}`,
-            })),
-        };
+        const embedData = Object.assign(Object.assign({}, embeds_1.defaultEmbedValues), { color: 'RED', fields: (0, helpers_1.mapPlayersForEmbed)(playerArr) });
         // if lose, remove loser from players and play game again
         yield game.embed.edit((0, embeds_1.default)(embedData));
-        yield (0, helpers_1.wait)(5000);
+        yield (0, helpers_1.wait)(messageDeleteInterval);
         yield interaction.deleteReply();
     });
 }

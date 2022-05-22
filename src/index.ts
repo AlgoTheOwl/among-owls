@@ -1,35 +1,30 @@
 import User from './models/user'
-import doEmbed from './embeds'
-import {
-  Client,
-  Intents,
-  Interaction,
-  MessageAttachment,
-  Permissions,
-} from 'discord.js'
-import { asyncForEach, wait } from './utils/helpers'
+import { Client, Intents, Interaction } from 'discord.js'
+import { asyncForEach } from './utils/helpers'
 import { processRegistration } from './utils/register'
 import { connectToDatabase } from './database/database.service'
 import Game from './models/game'
-import { EmbedData } from './types/game'
 import mockUsers from './mocks/users'
-import doAttackCanvas from './canvas/attackCanvas'
 import startGame from './interactions/start'
 import attack from './interactions/attack'
+import doTestAttack from './interactions/test-attack'
 
 const token: string = process.env.DISCORD_TOKEN
 
+// Gloval vars
 export let game: Game | undefined
 export let emojis = {}
 
 // Settings
 const hp = 1000
 const imageDir = 'dist/images'
-const coolDownInterval = 1000
-const messageDeleteInterval = 8000
 
 const client: Client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS],
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Intents.FLAGS.GUILD_MEMBERS,
+  ],
 })
 
 client.once('ready', async () => {
@@ -88,6 +83,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
             (member) => member.id === id
           )
           role && (await member?.roles.add(role.id))
+          console.log('role succesfully added')
         } catch (error) {
           console.log('ERROR adding role', error)
         }
@@ -113,74 +109,13 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
   // test pushing attack event to que
   if (commandName === 'attack-test') {
-    // interaction.deferReply({ ephemeral: true })
-
-    if (!game?.active) return interaction.reply(`Game is not running`)
-
-    const victim: User = Object.values(game.players)[0]
-    const attacker: User = Object.values(game.players)[1]
-
-    if (game.rolledRecently.has(attacker.discordId)) {
-      return await interaction.reply({
-        content: 'Ah ah, still cooling down - wait your turn!',
+    if (!game?.active)
+      return interaction.reply({
+        content: `Start game to trigger test attack`,
         ephemeral: true,
       })
-    }
-
-    if (victim && attacker) {
-      const { asset, username: victimName } = victim
-      const { username: attackerName } = attacker
-      const damage = Math.floor(Math.random() * (hp / 4))
-      victim.hp -= damage
-
-      // do canvas with attacker, hp drained and victim
-      const canvas = await doAttackCanvas(
-        damage,
-        asset,
-        victimName,
-        attackerName
-      )
-
-      const attachment = new MessageAttachment(
-        canvas.toBuffer('image/png'),
-        'attacker.png'
-      )
-
-      await interaction.reply({
-        files: [attachment],
-        content: `${victim.username} gets wrecked by ${attacker.asset.assetName} for ${damage} damage`,
-        // ephemeral: true,
-      })
-
-      handleRolledRecently(attacker)
-
-      const embedData: EmbedData = {
-        title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
-        description: '💀 Who will survive? 💀',
-        color: 'RED',
-        image:
-          'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
-        thumbNail:
-          'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-        fields: Object.values(game.players).map((player) => ({
-          name: player.username,
-          value: `${player.asset.assetName} - HP: ${player.hp}`,
-        })),
-      }
-
-      await game.embed.edit(doEmbed(embedData))
-      await wait(messageDeleteInterval)
-      interaction.deleteReply()
-    }
+    await doTestAttack(interaction, game, hp)
   }
 })
-
-const handleRolledRecently = (user: User) => {
-  game?.rolledRecently.add(user.discordId)
-
-  setTimeout(() => {
-    game?.rolledRecently.delete(user.discordId)
-  }, coolDownInterval + 1500)
-}
 
 client.login(token)

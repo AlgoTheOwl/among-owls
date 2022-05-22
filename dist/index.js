@@ -14,24 +14,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.emojis = exports.game = void 0;
 const user_1 = __importDefault(require("./models/user"));
-const embeds_1 = __importDefault(require("./embeds"));
 const discord_js_1 = require("discord.js");
 const helpers_1 = require("./utils/helpers");
 const register_1 = require("./utils/register");
 const database_service_1 = require("./database/database.service");
 const users_1 = __importDefault(require("./mocks/users"));
-const attackCanvas_1 = __importDefault(require("./canvas/attackCanvas"));
 const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
+const test_attack_1 = __importDefault(require("./interactions/test-attack"));
 const token = process.env.DISCORD_TOKEN;
 exports.emojis = {};
 // Settings
 const hp = 1000;
 const imageDir = 'dist/images';
-const coolDownInterval = 1000;
-const messageDeleteInterval = 8000;
 const client = new discord_js_1.Client({
-    intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS],
+    intents: [
+        discord_js_1.Intents.FLAGS.GUILDS,
+        discord_js_1.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
+    ],
 });
 client.once('ready', () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, database_service_1.connectToDatabase)();
@@ -78,6 +79,7 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
                     const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.name === 'registered');
                     const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === id);
                     role && (yield (member === null || member === void 0 ? void 0 : member.roles.add(role.id)));
+                    console.log('role succesfully added');
                 }
                 catch (error) {
                     console.log('ERROR adding role', error);
@@ -100,52 +102,12 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
     }
     // test pushing attack event to que
     if (commandName === 'attack-test') {
-        // interaction.deferReply({ ephemeral: true })
         if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
-            return interaction.reply(`Game is not running`);
-        const victim = Object.values(exports.game.players)[0];
-        const attacker = Object.values(exports.game.players)[1];
-        if (exports.game.rolledRecently.has(attacker.discordId)) {
-            return yield interaction.reply({
-                content: 'Ah ah, still cooling down - wait your turn!',
+            return interaction.reply({
+                content: `Start game to trigger test attack`,
                 ephemeral: true,
             });
-        }
-        if (victim && attacker) {
-            const { asset, username: victimName } = victim;
-            const { username: attackerName } = attacker;
-            const damage = Math.floor(Math.random() * (hp / 4));
-            victim.hp -= damage;
-            // do canvas with attacker, hp drained and victim
-            const canvas = yield (0, attackCanvas_1.default)(damage, asset, victimName, attackerName);
-            const attachment = new discord_js_1.MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png');
-            yield interaction.reply({
-                files: [attachment],
-                content: `${victim.username} gets wrecked by ${attacker.asset.assetName} for ${damage} damage`,
-                // ephemeral: true,
-            });
-            handleRolledRecently(attacker);
-            const embedData = {
-                title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
-                description: '💀 Who will survive? 💀',
-                color: 'RED',
-                image: 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
-                thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-                fields: Object.values(exports.game.players).map((player) => ({
-                    name: player.username,
-                    value: `${player.asset.assetName} - HP: ${player.hp}`,
-                })),
-            };
-            yield exports.game.embed.edit((0, embeds_1.default)(embedData));
-            yield (0, helpers_1.wait)(messageDeleteInterval);
-            interaction.deleteReply();
-        }
+        yield (0, test_attack_1.default)(interaction, exports.game, hp);
     }
 }));
-const handleRolledRecently = (user) => {
-    exports.game === null || exports.game === void 0 ? void 0 : exports.game.rolledRecently.add(user.discordId);
-    setTimeout(() => {
-        exports.game === null || exports.game === void 0 ? void 0 : exports.game.rolledRecently.delete(user.discordId);
-    }, coolDownInterval + 1500);
-};
 client.login(token);

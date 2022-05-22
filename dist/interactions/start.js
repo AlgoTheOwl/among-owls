@@ -17,6 +17,8 @@ const user_1 = __importDefault(require("../models/user"));
 const game_1 = __importDefault(require("../models/game"));
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
+const embeds_2 = require("../embeds");
+const helpers_2 = require("../utils/helpers");
 function startGame(interaction, hp, imageDir) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!interaction.isCommand())
@@ -45,17 +47,7 @@ function startGame(interaction, hp, imageDir) {
         // instansiate new game
         const game = new game_1.default(new Set(), gamePlayers, true, false, 1000);
         // send back game embed
-        const embedData = {
-            title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
-            description: '💀 Who will survive? 💀',
-            color: 'DARK_AQUA',
-            thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-            image: 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
-            fields: playerArr.map((player) => ({
-                name: player.username,
-                value: `${player.asset.unitName} - HP: ${player.hp}`,
-            })),
-        };
+        const embedData = Object.assign(Object.assign({}, embeds_2.defaultEmbedValues), { fields: (0, helpers_2.mapPlayersForEmbed)(playerArr) });
         game.embed = yield interaction.editReply((0, embeds_1.default)(embedData));
         return game;
     });

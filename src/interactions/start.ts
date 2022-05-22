@@ -6,6 +6,8 @@ import { asyncForEach, downloadFile } from '../utils/helpers'
 import { EmbedData } from '../types/game'
 import { Asset } from '../types/user'
 import doEmbed from '../embeds'
+import { defaultEmbedValues } from '../embeds'
+import { mapPlayersForEmbed } from '../utils/helpers'
 
 export default async function startGame(
   interaction: Interaction,
@@ -49,16 +51,8 @@ export default async function startGame(
   const game = new Game(new Set(), gamePlayers, true, false, 1000)
   // send back game embed
   const embedData: EmbedData = {
-    title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
-    description: '💀 Who will survive? 💀',
-    color: 'DARK_AQUA',
-    thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-    image:
-      'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
-    fields: playerArr.map((player) => ({
-      name: player.username,
-      value: `${player.asset.unitName} - HP: ${player.hp}`,
-    })),
+    ...defaultEmbedValues,
+    fields: mapPlayersForEmbed(playerArr),
   }
 
   game.embed = await interaction.editReply(doEmbed(embedData))
