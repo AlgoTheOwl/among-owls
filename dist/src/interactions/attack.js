@@ -7,6 +7,7 @@ const discord_js_1 = require("discord.js");
 const embeds_1 = __importDefault(require("../embeds"));
 const attackCanvas_1 = __importDefault(require("../canvas/attackCanvas"));
 const helpers_1 = require("../utils/helpers");
+const operations_1 = require("../database/operations");
 // Settings
 const coolDownInterval = 5000;
 const messageDeleteInterval = 5000;
@@ -61,7 +62,7 @@ async function attack(interaction, game, user, hp) {
             color: 'DARK_AQUA',
             image: winner.asset.assetUrl,
         };
-        // await removeAllPlayers()
+        await (0, operations_1.removeAllPlayers)();
         interaction.reply({ ephemeral: true, content: 'You WON!!!' });
         return game.embed.edit((0, embeds_1.default)(embedData));
     }
