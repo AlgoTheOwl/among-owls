@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchPlayers = exports.findPlayer = exports.deletePlayer = exports.addPlayer = void 0;
+exports.removeAllPlayers = exports.fetchPlayers = exports.findPlayer = exports.deletePlayer = exports.addPlayer = void 0;
 const database_service_1 = require("./database.service");
 const addPlayer = async (playerData) => {
     const collection = database_service_1.db.collection('users');
@@ -22,3 +22,8 @@ const fetchPlayers = async () => {
     return await collection.find().toArray();
 };
 exports.fetchPlayers = fetchPlayers;
+const removeAllPlayers = async () => {
+    const collection = database_service_1.db.collection('users');
+    return await collection.deleteMany({});
+};
+exports.removeAllPlayers = removeAllPlayers;

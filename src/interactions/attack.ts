@@ -13,6 +13,8 @@ import {
   handleRolledRecently,
   mapPlayersForEmbed,
 } from '../utils/helpers'
+import { removeAllListeners } from 'process'
+import { removeAllPlayers } from '../database/operations'
 
 // Settings
 const coolDownInterval = 1000
@@ -55,8 +57,8 @@ export default async function attack(
     })
   }
 
-  const damage = Math.floor(Math.random() * (hp / 2))
-  // const damage = 1000
+  // const damage = Math.floor(Math.random() * (hp / 2))
+  const damage = 1000
   victim.hp -= damage
 
   // if victim is dead, delete from game
@@ -77,6 +79,10 @@ export default async function attack(
       color: 'DARK_AQUA',
       image: winner.asset.assetUrl,
     }
+
+    await removeAllPlayers()
+
+    interaction.reply({ ephemeral: true, content: 'You WON!!!' })
 
     return game.embed.edit(doEmbed(embedData))
   }

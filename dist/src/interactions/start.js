@@ -12,9 +12,14 @@ const helpers_2 = require("../utils/helpers");
 async function startGame(interaction, hp, imageDir) {
     if (!interaction.isCommand())
         return;
-    await interaction.deferReply();
-    // grab players
     const players = await (0, operations_1.fetchPlayers)();
+    if (!players.length) {
+        await interaction.reply({
+            content: 'There are not enough players to start the game',
+            ephemeral: true,
+        });
+    }
+    await interaction.deferReply();
     const gamePlayers = {};
     await (0, helpers_1.asyncForEach)(players, async (player) => {
         const { username, discordId, address, asset } = player;

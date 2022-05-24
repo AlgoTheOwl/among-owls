@@ -120,5 +120,5 @@ export const handleRolledRecently = (
 export const mapPlayersForEmbed = (playerArr: User[]) =>
   playerArr.map((player) => ({
     name: player.username,
-    value: `${player.asset.assetName} - HP: ${player.hp}`,
+    value: `HP: ${player.hp}`,
   }))

@@ -14,9 +14,18 @@ export default async function startGame(
   imageDir: string
 ) {
   if (!interaction.isCommand()) return
-  await interaction.deferReply()
-  // grab players
+
   const players: User[] = await fetchPlayers()
+
+  if (!players.length) {
+    await interaction.reply({
+      content: 'There are not enough players to start the game',
+      ephemeral: true,
+    })
+  }
+
+  await interaction.deferReply()
+
   const gamePlayers: { [key: string]: User } = {}
   await asyncForEach(players, async (player: User) => {
     const { username, discordId, address, asset } = player

@@ -104,6 +104,6 @@ const handleRolledRecently = (user, game, coolDownInterval) => {
 exports.handleRolledRecently = handleRolledRecently;
 const mapPlayersForEmbed = (playerArr) => playerArr.map((player) => ({
     name: player.username,
-    value: `${player.asset.assetName} - HP: ${player.hp}`,
+    value: `HP: ${player.hp}`,
 }));
 exports.mapPlayersForEmbed = mapPlayersForEmbed;

@@ -7,6 +7,7 @@ const discord_js_1 = require("discord.js");
 const embeds_1 = __importDefault(require("../embeds"));
 const attackCanvas_1 = __importDefault(require("../canvas/attackCanvas"));
 const helpers_1 = require("../utils/helpers");
+const operations_1 = require("../database/operations");
 // Settings
 const coolDownInterval = 1000;
 const messageDeleteInterval = 5000;
@@ -36,8 +37,8 @@ async function attack(interaction, game, user, hp) {
             ephemeral: true,
         });
     }
-    const damage = Math.floor(Math.random() * (hp / 2));
-    // const damage = 1000
+    // const damage = Math.floor(Math.random() * (hp / 2))
+    const damage = 1000;
     victim.hp -= damage;
     // if victim is dead, delete from game
     if (victim.hp <= 0) {
@@ -55,6 +56,8 @@ async function attack(interaction, game, user, hp) {
             color: 'DARK_AQUA',
             image: winner.asset.assetUrl,
         };
+        await (0, operations_1.removeAllPlayers)();
+        interaction.reply({ ephemeral: true, content: 'You WON!!!' });
         return game.embed.edit((0, embeds_1.default)(embedData));
     }
     const { asset, username: victimName } = victim;
