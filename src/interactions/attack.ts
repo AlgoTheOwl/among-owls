@@ -70,8 +70,8 @@ export default async function attack(
   victim.hp -= damage
 
   let victimDead = false
-  // if victim is dead, delete from game
   if (victim.hp <= 0) {
+    // if victim is dead, delete from game
     delete game.players[victimId]
     victimDead = true
   }
