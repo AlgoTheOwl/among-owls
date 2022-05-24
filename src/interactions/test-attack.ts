@@ -2,7 +2,7 @@ import { Interaction, MessageAttachment } from 'discord.js'
 import Game from '../models/game'
 import User from '../models/user'
 import doAttackCanvas from '../canvas/attackCanvas'
-import { handleRolledRecently } from '../utils/helpers'
+import { handleRolledRecently, mapPlayersForEmbed } from '../utils/helpers'
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import { wait } from '../utils/helpers'
@@ -50,23 +50,10 @@ export default async function doTestAttack(
 
     handleRolledRecently(attacker, game, coolDownInterval)
 
+    const playerArr = Object.values(game.players)
     const embedData: EmbedData = {
-      title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
-      description: '💀 Who will survive? 💀',
+      fields: mapPlayersForEmbed(playerArr),
       color: 'RED',
-      image:
-        'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
-      thumbNail:
-        'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-      fields: Object.values(game.players).map((player) => ({
-        name: player.username,
-        value: `${player.asset.assetName} - HP: ${player.hp}`,
-      })),
-      footer: {
-        text: 'test footer content',
-        iconUrl:
-          'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-      },
     }
 
     await game.embed.edit(doEmbed(embedData))

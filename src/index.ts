@@ -1,7 +1,7 @@
 import User from './models/user'
-import { Client, Intents, Interaction } from 'discord.js'
+import { Client, Intents, Interaction, Permissions } from 'discord.js'
 import { asyncForEach } from './utils/helpers'
-import { processRegistration } from './utils/register'
+import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'
 import Game from './models/game'
 import mockUsers from './mocks/users'
@@ -71,8 +71,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
     if (address && assetId) {
       const registrant = new User(username, id, address, { assetId }, hp)
-      const { status, registeredUser } = await processRegistration(registrant)
-
+      const { status, registeredUser } = await processRegistration(
+        registrant,
+        false
+      )
       // add permissions if succesful
       if (registeredUser) {
         try {
@@ -100,15 +102,20 @@ client.on('interactionCreate', async (interaction: Interaction) => {
    */
 
   // test registring and selecting players
-  if (commandName === 'setup-test') {
+  if (commandName === 'test-register') {
     await asyncForEach(mockUsers, async (user: User, i: number) => {
-      await processRegistration(user)
-      console.log(`test user ${i + 1} added`)
+      const { status, registeredUser } = await processRegistration(user, true)
+      if (registeredUser) console.log(`test user ${i + 1} added`)
+      else console.log(status)
+    })
+
+    await interaction.reply({
+      content: 'all test users added',
     })
   }
 
   // test pushing attack event to que
-  if (commandName === 'attack-test') {
+  if (commandName === 'test-attack') {
     if (!game?.active)
       return interaction.reply({
         content: `Start game to trigger test attack`,

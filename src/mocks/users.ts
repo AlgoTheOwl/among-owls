@@ -1,11 +1,41 @@
 import User from '../models/user'
 
 export default [
-  new User('user1', 'testid', 'testAddress', { assetId: 123456 }, 1000),
-  new User('user2', 'testid', 'testAddress', { assetId: 123456 }, 1000),
-  new User('user3', 'testid', 'testAddress', { assetId: 123456 }, 1000),
-  new User('user4', 'testid', 'testAddress', { assetId: 123456 }, 1000),
-  new User('user5', 'testid', 'testAddress', { assetId: 123456 }, 1000),
+  new User(
+    'user1',
+    'discordId1',
+    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
+    { assetId: 550344747 },
+    1000
+  ),
+  new User(
+    'user2',
+    'discordId2',
+    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
+    { assetId: 550344747 },
+    1000
+  ),
+  new User(
+    'user3',
+    'discordId3',
+    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
+    { assetId: 550344747 },
+    1000
+  ),
+  new User(
+    'user4',
+    'discordId4',
+    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
+    { assetId: 550344747 },
+    1000
+  ),
+  new User(
+    'user5',
+    'discordId5',
+    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
+    { assetId: 550344747 },
+    1000
+  ),
 ]
 
 const instertedPlayer = {

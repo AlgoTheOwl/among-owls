@@ -3,7 +3,7 @@ import { EmbedData, EmbedReply } from './types/game'
 
 const ipfsGateway = process.env.IPFS_GATEWAY
 
-export const defaultEmbedValues: EmbedData = {
+const defaultEmbedValues: EmbedData = {
   title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
   description: '💀 Who will survive? 💀',
   color: 'DARK_AQUA',
@@ -17,7 +17,10 @@ export const defaultEmbedValues: EmbedData = {
 }
 
 export default function doEmbed(data: EmbedData): EmbedReply {
-  let { title, description, color, image, thumbNail, fields, footer } = data
+  let { title, description, color, image, thumbNail, fields, footer } = {
+    ...defaultEmbedValues,
+    ...data,
+  }
 
   const embed = new MessageEmbed()
 

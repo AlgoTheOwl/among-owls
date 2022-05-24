@@ -6,7 +6,6 @@ import { asyncForEach, downloadFile } from '../utils/helpers'
 import { EmbedData } from '../types/game'
 import { Asset } from '../types/user'
 import doEmbed from '../embeds'
-import { defaultEmbedValues } from '../embeds'
 import { mapPlayersForEmbed } from '../utils/helpers'
 
 export default async function startGame(
@@ -51,7 +50,6 @@ export default async function startGame(
   const game = new Game(new Set(), gamePlayers, true, false, 1000)
   // send back game embed
   const embedData: EmbedData = {
-    ...defaultEmbedValues,
     fields: mapPlayersForEmbed(playerArr),
   }
 

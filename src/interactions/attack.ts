@@ -6,7 +6,7 @@ import {
 } from 'discord.js'
 import Game from '../models/game'
 import { EmbedData } from '../types/game'
-import doEmbed, { defaultEmbedValues } from '../embeds'
+import doEmbed from '../embeds'
 import doAttackCanvas from '../canvas/attackCanvas'
 import {
   wait,
@@ -29,8 +29,9 @@ export default async function attack(
 
   const { id: victimId } = options.getUser('victim') as ClientUser
   const { id: attackerId } = user
-  const victim = game.players[victimId] ? null : game.players[victimId]
-  const attacker = game.players[attackerId] ? null : game.players[attackerId]
+
+  const victim = game.players[victimId] ? game.players[victimId] : null
+  const attacker = game.players[attackerId] ? game.players[attackerId] : null
 
   if (!attacker) {
     return interaction.reply({
@@ -54,8 +55,8 @@ export default async function attack(
     })
   }
 
-  const playerArr = Object.values(game.players)
-  const damage = Math.floor(Math.random() * (hp / 4))
+  const damage = Math.floor(Math.random() * (hp / 2))
+  // const damage = 1000
   victim.hp -= damage
 
   // if victim is dead, delete from game
@@ -63,6 +64,7 @@ export default async function attack(
     delete game.players[victimId]
   }
 
+  const playerArr = Object.values(game.players)
   // if there is only one player left, the game has been won
   if (playerArr.length === 1) {
     const winner = playerArr[0]
@@ -73,9 +75,10 @@ export default async function attack(
       title: 'WINNER!!!',
       description: `${winner.username}'s ${winner.asset.unitName} destroyed the competition`,
       color: 'DARK_AQUA',
+      image: winner.asset.assetUrl,
     }
 
-    game.embed.edit(doEmbed(embedData))
+    return game.embed.edit(doEmbed(embedData))
   }
 
   const { asset, username: victimName } = victim
@@ -97,7 +100,6 @@ export default async function attack(
   handleRolledRecently(attacker, game, coolDownInterval)
 
   const embedData: EmbedData = {
-    ...defaultEmbedValues,
     color: 'RED',
     fields: mapPlayersForEmbed(playerArr),
   }

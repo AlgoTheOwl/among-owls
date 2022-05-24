@@ -5,6 +5,7 @@ import { Indexer } from 'algosdk'
 import { Asset } from '../types/user'
 import User from '../models/user'
 import Game from '../models/game'
+import AccountInformation from 'algosdk/dist/types/src/client/v2/algod/accountInformation'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -25,7 +26,8 @@ export const asyncForEach = async (array: Array<any>, callback: any) => {
 export const determineOwnership = async function (
   algodclient: AlgodClient,
   address: string,
-  assetId: number
+  assetId: number,
+  test: boolean
 ): Promise<any> {
   try {
     let accountInfo = await algodclient.accountInformation(address).do()
@@ -38,7 +40,12 @@ export const determineOwnership = async function (
         walletOwned = true
       }
       // Check for entered asset
-      if (asset['asset-id'] === assetId) {
+      if (
+        // test case option
+        asset['asset-id'] === assetId && test
+          ? asset.amount >= 0
+          : asset.amount > 0
+      ) {
         assetOwned = true
       }
     })

@@ -38,8 +38,11 @@ const commands = [
     .setName('stop')
     .setDescription('Stop the current game'),
   new SlashCommandBuilder()
-    .setName('attack-test')
+    .setName('test-attack')
     .setDescription('test attacking'),
+  new SlashCommandBuilder()
+    .setName('test-register')
+    .setDescription('register multiple mock users'),
 ].map((command) => command.toJSON())
 
 const rest = new REST({ version: '9' }).setToken(token)
