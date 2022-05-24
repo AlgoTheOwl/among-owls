@@ -7,7 +7,12 @@ import {
 import { Asset } from '../types/user'
 import { readFile } from 'fs/promises'
 
-const owlReplies = ['HOOOOOOT!!!', 'SCREEETCH!!!', 'RAAWWWRRR!!!']
+const owlReplies = [
+  'HOOOOOOT!!!',
+  'SCREEETCH!!!',
+  'RAAWWWRRR!!!',
+  'CHIIIIRP!!!',
+]
 
 export default async function doAttackCanvas(
   damage: number,

@@ -2,7 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const canvas_1 = require("canvas");
 const promises_1 = require("fs/promises");
-const owlReplies = ['HOOOOOOT!!!', 'SCREEETCH!!!', 'RAAWWWRRR!!!'];
+const owlReplies = [
+    'HOOOOOOT!!!',
+    'SCREEETCH!!!',
+    'RAAWWWRRR!!!',
+    'CHIIIIRP!!!',
+];
 async function doAttackCanvas(damage, asset, victimUsername, attackerUsername) {
     const { localPath } = asset;
     (0, canvas_1.registerFont)('src/canvas/fonts/permenent-marker.ttf', {
