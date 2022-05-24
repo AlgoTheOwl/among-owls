@@ -1,5 +1,6 @@
 import AlgodClient from 'algosdk/dist/types/src/client/v2/algod/algod'
 import fs from 'fs'
+import path from 'path'
 import axios from 'axios'
 import { Indexer } from 'algosdk'
 import { Asset } from '../types/user'
@@ -119,3 +120,19 @@ export const mapPlayersForEmbed = (playerArr: User[]) =>
     name: player.username,
     value: `HP: ${player.hp}`,
   }))
+
+export const emptyDir = (dirPath: string) => {
+  try {
+    const dirContents = fs.readdirSync(dirPath)
+    dirContents.forEach((filePath) => {
+      const fullPath = path.join(dirPath, filePath)
+      const stat = fs.statSync(fullPath)
+      if (stat.isDirectory()) {
+        if (fs.readdirSync(fullPath).length) emptyDir(fullPath)
+        fs.rmdirSync(fullPath)
+      } else fs.unlinkSync(fullPath)
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}

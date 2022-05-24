@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
 const wait = async (duration) => {
     await new Promise((res) => {
@@ -108,3 +109,23 @@ const mapPlayersForEmbed = (playerArr) => playerArr.map((player) => ({
     value: `HP: ${player.hp}`,
 }));
 exports.mapPlayersForEmbed = mapPlayersForEmbed;
+const emptyDir = (dirPath) => {
+    try {
+        const dirContents = fs_1.default.readdirSync(dirPath);
+        dirContents.forEach((filePath) => {
+            const fullPath = path_1.default.join(dirPath, filePath);
+            const stat = fs_1.default.statSync(fullPath);
+            if (stat.isDirectory()) {
+                if (fs_1.default.readdirSync(fullPath).length)
+                    (0, exports.emptyDir)(fullPath);
+                fs_1.default.rmdirSync(fullPath);
+            }
+            else
+                fs_1.default.unlinkSync(fullPath);
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+exports.emptyDir = emptyDir;

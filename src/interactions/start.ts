@@ -2,7 +2,7 @@ import { Interaction } from 'discord.js'
 import { fetchPlayers } from '../database/operations'
 import User from '../models/user'
 import Game from '../models/game'
-import { asyncForEach, downloadFile } from '../utils/helpers'
+import { asyncForEach, downloadFile, emptyDir } from '../utils/helpers'
 import { EmbedData } from '../types/game'
 import { Asset } from '../types/user'
 import doEmbed from '../embeds'
@@ -35,6 +35,10 @@ export default async function startGame(
   await interaction.deferReply()
 
   const gamePlayers: { [key: string]: User } = {}
+
+  // empty image directory
+  emptyDir(imageDir)
+
   await asyncForEach(players, async (player: User) => {
     const { username, discordId, address, asset } = player
 

@@ -28,6 +28,8 @@ async function startGame(interaction, hp, imageDir) {
     }
     await interaction.deferReply();
     const gamePlayers = {};
+    // empty image directory
+    (0, helpers_1.emptyDir)(imageDir);
     await (0, helpers_1.asyncForEach)(players, async (player) => {
         const { username, discordId, address, asset } = player;
         // save each image locally for use later
