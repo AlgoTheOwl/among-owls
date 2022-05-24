@@ -1,5 +1,5 @@
 import User from './models/user'
-import { Client, Intents, Interaction, Permissions } from 'discord.js'
+import { Client, Intents, Interaction } from 'discord.js'
 import { asyncForEach } from './utils/helpers'
 import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'

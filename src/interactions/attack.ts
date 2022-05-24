@@ -17,7 +17,7 @@ import { removeAllPlayers } from '../database/operations'
 
 // Settings
 const coolDownInterval = 5000
-const messageDeleteInterval = 5000
+const messageDeleteInterval = 7000
 
 export default async function attack(
   interaction: Interaction,
@@ -69,9 +69,11 @@ export default async function attack(
   // const damage = 1000
   victim.hp -= damage
 
+  let victimDead = false
   // if victim is dead, delete from game
   if (victim.hp <= 0) {
     delete game.players[victimId]
+    victimDead = true
   }
 
   const playerArr = Object.values(game.players)
@@ -88,7 +90,7 @@ export default async function attack(
       image: winner.asset.assetUrl,
     }
 
-    await removeAllPlayers()
+    // await removeAllPlayers()
 
     interaction.reply({ ephemeral: true, content: 'You WON!!!' })
 
@@ -108,7 +110,9 @@ export default async function attack(
 
   await interaction.reply({
     files: [attachment],
-    content: 'Test content for attack',
+    content: victimDead
+      ? `${attacker.asset.assetName} has eliminated ${victim.username}!!!`
+      : `${attacker.asset.assetName} attacks ${victim.username} for ${damage} damage`,
   })
 
   handleRolledRecently(attacker, coolDownInterval)
