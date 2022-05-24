@@ -7,7 +7,6 @@ import Game from './models/game'
 import mockUsers from './mocks/users'
 import startGame from './interactions/start'
 import attack from './interactions/attack'
-import doTestAttack from './interactions/test-attack'
 
 const token: string = process.env.DISCORD_TOKEN
 
@@ -87,7 +86,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
             (member) => member.id === id
           )
           role && (await member?.roles.add(role.id))
-          console.log('role succesfully added')
         } catch (error) {
           console.log('ERROR adding role', error)
         }
@@ -114,16 +112,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     await interaction.reply({
       content: 'all test users added',
     })
-  }
-
-  // test pushing attack event to que
-  if (commandName === 'test-attack') {
-    if (!game?.active)
-      return interaction.reply({
-        content: `Start game to trigger test attack`,
-        ephemeral: true,
-      })
-    await doTestAttack(interaction, game, hp)
   }
 })
 

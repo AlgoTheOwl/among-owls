@@ -56,7 +56,7 @@ export default async function attack(
     })
   }
 
-  if (attacker.coolDownTimeLeft > 0) {
+  if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
     return interaction.reply({
       content: `Ah, ah, not your turn yet wait ${
         attacker.coolDownTimeLeft / 1000

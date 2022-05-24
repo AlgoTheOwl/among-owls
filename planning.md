@@ -12,7 +12,7 @@
 8. Add message/embed logic ✓
 9. Hook up registration and verification functionality ✓
 10. Add copy/emojis/canvas goodness
-11. Configure discord privledges
+11. Configure discord privledges ✓
 12. Live testing
 13. Onboarding to app with AOWL team
 14. Release

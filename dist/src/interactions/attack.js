@@ -37,7 +37,7 @@ async function attack(interaction, game, user, hp) {
             ephemeral: true,
         });
     }
-    if (attacker.coolDownTimeLeft > 0) {
+    if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
         return interaction.reply({
             content: `Ah, ah, not your turn yet wait ${attacker.coolDownTimeLeft / 1000} seconds`,
             ephemeral: true,

@@ -7,6 +7,7 @@ import { EmbedData } from '../types/game'
 import { Asset } from '../types/user'
 import doEmbed from '../embeds'
 import { mapPlayersForEmbed } from '../utils/helpers'
+import { game as previousGame } from '..'
 
 export default async function startGame(
   interaction: Interaction,
@@ -14,6 +15,13 @@ export default async function startGame(
   imageDir: string
 ) {
   if (!interaction.isCommand()) return
+
+  if (previousGame?.active) {
+    return await interaction.reply({
+      content: 'A game is already running',
+      ephemeral: true,
+    })
+  }
 
   const players: User[] = await fetchPlayers()
 

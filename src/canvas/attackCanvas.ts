@@ -7,7 +7,7 @@ import {
 import { Asset } from '../types/user'
 import { readFile } from 'fs/promises'
 
-const owlReplies = ['HOOOOOOT!!!', 'SCREEETCH!!!']
+const owlReplies = ['HOOOOOOT!!!', 'SCREEETCH!!!', 'RAAWWWRRR!!!']
 
 export default async function doAttackCanvas(
   damage: number,
@@ -33,7 +33,7 @@ export default async function doAttackCanvas(
     ctx.font = '45px permanent-marker'
     // Select the style that will be used to fill the text in
     ctx.fillStyle = 'red'
-    const randomNumber = Math.floor(Math.random() * 2)
+    const randomNumber = Math.floor(Math.random() * owlReplies.length)
     const text = owlReplies[randomNumber === 1 ? 0 : 1]
     // Actually fill the text with a solid color
     ctx.fillText(text, 5, 50)

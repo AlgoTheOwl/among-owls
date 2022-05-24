@@ -12,7 +12,6 @@ const database_service_1 = require("./database/database.service");
 const users_1 = __importDefault(require("./mocks/users"));
 const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
-const test_attack_1 = __importDefault(require("./interactions/test-attack"));
 const token = process.env.DISCORD_TOKEN;
 exports.emojis = {};
 // Settings
@@ -72,7 +71,6 @@ client.on('interactionCreate', async (interaction) => {
                     const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.name === 'registered');
                     const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === id);
                     role && (await (member === null || member === void 0 ? void 0 : member.roles.add(role.id)));
-                    console.log('role succesfully added');
                 }
                 catch (error) {
                     console.log('ERROR adding role', error);
@@ -98,15 +96,6 @@ client.on('interactionCreate', async (interaction) => {
         await interaction.reply({
             content: 'all test users added',
         });
-    }
-    // test pushing attack event to que
-    if (commandName === 'test-attack') {
-        if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
-            return interaction.reply({
-                content: `Start game to trigger test attack`,
-                ephemeral: true,
-            });
-        await (0, test_attack_1.default)(interaction, exports.game, hp);
     }
 });
 client.login(token);

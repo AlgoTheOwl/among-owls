@@ -9,9 +9,16 @@ const game_1 = __importDefault(require("../models/game"));
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
 const helpers_2 = require("../utils/helpers");
+const __1 = require("..");
 async function startGame(interaction, hp, imageDir) {
     if (!interaction.isCommand())
         return;
+    if (__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) {
+        return await interaction.reply({
+            content: 'A game is already running',
+            ephemeral: true,
+        });
+    }
     const players = await (0, operations_1.fetchPlayers)();
     if (!players.length) {
         return await interaction.reply({

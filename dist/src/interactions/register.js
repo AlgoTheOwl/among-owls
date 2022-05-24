@@ -55,7 +55,7 @@ const processRegistration = async (user, test) => {
         // Check to make sure NFT is in correct series
         if (incorrectCollection) {
             return {
-                status: 'This asset is not a AOWL, please try again',
+                status: `This asset is not a ${unitPrefix}, please try again`,
                 registeredUser: user,
             };
         }
@@ -72,7 +72,6 @@ const processRegistration = async (user, test) => {
             address: address,
             asset: assetEntry,
             hp,
-            coolDownTimeLeft: 0,
         });
         return {
             status: `Added ${unitName} - Prepare to attack!`,

@@ -8,7 +8,7 @@ export default class User {
     public address: string,
     public asset: Asset,
     public hp: number,
-    public coolDownTimeLeft: number,
+    public coolDownTimeLeft?: number,
     public id?: ObjectId
   ) {}
 }
