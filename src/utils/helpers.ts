@@ -4,8 +4,6 @@ import axios from 'axios'
 import { Indexer } from 'algosdk'
 import { Asset } from '../types/user'
 import User from '../models/user'
-import Game from '../models/game'
-import AccountInformation from 'algosdk/dist/types/src/client/v2/algod/accountInformation'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -105,16 +103,15 @@ export const normalizeLink = (imageUrl: string) => {
   return imageUrl
 }
 
-export const handleRolledRecently = (
+export const handleRolledRecently = async (
   user: User,
-  game: Game,
   coolDownInterval: number
 ) => {
-  game?.rolledRecently.add(user.discordId)
-
-  setTimeout(() => {
-    game?.rolledRecently.delete(user.discordId)
-  }, coolDownInterval + 1500)
+  user.coolDownTimeLeft = coolDownInterval
+  while (user.coolDownTimeLeft > 0) {
+    await wait(1000)
+    user.coolDownTimeLeft -= 1000
+  }
 }
 
 export const mapPlayersForEmbed = (playerArr: User[]) =>

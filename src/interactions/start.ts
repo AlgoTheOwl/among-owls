@@ -18,7 +18,7 @@ export default async function startGame(
   const players: User[] = await fetchPlayers()
 
   if (!players.length) {
-    await interaction.reply({
+    return await interaction.reply({
       content: 'There are not enough players to start the game',
       ephemeral: true,
     })
@@ -42,7 +42,7 @@ export default async function startGame(
         address,
         assetWithLocalPath,
         hp,
-        undefined
+        0
       )
     } else {
       // error downloading
@@ -56,7 +56,7 @@ export default async function startGame(
   const playerArr = Object.values(gamePlayers)
 
   // instansiate new game
-  const game = new Game(new Set(), gamePlayers, true, false, 1000)
+  const game = new Game(gamePlayers, true, false, 1000)
   // send back game embed
   const embedData: EmbedData = {
     fields: mapPlayersForEmbed(playerArr),

@@ -95,11 +95,12 @@ const normalizeLink = (imageUrl) => {
     return imageUrl;
 };
 exports.normalizeLink = normalizeLink;
-const handleRolledRecently = (user, game, coolDownInterval) => {
-    game === null || game === void 0 ? void 0 : game.rolledRecently.add(user.discordId);
-    setTimeout(() => {
-        game === null || game === void 0 ? void 0 : game.rolledRecently.delete(user.discordId);
-    }, coolDownInterval + 1500);
+const handleRolledRecently = async (user, coolDownInterval) => {
+    user.coolDownTimeLeft = coolDownInterval;
+    while (user.coolDownTimeLeft > 0) {
+        await (0, exports.wait)(1000);
+        user.coolDownTimeLeft -= 1000;
+    }
 };
 exports.handleRolledRecently = handleRolledRecently;
 const mapPlayersForEmbed = (playerArr) => playerArr.map((player) => ({

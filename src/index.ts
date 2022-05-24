@@ -45,7 +45,8 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   const { commandName, user, options } = interaction
 
   if (commandName === 'start') {
-    game = await startGame(interaction, hp, imageDir)
+    const gameState = await startGame(interaction, hp, imageDir)
+    if (gameState) game = gameState
   }
 
   if (commandName === 'attack') {
@@ -54,6 +55,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         content: `The game hasn't started yet, please register if you haven't already and try again later`,
         ephemeral: true,
       })
+
     attack(interaction, game, user, hp)
   }
 
@@ -70,7 +72,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     const { username, id } = user
 
     if (address && assetId) {
-      const registrant = new User(username, id, address, { assetId }, hp)
+      const registrant = new User(username, id, address, { assetId }, hp, 0)
       const { status, registeredUser } = await processRegistration(
         registrant,
         false

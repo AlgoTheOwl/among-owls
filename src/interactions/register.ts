@@ -102,6 +102,7 @@ const processRegistration = async (
       address: address,
       asset: assetEntry,
       hp,
+      coolDownTimeLeft: 0,
     })
 
     return {

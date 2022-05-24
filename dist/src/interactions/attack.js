@@ -7,9 +7,8 @@ const discord_js_1 = require("discord.js");
 const embeds_1 = __importDefault(require("../embeds"));
 const attackCanvas_1 = __importDefault(require("../canvas/attackCanvas"));
 const helpers_1 = require("../utils/helpers");
-const operations_1 = require("../database/operations");
 // Settings
-const coolDownInterval = 1000;
+const coolDownInterval = 5000;
 const messageDeleteInterval = 5000;
 async function attack(interaction, game, user, hp) {
     if (!interaction.isCommand())
@@ -31,14 +30,15 @@ async function attack(interaction, game, user, hp) {
             ephemeral: true,
         });
     }
-    if (game.rolledRecently.has(attacker.discordId)) {
+    console.log(attacker.coolDownTimeLeft);
+    if (attacker.coolDownTimeLeft > 0) {
         return interaction.reply({
-            content: 'Ah ah, still cooling down - wait your turn!',
+            content: `Ah, ah, not your turn yet wait ${attacker.coolDownTimeLeft / 1000} seconds`,
             ephemeral: true,
         });
     }
-    // const damage = Math.floor(Math.random() * (hp / 2))
-    const damage = 1000;
+    const damage = Math.floor(Math.random() * (hp / 2));
+    // const damage = 1000
     victim.hp -= damage;
     // if victim is dead, delete from game
     if (victim.hp <= 0) {
@@ -56,7 +56,7 @@ async function attack(interaction, game, user, hp) {
             color: 'DARK_AQUA',
             image: winner.asset.assetUrl,
         };
-        await (0, operations_1.removeAllPlayers)();
+        // await removeAllPlayers()
         interaction.reply({ ephemeral: true, content: 'You WON!!!' });
         return game.embed.edit((0, embeds_1.default)(embedData));
     }
@@ -69,7 +69,7 @@ async function attack(interaction, game, user, hp) {
         files: [attachment],
         content: 'Test content for attack',
     });
-    (0, helpers_1.handleRolledRecently)(attacker, game, coolDownInterval);
+    (0, helpers_1.handleRolledRecently)(attacker, coolDownInterval);
     const embedData = {
         color: 'RED',
         fields: (0, helpers_1.mapPlayersForEmbed)(playerArr),

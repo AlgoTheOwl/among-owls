@@ -41,7 +41,9 @@ client.on('interactionCreate', async (interaction) => {
         return;
     const { commandName, user, options } = interaction;
     if (commandName === 'start') {
-        exports.game = await (0, start_1.default)(interaction, hp, imageDir);
+        const gameState = await (0, start_1.default)(interaction, hp, imageDir);
+        if (gameState)
+            exports.game = gameState;
     }
     if (commandName === 'attack') {
         if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
@@ -62,7 +64,7 @@ client.on('interactionCreate', async (interaction) => {
         const assetId = options.getNumber('assetid');
         const { username, id } = user;
         if (address && assetId) {
-            const registrant = new user_1.default(username, id, address, { assetId }, hp);
+            const registrant = new user_1.default(username, id, address, { assetId }, hp, 0);
             const { status, registeredUser } = await (0, register_1.processRegistration)(registrant, false);
             // add permissions if succesful
             if (registeredUser) {

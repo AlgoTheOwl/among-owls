@@ -1,5 +1,5 @@
-import { ObjectId } from 'mongodb';
-import { Asset } from '../types/user';
+import { ObjectId } from 'mongodb'
+import { Asset } from '../types/user'
 
 export default class User {
   constructor(
@@ -8,6 +8,7 @@ export default class User {
     public address: string,
     public asset: Asset,
     public hp: number,
+    public coolDownTimeLeft: number,
     public id?: ObjectId
   ) {}
 }

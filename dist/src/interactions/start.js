@@ -14,7 +14,7 @@ async function startGame(interaction, hp, imageDir) {
         return;
     const players = await (0, operations_1.fetchPlayers)();
     if (!players.length) {
-        await interaction.reply({
+        return await interaction.reply({
             content: 'There are not enough players to start the game',
             ephemeral: true,
         });
@@ -27,7 +27,7 @@ async function startGame(interaction, hp, imageDir) {
         const localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
         if (localPath) {
             const assetWithLocalPath = Object.assign(Object.assign({}, asset), { localPath });
-            gamePlayers[discordId] = new user_1.default(username, discordId, address, assetWithLocalPath, hp, undefined);
+            gamePlayers[discordId] = new user_1.default(username, discordId, address, assetWithLocalPath, hp, 0);
         }
         else {
             // error downloading
@@ -39,7 +39,7 @@ async function startGame(interaction, hp, imageDir) {
     });
     const playerArr = Object.values(gamePlayers);
     // instansiate new game
-    const game = new game_1.default(new Set(), gamePlayers, true, false, 1000);
+    const game = new game_1.default(gamePlayers, true, false, 1000);
     // send back game embed
     const embedData = {
         fields: (0, helpers_2.mapPlayersForEmbed)(playerArr),

@@ -72,6 +72,7 @@ const processRegistration = async (user, test) => {
             address: address,
             asset: assetEntry,
             hp,
+            coolDownTimeLeft: 0,
         });
         return {
             status: `Added ${unitName} - Prepare to attack!`,

@@ -13,11 +13,10 @@ import {
   handleRolledRecently,
   mapPlayersForEmbed,
 } from '../utils/helpers'
-import { removeAllListeners } from 'process'
 import { removeAllPlayers } from '../database/operations'
 
 // Settings
-const coolDownInterval = 1000
+const coolDownInterval = 5000
 const messageDeleteInterval = 5000
 
 export default async function attack(
@@ -49,16 +48,19 @@ export default async function attack(
       ephemeral: true,
     })
   }
+  console.log(attacker.coolDownTimeLeft)
 
-  if (game.rolledRecently.has(attacker.discordId)) {
+  if (attacker.coolDownTimeLeft > 0) {
     return interaction.reply({
-      content: 'Ah ah, still cooling down - wait your turn!',
+      content: `Ah, ah, not your turn yet wait ${
+        attacker.coolDownTimeLeft / 1000
+      } seconds`,
       ephemeral: true,
     })
   }
 
-  // const damage = Math.floor(Math.random() * (hp / 2))
-  const damage = 1000
+  const damage = Math.floor(Math.random() * (hp / 2))
+  // const damage = 1000
   victim.hp -= damage
 
   // if victim is dead, delete from game
@@ -80,7 +82,7 @@ export default async function attack(
       image: winner.asset.assetUrl,
     }
 
-    await removeAllPlayers()
+    // await removeAllPlayers()
 
     interaction.reply({ ephemeral: true, content: 'You WON!!!' })
 
@@ -103,7 +105,7 @@ export default async function attack(
     content: 'Test content for attack',
   })
 
-  handleRolledRecently(attacker, game, coolDownInterval)
+  handleRolledRecently(attacker, coolDownInterval)
 
   const embedData: EmbedData = {
     color: 'RED',
