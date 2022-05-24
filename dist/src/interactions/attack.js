@@ -16,6 +16,12 @@ async function attack(interaction, game, user, hp) {
     const { options } = interaction;
     const { id: victimId } = options.getUser('victim');
     const { id: attackerId } = user;
+    if (victimId === attackerId) {
+        return interaction.reply({
+            content: `Unfortunately, you can't attack yourself, please try again!`,
+            ephemeral: true,
+        });
+    }
     const victim = game.players[victimId] ? game.players[victimId] : null;
     const attacker = game.players[attackerId] ? game.players[attackerId] : null;
     if (!attacker) {
@@ -26,11 +32,10 @@ async function attack(interaction, game, user, hp) {
     }
     if (!victim) {
         return interaction.reply({
-            content: 'Intended victim is currently not registered for WOA, please try attacking another player',
+            content: 'Intended victim is currently not registered, please try attacking another player',
             ephemeral: true,
         });
     }
-    console.log(attacker.coolDownTimeLeft);
     if (attacker.coolDownTimeLeft > 0) {
         return interaction.reply({
             content: `Ah, ah, not your turn yet wait ${attacker.coolDownTimeLeft / 1000} seconds`,

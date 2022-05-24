@@ -31,6 +31,13 @@ export default async function attack(
   const { id: victimId } = options.getUser('victim') as ClientUser
   const { id: attackerId } = user
 
+  if (victimId === attackerId) {
+    return interaction.reply({
+      content: `Unfortunately, you can't attack yourself, please try again!`,
+      ephemeral: true,
+    })
+  }
+
   const victim = game.players[victimId] ? game.players[victimId] : null
   const attacker = game.players[attackerId] ? game.players[attackerId] : null
 
@@ -44,11 +51,10 @@ export default async function attack(
   if (!victim) {
     return interaction.reply({
       content:
-        'Intended victim is currently not registered for WOA, please try attacking another player',
+        'Intended victim is currently not registered, please try attacking another player',
       ephemeral: true,
     })
   }
-  console.log(attacker.coolDownTimeLeft)
 
   if (attacker.coolDownTimeLeft > 0) {
     return interaction.reply({
