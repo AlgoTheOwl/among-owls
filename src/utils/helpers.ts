@@ -13,13 +13,9 @@ export const wait = async (duration: number) => {
   })
 }
 
-export const asyncForEach = async (array: Array<any>, callback: any) => {
+export const asyncForEach = async (array: Array<any>, callback: Function) => {
   for (let index = 0; index < array.length; index++) {
-    try {
-      await callback(array[index], index, array)
-    } catch (error) {
-      console.log('ERROR', error)
-    }
+    await callback(array[index], index, array)
   }
 }
 
@@ -93,7 +89,7 @@ export const downloadFile = async (
       })
     }
   } catch (error) {
-    console.log(error)
+    throw new Error('Error downloading asset')
   }
 }
 
@@ -134,7 +130,7 @@ export const emptyDir = (dirPath: string) => {
       } else fs.unlinkSync(fullPath)
     })
   } catch (error) {
-    console.log(error)
+    throw new Error('Error deleting contents of image directory')
   }
 }
 
@@ -152,6 +148,6 @@ export const addRole = async (
     )
     role && (await member?.roles.add(role.id))
   } catch (error) {
-    console.log('ERROR adding role', error)
+    throw new Error('Error adding role')
   }
 }
