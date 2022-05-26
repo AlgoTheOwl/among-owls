@@ -72,12 +72,12 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
     if (address && assetId) {
       const registrant = new User(username, id, address, { assetId }, hp, 0)
-      const { status, registeredUser } = await processRegistration(
+      const { status, registeredUser, asset } = await processRegistration(
         registrant,
         false
       )
       // add permissions if succesful
-      if (registeredUser) {
+      if (registeredUser && asset) {
         try {
           const role = interaction.guild?.roles.cache.find(
             (role) => role.name === 'registered'

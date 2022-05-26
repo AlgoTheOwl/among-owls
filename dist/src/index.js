@@ -64,9 +64,9 @@ client.on('interactionCreate', async (interaction) => {
         const { username, id } = user;
         if (address && assetId) {
             const registrant = new user_1.default(username, id, address, { assetId }, hp, 0);
-            const { status, registeredUser } = await (0, register_1.processRegistration)(registrant, false);
+            const { status, registeredUser, asset } = await (0, register_1.processRegistration)(registrant, false);
             // add permissions if succesful
-            if (registeredUser) {
+            if (registeredUser && asset) {
                 try {
                     const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.name === 'registered');
                     const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === id);
