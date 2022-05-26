@@ -5,6 +5,7 @@ import axios from 'axios'
 import { Indexer } from 'algosdk'
 import { Asset } from '../types/user'
 import User from '../models/user'
+import { Interaction } from 'discord.js'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -134,5 +135,23 @@ export const emptyDir = (dirPath: string) => {
     })
   } catch (error) {
     console.log(error)
+  }
+}
+
+export const addRole = async (
+  interaction: Interaction,
+  roleName: string,
+  user: User
+) => {
+  try {
+    const role = interaction.guild?.roles.cache.find(
+      (role) => role.name === roleName
+    )
+    const member = interaction.guild?.members.cache.find(
+      (member) => member.id === user.discordId
+    )
+    role && (await member?.roles.add(role.id))
+  } catch (error) {
+    console.log('ERROR adding role', error)
   }
 }

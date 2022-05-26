@@ -1,12 +1,13 @@
 import User from './models/user'
 import { Client, Intents, Interaction } from 'discord.js'
-import { asyncForEach } from './utils/helpers'
+import { addRole, asyncForEach } from './utils/helpers'
 import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'
 import Game from './models/game'
 import mockUsers from './mocks/users'
 import startGame from './interactions/start'
 import attack from './interactions/attack'
+import { DISCORD_ROLES } from './constants/roles'
 
 const token: string = process.env.DISCORD_TOKEN
 
@@ -78,17 +79,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       )
       // add permissions if succesful
       if (registeredUser && asset) {
-        try {
-          const role = interaction.guild?.roles.cache.find(
-            (role) => role.name === 'registered'
-          )
-          const member = interaction.guild?.members.cache.find(
-            (member) => member.id === id
-          )
-          role && (await member?.roles.add(role.id))
-        } catch (error) {
-          console.log('ERROR adding role', error)
-        }
+        addRole(interaction, DISCORD_ROLES.registered, registeredUser)
       }
 
       await interaction.reply({ ephemeral: true, content: status })
@@ -111,6 +102,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
     await interaction.reply({
       content: 'all test users added',
+      ephemeral: true,
     })
   }
 })
