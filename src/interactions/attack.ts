@@ -90,7 +90,7 @@ export default async function attack(
       image: winner.asset.assetUrl,
     }
 
-    // await removeAllPlayers()
+    await removeAllPlayers()
 
     interaction.reply({ ephemeral: true, content: 'You WON!!!' })
 
