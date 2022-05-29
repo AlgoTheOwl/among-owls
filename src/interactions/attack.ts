@@ -14,6 +14,7 @@ import {
   mapPlayersForEmbed,
 } from '../utils/helpers'
 import { removeAllPlayers } from '../database/operations'
+import { Canvas } from 'canvas'
 
 // Settings
 const coolDownInterval = 5000
@@ -101,7 +102,12 @@ export default async function attack(
   const { username: attackerName } = attacker
 
   // do canvas with attacker, hp drained and victim
-  const canvas = await doAttackCanvas(damage, asset, victimName, attackerName)
+  const canvas: Canvas = await doAttackCanvas(
+    damage,
+    asset,
+    victimName,
+    attackerName
+  )
 
   const attachment = new MessageAttachment(
     canvas.toBuffer('image/png'),

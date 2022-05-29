@@ -23,7 +23,7 @@ export const determineOwnership = async function (
   algodclient: AlgodClient,
   address: string,
   assetId: number,
-  test: boolean
+  test: boolean = false
 ): Promise<any> {
   try {
     let accountInfo = await algodclient.accountInformation(address).do()
