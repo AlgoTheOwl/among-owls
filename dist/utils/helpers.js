@@ -128,7 +128,6 @@ const addRole = async (interaction, roleName, user) => {
     var _a, _b;
     try {
         const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.name === roleName);
-        console.log('role:', role);
         const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === user.discordId);
         role && (await (member === null || member === void 0 ? void 0 : member.roles.add(role.id)));
     }
