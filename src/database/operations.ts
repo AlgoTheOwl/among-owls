@@ -1,4 +1,4 @@
-import { connectToDatabase, db } from './database.service'
+import { db } from './database.service'
 import { Collection } from 'mongodb'
 import User from '../models/user'
 

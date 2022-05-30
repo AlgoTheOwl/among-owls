@@ -2,42 +2,26 @@ import User from '../models/user'
 
 export default [
   new User(
-    'user1',
-    'discordId1',
+    'Algorandpa (test)',
+    '717166398320672867',
     'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
-    { assetId: 550344747 },
+    { assetId: 410992688 },
     1000,
     0
   ),
   new User(
-    'user2',
-    'discordId2',
-    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
-    { assetId: 550344747 },
+    'AlgoTheOwl (test)',
+    '874504143207792650',
+    'OWLCUFTOGACLCGGE2UQEIUSJGXI7Y5BBPQ77FFJ3YFD64TQMQ5CQZLBPNQ',
+    { assetId: 411047263 },
     1000,
     0
   ),
   new User(
-    'user3',
-    'discordId3',
-    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
-    { assetId: 550344747 },
-    1000,
-    0
-  ),
-  new User(
-    'user4',
-    'discordId4',
-    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
-    { assetId: 550344747 },
-    1000,
-    0
-  ),
-  new User(
-    'user5',
-    'discordId5',
-    'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4',
-    { assetId: 550344747 },
+    'yomo (test)',
+    '527192506488717317',
+    'QFXICGQM4GJTFIR3SERNYM5S3DJWOF5IOGBI2CP62VWW4J26PEVA6U6HYI',
+    { assetId: 410595349 },
     1000,
     0
   ),

@@ -91,15 +91,15 @@ export default async function attack(
       image: winner.asset.assetUrl,
     }
 
-    await removeAllPlayers()
+    removeAllPlayers()
 
     interaction.reply({ ephemeral: true, content: 'You WON!!!' })
 
     return game.embed.edit(doEmbed(embedData))
   }
 
-  const { asset, username: victimName } = victim
-  const { username: attackerName } = attacker
+  const { username: victimName } = victim
+  const { username: attackerName, asset } = attacker
 
   // do canvas with attacker, hp drained and victim
   const canvas: Canvas = await doAttackCanvas(

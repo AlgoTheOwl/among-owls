@@ -19,7 +19,7 @@ const asyncForEach = async (array, callback) => {
     }
 };
 exports.asyncForEach = asyncForEach;
-const determineOwnership = async function (algodclient, address, assetId, test) {
+const determineOwnership = async function (algodclient, address, assetId, test = false) {
     try {
         let accountInfo = await algodclient.accountInformation(address).do();
         let assetOwned = false;

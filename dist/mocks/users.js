@@ -5,11 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = __importDefault(require("../models/user"));
 exports.default = [
-    new user_1.default('user1', 'discordId1', 'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4', { assetId: 550344747 }, 1000, 0),
-    new user_1.default('user2', 'discordId2', 'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4', { assetId: 550344747 }, 1000, 0),
-    new user_1.default('user3', 'discordId3', 'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4', { assetId: 550344747 }, 1000, 0),
-    new user_1.default('user4', 'discordId4', 'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4', { assetId: 550344747 }, 1000, 0),
-    new user_1.default('user5', 'discordId5', 'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4', { assetId: 550344747 }, 1000, 0),
+    new user_1.default('Algorandpa (test)', '717166398320672867', 'RIY4VDR6L2NTSLIBRDATJ5WSGLJTO4QH775FPDPTNC4XRFNPRIE2K7UPQ4', { assetId: 410992688 }, 1000, 0),
+    new user_1.default('AlgoTheOwl (test)', '874504143207792650', 'OWLCUFTOGACLCGGE2UQEIUSJGXI7Y5BBPQ77FFJ3YFD64TQMQ5CQZLBPNQ', { assetId: 411047263 }, 1000, 0),
+    new user_1.default('yomo (test)', '527192506488717317', 'QFXICGQM4GJTFIR3SERNYM5S3DJWOF5IOGBI2CP62VWW4J26PEVA6U6HYI', { assetId: 410595349 }, 1000, 0),
 ];
 const instertedPlayer = {
     discordId: '717166398320672867',
