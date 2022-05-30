@@ -80,11 +80,13 @@ client.on('interactionCreate', async (interaction) => {
     // test registring and selecting players
     if (commandName === 'test-register') {
         await (0, helpers_1.asyncForEach)(users_1.default, async (user, i) => {
-            const { status, registeredUser } = await (0, register_1.processRegistration)(user, true);
-            if (registeredUser)
-                console.log(`test user ${i + 1} added`);
-            else
-                console.log(status);
+            const { status, registeredUser, asset } = await (0, register_1.processRegistration)(user, true);
+            if (registeredUser && asset) {
+                (0, helpers_1.addRole)(interaction, roles_1.DISCORD_ROLES.registered, registeredUser);
+            }
+            else {
+                console.log('status:', status);
+            }
         });
         await interaction.reply({
             content: 'all test users added',

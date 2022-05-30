@@ -95,9 +95,15 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   // test registring and selecting players
   if (commandName === 'test-register') {
     await asyncForEach(mockUsers, async (user: User, i: number) => {
-      const { status, registeredUser } = await processRegistration(user, true)
-      if (registeredUser) console.log(`test user ${i + 1} added`)
-      else console.log(status)
+      const { status, registeredUser, asset } = await processRegistration(
+        user,
+        true
+      )
+      if (registeredUser && asset) {
+        addRole(interaction, DISCORD_ROLES.registered, registeredUser)
+      } else {
+        console.log('status:', status)
+      }
     })
 
     await interaction.reply({

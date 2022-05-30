@@ -143,6 +143,7 @@ export const addRole = async (
     const role = interaction.guild?.roles.cache.find(
       (role) => role.name === roleName
     )
+    console.log('role:', role)
     const member = interaction.guild?.members.cache.find(
       (member) => member.id === user.discordId
     )
