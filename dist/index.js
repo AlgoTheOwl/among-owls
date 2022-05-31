@@ -52,11 +52,15 @@ client.on('interactionCreate', async (interaction) => {
     }
     if (commandName === 'stop') {
         if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
-            return interaction.reply('Game is not currently running');
+            return interaction.reply({
+                content: 'Game is not currently running',
+                ephemeral: true,
+            });
         exports.game.active = false;
         return interaction.reply({ content: 'Game stopped', ephemeral: true });
     }
     if (commandName === 'register') {
+        // TODO: add ability to register for different games here
         const address = options.getString('address');
         const assetId = options.getNumber('assetid');
         const { username, id } = user;
