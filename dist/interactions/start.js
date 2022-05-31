@@ -22,12 +22,12 @@ async function startGame(interaction, hp, imageDir) {
     const players = (await database_service_1.collections.yaoPlayers
         .find({})
         .toArray());
-    if (players.length < 2) {
-        return await interaction.reply({
-            content: 'There are not enough players to start the game',
-            ephemeral: true,
-        });
-    }
+    // if (players.length < 2) {
+    //   return await interaction.reply({
+    //     content: 'There are not enough players to start the game',
+    //     ephemeral: true,
+    //   })
+    // }
     await interaction.deferReply();
     const gamePlayers = {};
     // empty image directory
