@@ -19,7 +19,7 @@ const asyncForEach = async (array, callback) => {
     }
 };
 exports.asyncForEach = asyncForEach;
-const determineOwnership = async function (algodclient, address, assetId, test = false) {
+const determineOwnership = async function (algodclient, address, assetId) {
     try {
         let accountInfo = await algodclient.accountInformation(address).do();
         let assetOwned = false;
@@ -32,9 +32,8 @@ const determineOwnership = async function (algodclient, address, assetId, test =
             // Check for entered asset
             if (
             // test case option
-            asset['asset-id'] === assetId && test
-                ? asset.amount >= 0
-                : asset.amount > 0) {
+            asset['asset-id'] === assetId &&
+                asset.amount > 0) {
                 assetOwned = true;
             }
         });

@@ -22,8 +22,7 @@ export const asyncForEach = async (array: Array<any>, callback: Function) => {
 export const determineOwnership = async function (
   algodclient: AlgodClient,
   address: string,
-  assetId: number,
-  test: boolean = false
+  assetId: number
 ): Promise<any> {
   try {
     let accountInfo = await algodclient.accountInformation(address).do()
@@ -38,9 +37,8 @@ export const determineOwnership = async function (
       // Check for entered asset
       if (
         // test case option
-        asset['asset-id'] === assetId && test
-          ? asset.amount >= 0
-          : asset.amount > 0
+        asset['asset-id'] === assetId &&
+        asset.amount > 0
       ) {
         assetOwned = true
       }
