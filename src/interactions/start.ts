@@ -29,7 +29,7 @@ export default async function startGame(
     .find({})
     .toArray()) as WithId<Player>[]
 
-  if (!players.length) {
+  if (players.length < 2) {
     return await interaction.reply({
       content: 'There are not enough players to start the game',
       ephemeral: true,
