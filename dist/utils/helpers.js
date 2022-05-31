@@ -19,7 +19,7 @@ const asyncForEach = async (array, callback) => {
     }
 };
 exports.asyncForEach = asyncForEach;
-const determineOwnership = async function (algodclient, address, assetId, test = false) {
+const determineOwnership = async function (algodclient, address, assetId) {
     try {
         let accountInfo = await algodclient.accountInformation(address).do();
         let assetOwned = false;
@@ -32,9 +32,8 @@ const determineOwnership = async function (algodclient, address, assetId, test =
             // Check for entered asset
             if (
             // test case option
-            asset['asset-id'] === assetId && test
-                ? asset.amount >= 0
-                : asset.amount > 0) {
+            asset['asset-id'] === assetId &&
+                asset.amount > 0) {
                 assetOwned = true;
             }
         });
@@ -91,11 +90,11 @@ const normalizeLink = (imageUrl) => {
     return imageUrl;
 };
 exports.normalizeLink = normalizeLink;
-const handleRolledRecently = async (user, coolDownInterval) => {
-    user.coolDownTimeLeft = coolDownInterval;
-    while (user.coolDownTimeLeft > 0) {
+const handleRolledRecently = async (player, coolDownInterval) => {
+    player.coolDownTimeLeft = coolDownInterval;
+    while (player.coolDownTimeLeft > 0) {
         await (0, exports.wait)(1000);
-        user.coolDownTimeLeft -= 1000;
+        player.coolDownTimeLeft -= 1000;
     }
 };
 exports.handleRolledRecently = handleRolledRecently;

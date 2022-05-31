@@ -4,12 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.emojis = exports.game = void 0;
-const user_1 = __importDefault(require("./models/user"));
 const discord_js_1 = require("discord.js");
 const helpers_1 = require("./utils/helpers");
 const register_1 = require("./interactions/register");
 const database_service_1 = require("./database/database.service");
-const users_1 = __importDefault(require("./mocks/users"));
 const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
 const roles_1 = require("./constants/roles");
@@ -27,7 +25,7 @@ const client = new discord_js_1.Client({
 });
 client.once('ready', async () => {
     await (0, database_service_1.connectToDatabase)();
-    console.log('When AOWLS Attack - Server ready');
+    console.log('Ye Among AOWLs - Server ready');
     // load emojis into game
 });
 /*
@@ -63,8 +61,7 @@ client.on('interactionCreate', async (interaction) => {
         const assetId = options.getNumber('assetid');
         const { username, id } = user;
         if (address && assetId) {
-            const registrant = new user_1.default(username, id, address, { assetId }, hp, 0);
-            const { status, registeredUser, asset } = await (0, register_1.processRegistration)(registrant, false);
+            const { status, registeredUser, asset } = await (0, register_1.processRegistration)(username, id, address, assetId, 'yao', hp);
             // add permissions if succesful
             if (registeredUser && asset) {
                 (0, helpers_1.addRole)(interaction, roles_1.DISCORD_ROLES.registered, registeredUser);
@@ -78,20 +75,22 @@ client.on('interactionCreate', async (interaction) => {
      *****************
      */
     // test registring and selecting players
-    if (commandName === 'test-register') {
-        await (0, helpers_1.asyncForEach)(users_1.default, async (user, i) => {
-            const { status, registeredUser, asset } = await (0, register_1.processRegistration)(user, true);
-            if (registeredUser && asset) {
-                (0, helpers_1.addRole)(interaction, roles_1.DISCORD_ROLES.registered, registeredUser);
-            }
-            else {
-                console.log('status:', status);
-            }
-        });
-        await interaction.reply({
-            content: 'all test users added',
-            ephemeral: true,
-        });
-    }
+    //   if (commandName === 'test-register') {
+    //     await asyncForEach(mockUsers, async (user: User, i: number) => {
+    //       const { status, registeredUser, asset } = await processRegistration(
+    //         user,
+    //         true
+    //       )
+    //       if (registeredUser && asset) {
+    //         addRole(interaction, DISCORD_ROLES.registered, registeredUser)
+    //       } else {
+    //         console.log('status:', status)
+    //       }
+    //     })
+    //     await interaction.reply({
+    //       content: 'all test users added',
+    //       ephemeral: true,
+    //     })
+    //   }
 });
 client.login(token);
