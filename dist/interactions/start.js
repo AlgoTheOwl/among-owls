@@ -53,9 +53,15 @@ async function startGame(interaction, hp, imageDir) {
     const game = new game_1.default(gamePlayers, true, false, 1000);
     // send back game embed
     const embedData = {
+        image: undefined,
         fields: (0, helpers_2.mapPlayersForEmbed)(playerArr),
     };
-    game.embed = await interaction.editReply((0, embeds_1.default)(embedData));
+    const intorEmbedData = {
+        title: 'test',
+    };
+    // send embed here
+    await interaction.editReply((0, embeds_1.default)(intorEmbedData));
+    game.embed = await interaction.followUp((0, embeds_1.default)(embedData));
     return game;
 }
 exports.default = startGame;
