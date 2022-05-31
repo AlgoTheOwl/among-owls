@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const ipfsGateway = process.env.IPFS_GATEWAY;
 const defaultEmbedValues = {
-    title: '🔥🦉🔥 Ye Among AOWLs 🔥🦉🔥',
+    title: '🔥 Ye Among AOWLs 🔥',
     description: '💀 Who will survive? 💀',
     color: 'DARK_AQUA',
-    image: 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
+    image: 'attachment://main.gif',
     thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
     footer: {
         text: 'A Parliament of AOWLs creation',
@@ -15,6 +15,7 @@ const defaultEmbedValues = {
 };
 function doEmbed(data) {
     let { title, description, color, image, thumbNail, fields, footer } = Object.assign(Object.assign({}, defaultEmbedValues), data);
+    const file = new discord_js_1.MessageAttachment('src/images/main.gif');
     const embed = new discord_js_1.MessageEmbed();
     if ((image === null || image === void 0 ? void 0 : image.slice(0, 4)) === 'ipfs') {
         const ifpsHash = image.slice(7);
@@ -30,6 +31,7 @@ function doEmbed(data) {
     return {
         embeds: [embed],
         fetchReply: true,
+        files: image !== 'attachment://main.gif' ? [] : [file],
     };
 }
 exports.default = doEmbed;

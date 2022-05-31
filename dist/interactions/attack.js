@@ -72,7 +72,9 @@ async function attack(interaction, game, user, hp) {
     const { username: attackerName, asset } = attacker;
     // do canvas with attacker, hp drained and victim
     const canvas = await (0, attackCanvas_1.default)(damage, asset, victimName, attackerName);
-    const attachment = new discord_js_1.MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png');
+    const attachment = victimDead
+        ? new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif')
+        : new discord_js_1.MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png');
     await interaction.reply({
         files: [attachment],
         content: victimDead

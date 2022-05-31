@@ -17,7 +17,7 @@ export let emojis = {}
 
 // Settings
 const hp = 1000
-const imageDir = 'dist/images'
+const imageDir = 'dist/nftAssets'
 
 const client: Client = new Client({
   intents: [
