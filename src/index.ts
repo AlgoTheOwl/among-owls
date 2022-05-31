@@ -29,7 +29,7 @@ const client: Client = new Client({
 
 client.once('ready', async () => {
   await connectToDatabase()
-  console.log('When AOWLS Attack - Server ready')
+  console.log('Ye Among AOWLs - Server ready')
   // load emojis into game
 })
 
@@ -72,10 +72,13 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     const { username, id } = user
 
     if (address && assetId) {
-      const registrant = new User(username, id, address, { assetId }, hp, 0)
       const { status, registeredUser, asset } = await processRegistration(
-        registrant,
-        false
+        username,
+        id,
+        address,
+        assetId,
+        'yao',
+        hp
       )
       // add permissions if succesful
       if (registeredUser && asset) {
@@ -93,24 +96,24 @@ client.on('interactionCreate', async (interaction: Interaction) => {
    */
 
   // test registring and selecting players
-  if (commandName === 'test-register') {
-    await asyncForEach(mockUsers, async (user: User, i: number) => {
-      const { status, registeredUser, asset } = await processRegistration(
-        user,
-        true
-      )
-      if (registeredUser && asset) {
-        addRole(interaction, DISCORD_ROLES.registered, registeredUser)
-      } else {
-        console.log('status:', status)
-      }
-    })
+  //   if (commandName === 'test-register') {
+  //     await asyncForEach(mockUsers, async (user: User, i: number) => {
+  //       const { status, registeredUser, asset } = await processRegistration(
+  //         user,
+  //         true
+  //       )
+  //       if (registeredUser && asset) {
+  //         addRole(interaction, DISCORD_ROLES.registered, registeredUser)
+  //       } else {
+  //         console.log('status:', status)
+  //       }
+  //     })
 
-    await interaction.reply({
-      content: 'all test users added',
-      ephemeral: true,
-    })
-  }
+  //     await interaction.reply({
+  //       content: 'all test users added',
+  //       ephemeral: true,
+  //     })
+  //   }
 })
 
 client.login(token)

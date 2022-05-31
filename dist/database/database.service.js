@@ -35,8 +35,12 @@ async function connectToDatabase() {
     const client = new mongoDB.MongoClient(process.env.DB_CONN_STRING);
     await client.connect();
     exports.db = db = client.db(process.env.DB_NAME);
-    const usersCollection = db.collection(process.env.GAMES_COLLECTION_NAME);
+    const usersCollection = db.collection(process.env.USERS_COLLECTION_NAME);
+    const assetsCollection = db.collection(process.env.ASSETS_COLLECTION_NAME);
+    const yaoPlayersCollection = db.collection(process.env.GAME_COLLECTION_NAME);
     exports.collections.users = usersCollection;
-    console.log(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);
+    exports.collections.assets = assetsCollection;
+    exports.collections.yaoPlayers = yaoPlayersCollection;
+    console.log(`Successfully connected to database: ${db.databaseName}`);
 }
 exports.connectToDatabase = connectToDatabase;

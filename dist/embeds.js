@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const ipfsGateway = process.env.IPFS_GATEWAY;
 const defaultEmbedValues = {
-    title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
+    title: '🔥🦉🔥 Ye Among AOWLs 🔥🦉🔥',
     description: '💀 Who will survive? 💀',
     color: 'DARK_AQUA',
     image: 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',

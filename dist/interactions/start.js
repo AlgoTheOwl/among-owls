@@ -3,13 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const operations_1 = require("../database/operations");
-const user_1 = __importDefault(require("../models/user"));
 const game_1 = __importDefault(require("../models/game"));
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
 const helpers_2 = require("../utils/helpers");
 const __1 = require("..");
+const player_1 = __importDefault(require("../models/player"));
+const database_service_1 = require("../database/database.service");
 async function startGame(interaction, hp, imageDir) {
     if (!interaction.isCommand())
         return;
@@ -19,7 +19,9 @@ async function startGame(interaction, hp, imageDir) {
             ephemeral: true,
         });
     }
-    const players = await (0, operations_1.fetchPlayers)();
+    const players = (await database_service_1.collections.yaoPlayers
+        .find({})
+        .toArray());
     if (!players.length) {
         return await interaction.reply({
             content: 'There are not enough players to start the game',
@@ -31,12 +33,12 @@ async function startGame(interaction, hp, imageDir) {
     // empty image directory
     (0, helpers_1.emptyDir)(imageDir);
     await (0, helpers_1.asyncForEach)(players, async (player) => {
-        const { username, discordId, address, asset } = player;
+        const { username, discordId, address, asset, userId } = player;
         // save each image locally for use later
         const localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
         if (localPath) {
             const assetWithLocalPath = Object.assign(Object.assign({}, asset), { localPath });
-            gamePlayers[discordId] = new user_1.default(username, discordId, address, assetWithLocalPath, hp, 0);
+            gamePlayers[discordId] = new player_1.default(username, discordId, address, assetWithLocalPath, userId, hp, 0);
         }
         else {
             // error downloading

@@ -6,6 +6,7 @@ import { Indexer } from 'algosdk'
 import { Asset } from '../types/user'
 import User from '../models/user'
 import { Interaction } from 'discord.js'
+import Player from '../models/player'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -22,8 +23,7 @@ export const asyncForEach = async (array: Array<any>, callback: Function) => {
 export const determineOwnership = async function (
   algodclient: AlgodClient,
   address: string,
-  assetId: number,
-  test: boolean = false
+  assetId: number
 ): Promise<any> {
   try {
     let accountInfo = await algodclient.accountInformation(address).do()
@@ -38,9 +38,8 @@ export const determineOwnership = async function (
       // Check for entered asset
       if (
         // test case option
-        asset['asset-id'] === assetId && test
-          ? asset.amount >= 0
-          : asset.amount > 0
+        asset['asset-id'] === assetId &&
+        asset.amount > 0
       ) {
         assetOwned = true
       }
@@ -102,17 +101,17 @@ export const normalizeLink = (imageUrl: string) => {
 }
 
 export const handleRolledRecently = async (
-  user: User,
+  player: Player,
   coolDownInterval: number
 ) => {
-  user.coolDownTimeLeft = coolDownInterval
-  while (user.coolDownTimeLeft > 0) {
+  player.coolDownTimeLeft = coolDownInterval
+  while (player.coolDownTimeLeft > 0) {
     await wait(1000)
-    user.coolDownTimeLeft -= 1000
+    player.coolDownTimeLeft -= 1000
   }
 }
 
-export const mapPlayersForEmbed = (playerArr: User[]) =>
+export const mapPlayersForEmbed = (playerArr: Player[]) =>
   playerArr.map((player) => ({
     name: player.username,
     value: `HP: ${player.hp}`,

@@ -4,7 +4,7 @@ import { EmbedData, EmbedReply } from './types/game'
 const ipfsGateway = process.env.IPFS_GATEWAY
 
 const defaultEmbedValues: EmbedData = {
-  title: '🔥🦉🔥 When AOWLS Attack 🔥🦉🔥',
+  title: '🔥🦉🔥 Ye Among AOWLs 🔥🦉🔥',
   description: '💀 Who will survive? 💀',
   color: 'DARK_AQUA',
   image:
