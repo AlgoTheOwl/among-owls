@@ -5,7 +5,7 @@ export default class User {
     public username: string,
     public discordId: string,
     public address: string,
-    public assets: string[],
+    public assets: number[], // assetId
     public _id?: ObjectId
   ) {}
 }

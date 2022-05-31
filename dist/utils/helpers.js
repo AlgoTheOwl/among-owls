@@ -90,11 +90,11 @@ const normalizeLink = (imageUrl) => {
     return imageUrl;
 };
 exports.normalizeLink = normalizeLink;
-const handleRolledRecently = async (user, coolDownInterval) => {
-    user.coolDownTimeLeft = coolDownInterval;
-    while (user.coolDownTimeLeft > 0) {
+const handleRolledRecently = async (player, coolDownInterval) => {
+    player.coolDownTimeLeft = coolDownInterval;
+    while (player.coolDownTimeLeft > 0) {
         await (0, exports.wait)(1000);
-        user.coolDownTimeLeft -= 1000;
+        player.coolDownTimeLeft -= 1000;
     }
 };
 exports.handleRolledRecently = handleRolledRecently;

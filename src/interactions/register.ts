@@ -1,4 +1,3 @@
-import { findPlayer, addPlayer } from '../database/operations'
 import { RegistrationResult } from '../types/user'
 import algosdk from 'algosdk'
 import { determineOwnership, findAsset } from '../utils/helpers'
@@ -74,10 +73,10 @@ const processRegistration = async (
     }
 
     // // // // If owned, find full player and asset data
-    const player = await collections.yaoPlayers.findOne({
+    const player = (await collections.yaoPlayers.findOne({
       discordId,
-    })
-    console.log('player', player)
+    })) as WithId<Player>
+
     const asset = await findAsset(assetId, algoIndexer)
 
     // if there's no asset, return right away
@@ -89,19 +88,22 @@ const processRegistration = async (
     }
 
     // Destructure asset values and store in db
-
     const {
       name: assetName,
       url: assetUrl,
       'unit-name': unitName,
     } = asset?.assets[0].params
 
-    let assetEntry
+    let assetEntry: Asset | undefined
+    let assetStored = false
 
     if (user?._id) {
-      const dbEntry = await collections.assets.findOne({ assetId })
-      if (dbEntry) {
-        assetEntry = dbEntry
+      const dbAssetEntry = (await collections.assets.findOne({
+        assetId,
+      })) as WithId<Asset>
+      if (dbAssetEntry) {
+        assetEntry = dbAssetEntry
+        assetStored = true
       } else {
         assetEntry = new Asset(
           user?._id,
@@ -110,7 +112,13 @@ const processRegistration = async (
           assetUrl,
           unitName
         )
+        // Add asset
         await collections.assets.insertOne(assetEntry)
+        // Add asset ref to user object
+        await collections.users.findOneAndUpdate(
+          { _id: user._id },
+          { $set: { assets: [...user.assets, assetId] } }
+        )
       }
       // add error handling here
     }
@@ -126,9 +134,19 @@ const processRegistration = async (
     }
 
     if (player) {
-      // if there is already a player, only add asset
+      // if player exists and asset is stored, return
+      if (assetStored) {
+        return {
+          status: "Looks like you've already registered",
+        }
+      }
+      // if player and new asset, update player entry
+      await collections.yaoPlayers.findOneAndUpdate(
+        { _id: player._id },
+        { $set: { asset: assetEntry } }
+      )
       return {
-        status: "Looks like you've already registered",
+        status: `Replaced previous asset with ${assetEntry?.unitName} `,
       }
     }
 
@@ -139,10 +157,11 @@ const processRegistration = async (
         discordId,
         address,
         assetEntry,
-        hp
+        hp,
+        0,
+        user._id
       )
-      const result = await collections.yaoPlayers.insertOne(playerEntry)
-      console.log('result', result)
+      await collections.yaoPlayers.insertOne(playerEntry)
     }
 
     return {

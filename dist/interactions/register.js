@@ -57,10 +57,9 @@ const processRegistration = async (username, discordId, address, assetId, gameTy
             };
         }
         // // // // If owned, find full player and asset data
-        const player = await database_service_1.collections.yaoPlayers.findOne({
+        const player = (await database_service_1.collections.yaoPlayers.findOne({
             discordId,
-        });
-        console.log('player', player);
+        }));
         const asset = await (0, helpers_1.findAsset)(assetId, algoIndexer);
         // if there's no asset, return right away
         if (!asset) {
@@ -71,14 +70,21 @@ const processRegistration = async (username, discordId, address, assetId, gameTy
         // Destructure asset values and store in db
         const { name: assetName, url: assetUrl, 'unit-name': unitName, } = asset === null || asset === void 0 ? void 0 : asset.assets[0].params;
         let assetEntry;
+        let assetStored = false;
         if (user === null || user === void 0 ? void 0 : user._id) {
-            const dbEntry = await database_service_1.collections.assets.findOne({ assetId });
-            if (dbEntry) {
-                assetEntry = dbEntry;
+            const dbAssetEntry = (await database_service_1.collections.assets.findOne({
+                assetId,
+            }));
+            if (dbAssetEntry) {
+                assetEntry = dbAssetEntry;
+                assetStored = true;
             }
             else {
                 assetEntry = new asset_1.default(user === null || user === void 0 ? void 0 : user._id, assetId, assetName, assetUrl, unitName);
+                // Add asset
                 await database_service_1.collections.assets.insertOne(assetEntry);
+                // Add asset ref to user object
+                await database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: [...user.assets, assetId] } });
             }
             // add error handling here
         }
@@ -90,16 +96,22 @@ const processRegistration = async (username, discordId, address, assetId, gameTy
             };
         }
         if (player) {
-            // if there is already a player, only add asset
+            // if player exists and asset is stored, return
+            if (assetStored) {
+                return {
+                    status: "Looks like you've already registered",
+                };
+            }
+            // if player and new asset, update player entry
+            await database_service_1.collections.yaoPlayers.findOneAndUpdate({ _id: player._id }, { $set: { asset: assetEntry } });
             return {
-                status: "Looks like you've already registered",
+                status: `Replaced previous asset with ${assetEntry === null || assetEntry === void 0 ? void 0 : assetEntry.unitName} `,
             };
         }
         // Player doesn't exist, add to db
         if (assetEntry) {
-            const playerEntry = new player_1.default(username, discordId, address, assetEntry, hp);
-            const result = await database_service_1.collections.yaoPlayers.insertOne(playerEntry);
-            console.log('result', result);
+            const playerEntry = new player_1.default(username, discordId, address, assetEntry, hp, 0, user._id);
+            await database_service_1.collections.yaoPlayers.insertOne(playerEntry);
         }
         return {
             status: `Added ${unitName} - Prepare to attack!`,

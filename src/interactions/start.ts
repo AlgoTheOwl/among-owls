@@ -1,13 +1,14 @@
 import { Interaction } from 'discord.js'
-import { fetchPlayers } from '../database/operations'
-import User from '../models/user'
 import Game from '../models/game'
 import { asyncForEach, downloadFile, emptyDir } from '../utils/helpers'
 import { EmbedData } from '../types/game'
-import { Asset } from '../types/user'
+import Asset from '../models/asset'
 import doEmbed from '../embeds'
 import { mapPlayersForEmbed } from '../utils/helpers'
 import { game as previousGame } from '..'
+import Player from '../models/player'
+import { collections } from '../database/database.service'
+import { WithId } from 'mongodb'
 
 export default async function startGame(
   interaction: Interaction,
@@ -23,7 +24,9 @@ export default async function startGame(
     })
   }
 
-  const players: User[] = await fetchPlayers()
+  const players = (await collections.yaoPlayers
+    .find({})
+    .toArray()) as WithId<Player>[]
 
   if (!players.length) {
     return await interaction.reply({
@@ -34,12 +37,12 @@ export default async function startGame(
 
   await interaction.deferReply()
 
-  const gamePlayers: { [key: string]: User } = {}
+  const gamePlayers: { [key: string]: Player } = {}
 
   // empty image directory
   emptyDir(imageDir)
 
-  await asyncForEach(players, async (player: User) => {
+  await asyncForEach(players, async (player: Player) => {
     const { username, discordId, address, asset } = player
 
     // save each image locally for use later
@@ -48,7 +51,7 @@ export default async function startGame(
     if (localPath) {
       const assetWithLocalPath: Asset = { ...asset, localPath }
 
-      gamePlayers[discordId] = new User(
+      gamePlayers[discordId] = new Player(
         username,
         discordId,
         address,

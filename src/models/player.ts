@@ -1,4 +1,4 @@
-import { ObjectId, WithId } from 'mongodb'
+import { ObjectId } from 'mongodb'
 import Asset from './asset'
 
 export default class Player {
@@ -6,7 +6,7 @@ export default class Player {
     public username: string,
     public discordId: string,
     public address: string,
-    public asset: WithId<Asset>,
+    public asset: Asset,
     public hp: number,
     public coolDownTimeLeft?: number,
     public _id?: ObjectId

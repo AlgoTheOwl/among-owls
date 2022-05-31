@@ -6,6 +6,7 @@ import { Indexer } from 'algosdk'
 import { Asset } from '../types/user'
 import User from '../models/user'
 import { Interaction } from 'discord.js'
+import Player from '../models/player'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -100,17 +101,17 @@ export const normalizeLink = (imageUrl: string) => {
 }
 
 export const handleRolledRecently = async (
-  user: User,
+  player: Player,
   coolDownInterval: number
 ) => {
-  user.coolDownTimeLeft = coolDownInterval
-  while (user.coolDownTimeLeft > 0) {
+  player.coolDownTimeLeft = coolDownInterval
+  while (player.coolDownTimeLeft > 0) {
     await wait(1000)
-    user.coolDownTimeLeft -= 1000
+    player.coolDownTimeLeft -= 1000
   }
 }
 
-export const mapPlayersForEmbed = (playerArr: User[]) =>
+export const mapPlayersForEmbed = (playerArr: Player[]) =>
   playerArr.map((player) => ({
     name: player.username,
     value: `HP: ${player.hp}`,
