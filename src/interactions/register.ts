@@ -157,9 +157,8 @@ const processRegistration = async (
         discordId,
         address,
         assetEntry,
-        hp,
-        0,
-        user._id
+        user._id,
+        hp
       )
       await collections.yaoPlayers.insertOne(playerEntry)
     }

@@ -33,12 +33,12 @@ async function startGame(interaction, hp, imageDir) {
     // empty image directory
     (0, helpers_1.emptyDir)(imageDir);
     await (0, helpers_1.asyncForEach)(players, async (player) => {
-        const { username, discordId, address, asset } = player;
+        const { username, discordId, address, asset, userId } = player;
         // save each image locally for use later
         const localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
         if (localPath) {
             const assetWithLocalPath = Object.assign(Object.assign({}, asset), { localPath });
-            gamePlayers[discordId] = new player_1.default(username, discordId, address, assetWithLocalPath, hp, 0);
+            gamePlayers[discordId] = new player_1.default(username, discordId, address, assetWithLocalPath, userId, hp, 0);
         }
         else {
             // error downloading

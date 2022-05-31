@@ -110,7 +110,7 @@ const processRegistration = async (username, discordId, address, assetId, gameTy
         }
         // Player doesn't exist, add to db
         if (assetEntry) {
-            const playerEntry = new player_1.default(username, discordId, address, assetEntry, hp, 0, user._id);
+            const playerEntry = new player_1.default(username, discordId, address, assetEntry, user._id, hp);
             await database_service_1.collections.yaoPlayers.insertOne(playerEntry);
         }
         return {

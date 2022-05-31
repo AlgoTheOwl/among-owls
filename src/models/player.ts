@@ -7,8 +7,8 @@ export default class Player {
     public discordId: string,
     public address: string,
     public asset: Asset,
+    public userId: ObjectId,
     public hp: number,
-    public coolDownTimeLeft?: number,
-    public _id?: ObjectId
+    public coolDownTimeLeft?: number
   ) {}
 }

@@ -1,4 +1,5 @@
 import { Interaction } from 'discord.js'
+
 import Game from '../models/game'
 import { asyncForEach, downloadFile, emptyDir } from '../utils/helpers'
 import { EmbedData } from '../types/game'
@@ -43,7 +44,7 @@ export default async function startGame(
   emptyDir(imageDir)
 
   await asyncForEach(players, async (player: Player) => {
-    const { username, discordId, address, asset } = player
+    const { username, discordId, address, asset, userId } = player
 
     // save each image locally for use later
     const localPath = await downloadFile(asset, imageDir, username)
@@ -56,6 +57,7 @@ export default async function startGame(
         discordId,
         address,
         assetWithLocalPath,
+        userId,
         hp,
         0
       )
