@@ -8,6 +8,10 @@ import mockUsers from './mocks/users'
 import startGame from './interactions/start'
 import attack from './interactions/attack'
 import { DISCORD_ROLES } from './constants/roles'
+import { collections } from './database/database.service'
+import { EmbedData } from './types/game'
+import { WithId } from 'mongodb'
+import doEmbed from './embeds'
 
 const token: string = process.env.DISCORD_TOKEN
 
@@ -95,6 +99,24 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   }
 
   if (commandName === 'leaderboard') {
+    const winningUsers = (await collections.users
+      .find({ yaoWins: { $gt: 0 } })
+      .toArray()) as WithId<User>[]
+
+    if (winningUsers.length) {
+      const embedData: EmbedData = {
+        title: 'Leaderboard',
+        description: 'Which AOWLs rule them all?',
+        image: undefined,
+        fields: winningUsers.map((user) => {
+          return {
+            name: user.username,
+            value: `${user.yaoWins}`,
+          }
+        }),
+      }
+      await interaction.reply(doEmbed(embedData))
+    }
   }
 
   /*
