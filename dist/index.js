@@ -11,6 +11,8 @@ const database_service_1 = require("./database/database.service");
 const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
 const roles_1 = require("./constants/roles");
+const database_service_2 = require("./database/database.service");
+const embeds_1 = __importDefault(require("./embeds"));
 const token = process.env.DISCORD_TOKEN;
 exports.emojis = {};
 // Settings
@@ -74,6 +76,23 @@ client.on('interactionCreate', async (interaction) => {
         }
     }
     if (commandName === 'leaderboard') {
+        const winningUsers = (await database_service_2.collections.users
+            .find({ yaoWins: { $gt: 0 } })
+            .toArray());
+        if (winningUsers.length) {
+            const embedData = {
+                title: 'Leaderboard',
+                description: 'Which AOWLs rule them all?',
+                image: undefined,
+                fields: winningUsers.map((user) => {
+                    return {
+                        name: user.username,
+                        value: `${user.yaoWins}`,
+                    };
+                }),
+            };
+            await interaction.reply((0, embeds_1.default)(embedData));
+        }
     }
     /*
      *****************
