@@ -23,5 +23,6 @@ type Footer = {
 
 export interface EmbedReply {
   embeds: [MessageEmbed]
+  files: any
   fetchReply: boolean
 }

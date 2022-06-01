@@ -1,14 +1,13 @@
-import { MessageEmbed } from 'discord.js'
+import { MessageAttachment, MessageEmbed } from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
 
 const ipfsGateway = process.env.IPFS_GATEWAY
 
 const defaultEmbedValues: EmbedData = {
-  title: '🔥🦉🔥 Ye Among AOWLs 🔥🦉🔥',
+  title: '🔥 Ye Among AOWLs 🔥',
   description: '💀 Who will survive? 💀',
   color: 'DARK_AQUA',
-  image:
-    'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweirdlystrange.com%2Fwp-content%2Fuploads%2F2015%2F12%2Fowl004.jpg&f=1&nofb=1',
+  image: 'attachment://main.gif',
   thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   footer: {
     text: 'A Parliament of AOWLs creation',
@@ -21,6 +20,8 @@ export default function doEmbed(data: EmbedData): EmbedReply {
     ...defaultEmbedValues,
     ...data,
   }
+
+  const file = new MessageAttachment('src/images/main.gif')
 
   const embed = new MessageEmbed()
 
@@ -40,5 +41,6 @@ export default function doEmbed(data: EmbedData): EmbedReply {
   return {
     embeds: [embed],
     fetchReply: true,
+    files: image !== 'attachment://main.gif' ? [] : [file],
   }
 }

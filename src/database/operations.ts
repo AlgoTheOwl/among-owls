@@ -23,7 +23,7 @@ const fetchPlayers = async (): Promise<any> => {
 }
 
 const removeAllPlayers = async () => {
-  const collection: Collection = db.collection('users')
+  const collection: Collection = db.collection('players')
   return await collection.deleteMany({})
 }
 

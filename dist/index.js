@@ -15,7 +15,7 @@ const token = process.env.DISCORD_TOKEN;
 exports.emojis = {};
 // Settings
 const hp = 1000;
-const imageDir = 'dist/images';
+const imageDir = 'dist/nftAssets';
 const client = new discord_js_1.Client({
     intents: [
         discord_js_1.Intents.FLAGS.GUILDS,
