@@ -7,7 +7,7 @@ const discord_js_1 = require("discord.js");
 const embeds_1 = __importDefault(require("../embeds"));
 const attackCanvas_1 = __importDefault(require("../canvas/attackCanvas"));
 const helpers_1 = require("../utils/helpers");
-const operations_1 = require("../database/operations");
+const database_service_1 = require("../database/database.service");
 // Settings
 const coolDownInterval = 5000;
 const messageDeleteInterval = 7000;
@@ -58,13 +58,19 @@ async function attack(interaction, game, user, hp) {
         const winner = playerArr[0];
         // handle win
         game.active = false;
+        // Increment score of winning player
+        const winningUser = (await database_service_1.collections.users.findOne({
+            _id: winner.userId,
+        }));
+        const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1;
+        await database_service_1.collections.users.findOneAndUpdate({}, { $set: { yaoWins: updatedScore } });
         const embedData = {
             title: 'WINNER!!!',
             description: `${winner.username}'s ${winner.asset.unitName} destroyed the competition`,
             color: 'DARK_AQUA',
             image: winner.asset.assetUrl,
         };
-        (0, operations_1.removeAllPlayers)();
+        // collections.players.deleteMany({})
         interaction.reply({ ephemeral: true, content: 'You WON!!!' });
         return game.embed.edit((0, embeds_1.default)(embedData));
     }
@@ -85,6 +91,7 @@ async function attack(interaction, game, user, hp) {
     const embedData = {
         color: 'RED',
         fields: (0, helpers_1.mapPlayersForEmbed)(playerArr),
+        image: undefined,
     };
     // if lose, remove loser from players and play game again
     await game.embed.edit((0, embeds_1.default)(embedData));

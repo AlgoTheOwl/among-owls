@@ -73,6 +73,8 @@ client.on('interactionCreate', async (interaction) => {
             await interaction.reply({ ephemeral: true, content: status });
         }
     }
+    if (commandName === 'leaderboard') {
+    }
     /*
      *****************
      * TEST COMMANDS *

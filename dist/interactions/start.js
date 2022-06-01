@@ -55,10 +55,11 @@ async function startGame(interaction, hp, imageDir) {
     const embedData = {
         image: undefined,
         fields: (0, helpers_2.mapPlayersForEmbed)(playerArr),
+        description: 'Leaderboard',
     };
     // TODO: fill out intor embed
     const intorEmbedData = {
-        title: 'test',
+        thumbNail: undefined,
     };
     // send embed here
     await interaction.editReply((0, embeds_1.default)(intorEmbedData));

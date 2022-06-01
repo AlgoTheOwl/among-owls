@@ -78,11 +78,12 @@ export default async function startGame(
   const embedData: EmbedData = {
     image: undefined,
     fields: mapPlayersForEmbed(playerArr),
+    description: 'Leaderboard',
   }
 
   // TODO: fill out intor embed
   const intorEmbedData: EmbedData = {
-    title: 'test',
+    thumbNail: undefined,
   }
 
   // send embed here
