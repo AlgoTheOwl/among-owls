@@ -109,10 +109,9 @@ export default async function attack(
     attackerName
   )
 
-  const attachment = new MessageAttachment(
-    canvas.toBuffer('image/png'),
-    'attacker.png'
-  )
+  const attachment = victimDead
+    ? new MessageAttachment('src/images/death.gif', 'death.gif')
+    : new MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png')
 
   await interaction.reply({
     files: [attachment],

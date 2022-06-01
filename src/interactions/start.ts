@@ -76,10 +76,19 @@ export default async function startGame(
   const game = new Game(gamePlayers, true, false, 1000)
   // send back game embed
   const embedData: EmbedData = {
+    image: undefined,
     fields: mapPlayersForEmbed(playerArr),
   }
 
-  game.embed = await interaction.editReply(doEmbed(embedData))
+  // TODO: fill out intor embed
+  const intorEmbedData: EmbedData = {
+    title: 'test',
+  }
+
+  // send embed here
+  await interaction.editReply(doEmbed(intorEmbedData))
+
+  game.embed = await interaction.followUp(doEmbed(embedData))
 
   return game
 }

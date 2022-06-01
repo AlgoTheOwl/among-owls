@@ -23,7 +23,7 @@ const fetchPlayers = async () => {
 };
 exports.fetchPlayers = fetchPlayers;
 const removeAllPlayers = async () => {
-    const collection = database_service_1.db.collection('users');
+    const collection = database_service_1.db.collection('players');
     return await collection.deleteMany({});
 };
 exports.removeAllPlayers = removeAllPlayers;
