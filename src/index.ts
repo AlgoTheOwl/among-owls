@@ -94,6 +94,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     }
   }
 
+  if (commandName === 'leaderboard') {
+  }
+
   /*
    *****************
    * TEST COMMANDS *

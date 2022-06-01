@@ -5,6 +5,7 @@ import {
   User as DiscordUser,
 } from 'discord.js'
 import Game from '../models/game'
+import User from '../models/user'
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import doAttackCanvas from '../canvas/attackCanvas'
@@ -15,6 +16,8 @@ import {
 } from '../utils/helpers'
 import { removeAllPlayers } from '../database/operations'
 import { Canvas } from 'canvas'
+import { collections } from '../database/database.service'
+import { WithId } from 'mongodb'
 
 // Settings
 const coolDownInterval = 5000
@@ -78,11 +81,24 @@ export default async function attack(
   }
 
   const playerArr = Object.values(game.players)
+
   // if there is only one player left, the game has been won
   if (playerArr.length === 1) {
     const winner = playerArr[0]
     // handle win
     game.active = false
+
+    // Increment score of winning player
+    const winningUser = (await collections.users.findOne({
+      _id: winner.userId,
+    })) as WithId<User>
+
+    const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
+
+    await collections.users.findOneAndUpdate(
+      {},
+      { $set: { yaoWins: updatedScore } }
+    )
 
     const embedData: EmbedData = {
       title: 'WINNER!!!',
@@ -91,7 +107,7 @@ export default async function attack(
       image: winner.asset.assetUrl,
     }
 
-    removeAllPlayers()
+    // collections.players.deleteMany({})
 
     interaction.reply({ ephemeral: true, content: 'You WON!!!' })
 
@@ -125,6 +141,7 @@ export default async function attack(
   const embedData: EmbedData = {
     color: 'RED',
     fields: mapPlayersForEmbed(playerArr),
+    image: undefined,
   }
   // if lose, remove loser from players and play game again
   await game.embed.edit(doEmbed(embedData))
