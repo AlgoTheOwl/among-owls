@@ -129,6 +129,7 @@ export const emptyDir = (dirPath: string) => {
       } else fs.unlinkSync(fullPath)
     })
   } catch (error) {
+    console.log(error)
     throw new Error('Error deleting contents of image directory')
   }
 }
