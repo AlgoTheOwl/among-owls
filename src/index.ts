@@ -1,6 +1,6 @@
 import User from './models/user'
 import { Client, Intents, Interaction } from 'discord.js'
-import { addRole, asyncForEach } from './utils/helpers'
+import { addRole, asyncForEach, getNumberSuffix } from './utils/helpers'
 import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'
 import Game from './models/game'
@@ -101,6 +101,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   if (commandName === 'leaderboard') {
     const winningUsers = (await collections.users
       .find({ yaoWins: { $gt: 0 } })
+      .sort({ yaoWins: 'desc' })
       .toArray()) as WithId<User>[]
 
     if (winningUsers.length) {
@@ -108,10 +109,14 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         title: 'Leaderboard',
         description: 'Which AOWLs rule them all?',
         image: undefined,
-        fields: winningUsers.map((user) => {
+        fields: winningUsers.map((user, i) => {
+          //@ts-ignore
+          // const numberWithSuffix = getNumberSuffix(user.yaoWins)
+          const place = i + 1
+          const win = user.yaoWins === 1 ? 'win' : 'wins'
           return {
-            name: user.username,
-            value: `${user.yaoWins}`,
+            name: `#${place}: ${user.username}`,
+            value: `${user.yaoWins} ${win}`,
           }
         }),
       }

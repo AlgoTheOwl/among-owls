@@ -13,7 +13,7 @@ export interface EmbedData {
 
 type Field = {
   name: string
-  value: string | number
+  value: string
 }
 
 type Footer = {
