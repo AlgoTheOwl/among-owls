@@ -78,16 +78,21 @@ client.on('interactionCreate', async (interaction) => {
     if (commandName === 'leaderboard') {
         const winningUsers = (await database_service_2.collections.users
             .find({ yaoWins: { $gt: 0 } })
+            .sort({ yaoWins: 'desc' })
             .toArray());
         if (winningUsers.length) {
             const embedData = {
                 title: 'Leaderboard',
                 description: 'Which AOWLs rule them all?',
                 image: undefined,
-                fields: winningUsers.map((user) => {
+                fields: winningUsers.map((user, i) => {
+                    //@ts-ignore
+                    // const numberWithSuffix = getNumberSuffix(user.yaoWins)
+                    const place = i + 1;
+                    const win = user.yaoWins === 1 ? 'win' : 'wins';
                     return {
-                        name: user.username,
-                        value: `${user.yaoWins}`,
+                        name: `#${place}: ${user.username}`,
+                        value: `${user.yaoWins} ${win}`,
                     };
                 }),
             };
