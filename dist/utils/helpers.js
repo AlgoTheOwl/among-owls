@@ -73,7 +73,7 @@ const downloadFile = async (asset, directory, username) => {
                 writer.on('finish', () => {
                     return resolve(path);
                 });
-                writer.on('error', reject);
+                writer.on('error', (err) => console.log(err));
             });
         }
     }
