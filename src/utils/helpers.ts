@@ -150,3 +150,10 @@ export const addRole = async (
     throw new Error('Error adding role')
   }
 }
+
+export const getNumberSuffix = (num: number): string => {
+  if (num === 1) return '1st'
+  if (num === 2) return '2nd'
+  if (num === 3) return '3rd'
+  else return `${num}th`
+}

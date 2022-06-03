@@ -6,6 +6,9 @@ export default class User {
     public discordId: string,
     public address: string,
     public assets: number[], // assetId
-    public _id?: ObjectId
-  ) {}
+    public _id?: ObjectId,
+    public yaoWins?: number
+  ) {
+    this.yaoWins = 0
+  }
 }

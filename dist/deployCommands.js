@@ -39,6 +39,9 @@ const commands = [
     new builders_1.SlashCommandBuilder()
         .setName('test-register')
         .setDescription('register multiple mock users'),
+    new builders_1.SlashCommandBuilder()
+        .setName('leaderboard')
+        .setDescription('show global leaderboard for AOWL games'),
 ].map((command) => command.toJSON());
 const rest = new rest_1.REST({ version: '9' }).setToken(token);
 rest

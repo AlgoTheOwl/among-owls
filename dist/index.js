@@ -11,6 +11,8 @@ const database_service_1 = require("./database/database.service");
 const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
 const roles_1 = require("./constants/roles");
+const database_service_2 = require("./database/database.service");
+const embeds_1 = __importDefault(require("./embeds"));
 const token = process.env.DISCORD_TOKEN;
 exports.emojis = {};
 // Settings
@@ -71,6 +73,30 @@ client.on('interactionCreate', async (interaction) => {
                 (0, helpers_1.addRole)(interaction, roles_1.DISCORD_ROLES.registered, registeredUser);
             }
             await interaction.reply({ ephemeral: true, content: status });
+        }
+    }
+    if (commandName === 'leaderboard') {
+        const winningUsers = (await database_service_2.collections.users
+            .find({ yaoWins: { $gt: 0 } })
+            .sort({ yaoWins: 'desc' })
+            .toArray());
+        if (winningUsers.length) {
+            const embedData = {
+                title: 'Leaderboard',
+                description: 'Which AOWLs rule them all?',
+                image: undefined,
+                fields: winningUsers.map((user, i) => {
+                    //@ts-ignore
+                    // const numberWithSuffix = getNumberSuffix(user.yaoWins)
+                    const place = i + 1;
+                    const win = user.yaoWins === 1 ? 'win' : 'wins';
+                    return {
+                        name: `#${place}: ${user.username}`,
+                        value: `${user.yaoWins} ${win}`,
+                    };
+                }),
+            };
+            await interaction.reply((0, embeds_1.default)(embedData));
         }
     }
     /*
