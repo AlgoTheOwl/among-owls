@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.getNumberSuffix = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -135,3 +135,14 @@ const addRole = async (interaction, roleName, user) => {
     }
 };
 exports.addRole = addRole;
+const getNumberSuffix = (num) => {
+    if (num === 1)
+        return '1st';
+    if (num === 2)
+        return '2nd';
+    if (num === 3)
+        return '3rd';
+    else
+        return `${num}th`;
+};
+exports.getNumberSuffix = getNumberSuffix;
