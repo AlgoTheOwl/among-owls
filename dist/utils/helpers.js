@@ -78,6 +78,7 @@ const downloadFile = async (asset, directory, username) => {
         }
     }
     catch (error) {
+        console.log('ERROR:', error);
         throw new Error('Error downloading asset');
     }
 };
