@@ -119,6 +119,7 @@ const emptyDir = (dirPath) => {
         });
     }
     catch (error) {
+        console.log(error);
         throw new Error('Error deleting contents of image directory');
     }
 };
