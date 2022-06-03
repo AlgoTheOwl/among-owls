@@ -89,7 +89,6 @@ export const downloadFile = async (
     }
   } catch (error) {
     console.log('ERROR:', error)
-    throw new Error('Error downloading asset')
   }
 }
 
