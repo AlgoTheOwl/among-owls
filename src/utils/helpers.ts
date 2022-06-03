@@ -84,7 +84,7 @@ export const downloadFile = async (
         writer.on('finish', () => {
           return resolve(path)
         })
-        writer.on('error', reject)
+        writer.on('error', (err) => console.log(err))
       })
     }
   } catch (error) {
