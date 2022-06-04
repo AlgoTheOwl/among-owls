@@ -8,6 +8,7 @@ const discord_js_1 = require("discord.js");
 const helpers_1 = require("./utils/helpers");
 const register_1 = require("./interactions/register");
 const database_service_1 = require("./database/database.service");
+const users_1 = __importDefault(require("./mocks/users"));
 const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
 const roles_1 = require("./constants/roles");
@@ -71,6 +72,7 @@ client.on('interactionCreate', async (interaction) => {
         const address = options.getString('address');
         const assetId = options.getNumber('assetid');
         const { username, id } = user;
+        console.log(id);
         if (address && assetId) {
             const { status, registeredUser, asset } = await (0, register_1.processRegistration)(username, id, address, assetId, 'yao', hp);
             // add permissions if succesful
@@ -108,23 +110,16 @@ client.on('interactionCreate', async (interaction) => {
      *****************
      */
     // test registring and selecting players
-    //   if (commandName === 'test-register') {
-    //     await asyncForEach(mockUsers, async (user: User, i: number) => {
-    //       const { status, registeredUser, asset } = await processRegistration(
-    //         user,
-    //         true
-    //       )
-    //       if (registeredUser && asset) {
-    //         addRole(interaction, DISCORD_ROLES.registered, registeredUser)
-    //       } else {
-    //         console.log('status:', status)
-    //       }
-    //     })
-    //     await interaction.reply({
-    //       content: 'all test users added',
-    //       ephemeral: true,
-    //     })
-    //   }
+    if (commandName === 'test-register') {
+        await (0, helpers_1.asyncForEach)(users_1.default, async (player, i) => {
+            const { username, discordId, address, assetId } = player;
+            const result = await (0, register_1.processRegistration)(username, discordId, address, assetId, 'yao', hp);
+        });
+        await interaction.reply({
+            content: 'all test users added',
+            ephemeral: true,
+        });
+    }
 });
 /*
  *****************
@@ -145,6 +140,7 @@ const handlePlayerTimeout = async (interaction) => {
             });
             const playerArr = (0, helpers_1.getPlayerArray)(exports.game.players);
             if (playerArr.length === 1) {
+                clearInterval(kickPlayerInterval);
                 return (0, helpers_1.handleWin)(playerArr, interaction);
             }
             if (playerArr.length) {
@@ -152,16 +148,19 @@ const handlePlayerTimeout = async (interaction) => {
                     fields: (0, helpers_1.mapPlayersForEmbed)((0, helpers_1.getPlayerArray)(exports.game.players)),
                     image: undefined,
                 };
+                clearInterval(kickPlayerInterval);
                 return exports.game.embed.edit((0, embeds_1.default)(embedData));
             }
-            const embedData = {
-                image: undefined,
-                title: 'BOOOO',
-                description: 'Game has ended due to all players being removed for inactivity',
-            };
-            exports.game.embed.edit((0, embeds_1.default)(embedData));
-            exports.game.active = false;
-            clearInterval(kickPlayerInterval);
+            if (!playerArr.length) {
+                const embedData = {
+                    image: undefined,
+                    title: 'BOOOO',
+                    description: 'Game has ended due to all players being removed for inactivity',
+                };
+                exports.game.embed.edit((0, embeds_1.default)(embedData));
+                exports.game.active = false;
+                clearInterval(kickPlayerInterval);
+            }
         }
     }, kickPlayerTimeout);
 };

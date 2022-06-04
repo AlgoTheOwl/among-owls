@@ -94,6 +94,8 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
     const { username, id } = user
 
+    console.log(id)
+
     if (address && assetId) {
       const { status, registeredUser, asset } = await processRegistration(
         username,
@@ -143,24 +145,24 @@ client.on('interactionCreate', async (interaction: Interaction) => {
    */
 
   // test registring and selecting players
-  //   if (commandName === 'test-register') {
-  //     await asyncForEach(mockUsers, async (user: User, i: number) => {
-  //       const { status, registeredUser, asset } = await processRegistration(
-  //         user,
-  //         true
-  //       )
-  //       if (registeredUser && asset) {
-  //         addRole(interaction, DISCORD_ROLES.registered, registeredUser)
-  //       } else {
-  //         console.log('status:', status)
-  //       }
-  //     })
+  if (commandName === 'test-register') {
+    await asyncForEach(mockUsers, async (player: any, i: number) => {
+      const { username, discordId, address, assetId } = player
+      const result = await processRegistration(
+        username,
+        discordId,
+        address,
+        assetId,
+        'yao',
+        hp
+      )
+    })
 
-  //     await interaction.reply({
-  //       content: 'all test users added',
-  //       ephemeral: true,
-  //     })
-  //   }
+    await interaction.reply({
+      content: 'all test users added',
+      ephemeral: true,
+    })
+  }
 })
 
 /*
@@ -186,6 +188,7 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
       const playerArr = getPlayerArray(game.players)
 
       if (playerArr.length === 1) {
+        clearInterval(kickPlayerInterval)
         return handleWin(playerArr, interaction)
       }
 
@@ -194,19 +197,22 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
           fields: mapPlayersForEmbed(getPlayerArray(game.players)),
           image: undefined,
         }
+        clearInterval(kickPlayerInterval)
         return game.embed.edit(doEmbed(embedData))
       }
 
-      const embedData: EmbedData = {
-        image: undefined,
-        title: 'BOOOO',
-        description:
-          'Game has ended due to all players being removed for inactivity',
-      }
+      if (!playerArr.length) {
+        const embedData: EmbedData = {
+          image: undefined,
+          title: 'BOOOO',
+          description:
+            'Game has ended due to all players being removed for inactivity',
+        }
 
-      game.embed.edit(doEmbed(embedData))
-      game.active = false
-      clearInterval(kickPlayerInterval)
+        game.embed.edit(doEmbed(embedData))
+        game.active = false
+        clearInterval(kickPlayerInterval)
+      }
     }
   }, kickPlayerTimeout)
 }
