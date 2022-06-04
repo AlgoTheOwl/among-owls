@@ -70,7 +70,7 @@ async function attack(interaction, game, user, hp) {
             color: 'DARK_AQUA',
             image: winner.asset.assetUrl,
         };
-        // collections.players.deleteMany({})
+        database_service_1.collections.yaoPlayers.deleteMany({});
         interaction.reply({ ephemeral: true, content: 'You WON!!!' });
         return game.embed.edit((0, embeds_1.default)(embedData));
     }
