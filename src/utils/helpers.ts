@@ -163,6 +163,18 @@ export const addRole = async (
   }
 }
 
+export const confirmRole = async (
+  roleId: string,
+  interaction: Interaction,
+  userId: string
+) => {
+  // const role = interaction.guild?.roles.cache.find((role) => role.id === roleId)
+  const member = interaction.guild?.members.cache.find(
+    (member) => member.id === userId
+  )
+  return member?.roles.cache.has(roleId)
+}
+
 export const getNumberSuffix = (num: number): string => {
   if (num === 1) return '1st'
   if (num === 2) return '2nd'
@@ -201,9 +213,12 @@ export const handleWin = async (
     image: winner.asset.assetUrl,
   }
 
-  interaction.followUp({ ephemeral: true, content: 'You WON!!!' })
+  interaction.followUp({ ephemeral: true, content: 'Woo-Hoot! You won!' })
 
   // collections.yaoPlayers.deleteMany({})
 
   return game.embed.edit(doEmbed(embedData))
 }
+
+export const randomNumber = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min) + min)

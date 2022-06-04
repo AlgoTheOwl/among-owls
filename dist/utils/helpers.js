@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -145,6 +145,13 @@ const addRole = async (interaction, roleName, user) => {
     }
 };
 exports.addRole = addRole;
+const confirmRole = async (roleId, interaction, userId) => {
+    var _a;
+    // const role = interaction.guild?.roles.cache.find((role) => role.id === roleId)
+    const member = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.members.cache.find((member) => member.id === userId);
+    return member === null || member === void 0 ? void 0 : member.roles.cache.has(roleId);
+};
+exports.confirmRole = confirmRole;
 const getNumberSuffix = (num) => {
     if (num === 1)
         return '1st';
@@ -176,8 +183,10 @@ const handleWin = async (playerArr, interaction) => {
         color: 'DARK_AQUA',
         image: winner.asset.assetUrl,
     };
-    interaction.followUp({ ephemeral: true, content: 'You WON!!!' });
+    interaction.followUp({ ephemeral: true, content: 'Woo-Hoot! You won!' });
     // collections.yaoPlayers.deleteMany({})
     return __1.game.embed.edit((0, embeds_1.default)(embedData));
 };
 exports.handleWin = handleWin;
+const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
+exports.randomNumber = randomNumber;

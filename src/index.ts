@@ -3,11 +3,11 @@ import { Client, Intents, Interaction } from 'discord.js'
 import {
   addRole,
   asyncForEach,
-  getNumberSuffix,
   wait,
   getPlayerArray,
   mapPlayersForEmbed,
   handleWin,
+  confirmRole,
 } from './utils/helpers'
 import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'
@@ -22,6 +22,7 @@ import { WithId } from 'mongodb'
 import doEmbed from './embeds'
 
 const token: string = process.env.DISCORD_TOKEN
+const roleId: string = process.env.ADMIN_ID
 
 // Gloval vars
 export let game: Game
@@ -59,6 +60,14 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   const { commandName, user, options } = interaction
 
   if (commandName === 'start') {
+    const hasRole = await confirmRole(roleId, interaction, user.id)
+    if (!hasRole) {
+      return await interaction.reply({
+        content: 'Only administrators can use this command',
+        ephemeral: true,
+      })
+    }
+
     const gameState = await startGame(interaction, hp, imageDir)
     if (gameState) {
       game = gameState
@@ -69,7 +78,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   if (commandName === 'attack') {
     if (!game?.active)
       return interaction.reply({
-        content: `The game hasn't started yet, please register if you haven't already and try again later`,
+        content: `HOO do you think you are? The game hasn’t started yet!`,
         ephemeral: true,
       })
 
@@ -77,6 +86,13 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   }
 
   if (commandName === 'stop') {
+    const hasRole = await confirmRole(roleId, interaction, user.id)
+    if (!hasRole) {
+      return await interaction.reply({
+        content: 'Only administrators can use this command',
+        ephemeral: true,
+      })
+    }
     if (!game?.active)
       return interaction.reply({
         content: 'Game is not currently running',
@@ -93,8 +109,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     const assetId = options.getNumber('assetid')
 
     const { username, id } = user
-
-    console.log(id)
 
     if (address && assetId) {
       const { status, registeredUser, asset } = await processRegistration(
@@ -146,6 +160,13 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
   // test registring and selecting players
   if (commandName === 'test-register') {
+    const hasRole = await confirmRole(roleId, interaction, user.id)
+    if (!hasRole) {
+      return await interaction.reply({
+        content: 'Only administrators can use this command',
+        ephemeral: true,
+      })
+    }
     await asyncForEach(mockUsers, async (player: any, i: number) => {
       const { username, discordId, address, assetId } = player
       const result = await processRegistration(
@@ -175,7 +196,6 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
   if (!interaction.isCommand()) return
 
   await wait(20000)
-  console.log('already past wait')
 
   kickPlayerInterval = setInterval(async () => {
     if (game.active) {
@@ -204,7 +224,7 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
       if (!playerArr.length) {
         const embedData: EmbedData = {
           image: undefined,
-          title: 'BOOOO',
+          title: 'BOOOO!!!',
           description:
             'Game has ended due to all players being removed for inactivity',
         }
