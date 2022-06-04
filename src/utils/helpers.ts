@@ -7,6 +7,11 @@ import { Asset } from '../types/user'
 import User from '../models/user'
 import { Interaction } from 'discord.js'
 import Player from '../models/player'
+import { game } from '..'
+import { collections } from '../database/database.service'
+import { WithId } from 'mongodb'
+import { EmbedData } from '../types/game'
+import doEmbed from '../embeds'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -109,6 +114,12 @@ export const handleRolledRecently = async (
     await wait(1000)
     player.coolDownTimeLeft -= 1000
   }
+  // turn rolled recently to true
+  player.rolledRecently = true
+  // set Timeout and remove after 20 seconds
+  setTimeout(() => {
+    player.rolledRecently = false
+  }, 20000)
 }
 
 export const mapPlayersForEmbed = (playerArr: Player[]) =>
@@ -157,4 +168,42 @@ export const getNumberSuffix = (num: number): string => {
   if (num === 2) return '2nd'
   if (num === 3) return '3rd'
   else return `${num}th`
+}
+
+export const getPlayerArray = (players: { [key: string]: Player }): Player[] =>
+  Object.values(players)
+
+export const handleWin = async (
+  playerArr: Player[],
+  interaction: Interaction
+) => {
+  if (!interaction.isCommand()) return
+  const winner = playerArr[0]
+  // handle win
+  game.active = false
+
+  // Increment score of winning player
+  const winningUser = (await collections.users.findOne({
+    _id: winner.userId,
+  })) as WithId<User>
+
+  const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
+
+  await collections.users.findOneAndUpdate(
+    { _id: winner.userId },
+    { $set: { yaoWins: updatedScore } }
+  )
+
+  const embedData: EmbedData = {
+    title: 'WINNER!!!',
+    description: `${winner.username}'s ${winner.asset.unitName} destroyed the competition`,
+    color: 'DARK_AQUA',
+    image: winner.asset.assetUrl,
+  }
+
+  // collections.players.deleteMany({})
+
+  interaction.followUp({ ephemeral: true, content: 'You WON!!!' })
+
+  return game.embed.edit(doEmbed(embedData))
 }

@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const game_1 = __importDefault(require("../models/game"));
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
@@ -57,12 +58,9 @@ async function startGame(interaction, hp, imageDir) {
         fields: (0, helpers_2.mapPlayersForEmbed)(playerArr),
         description: 'Leaderboard',
     };
-    // TODO: fill out intor embed
-    const intorEmbedData = {
-        thumbNail: undefined,
-    };
+    const file = new discord_js_1.MessageAttachment('src/images/main.gif');
     // send embed here
-    await interaction.editReply((0, embeds_1.default)(intorEmbedData));
+    await interaction.editReply({ files: [file] });
     game.embed = await interaction.followUp((0, embeds_1.default)(embedData));
     return game;
 }

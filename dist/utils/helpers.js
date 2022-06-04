@@ -3,10 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNumberSuffix = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
+const __1 = require("..");
+const database_service_1 = require("../database/database.service");
+const embeds_1 = __importDefault(require("../embeds"));
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -96,6 +99,12 @@ const handleRolledRecently = async (player, coolDownInterval) => {
         await (0, exports.wait)(1000);
         player.coolDownTimeLeft -= 1000;
     }
+    // turn rolled recently to true
+    player.rolledRecently = true;
+    // set Timeout and remove after 20 seconds
+    setTimeout(() => {
+        player.rolledRecently = false;
+    }, 20000);
 };
 exports.handleRolledRecently = handleRolledRecently;
 const mapPlayersForEmbed = (playerArr) => playerArr.map((player) => ({
@@ -147,3 +156,28 @@ const getNumberSuffix = (num) => {
         return `${num}th`;
 };
 exports.getNumberSuffix = getNumberSuffix;
+const getPlayerArray = (players) => Object.values(players);
+exports.getPlayerArray = getPlayerArray;
+const handleWin = async (playerArr, interaction) => {
+    if (!interaction.isCommand())
+        return;
+    const winner = playerArr[0];
+    // handle win
+    __1.game.active = false;
+    // Increment score of winning player
+    const winningUser = (await database_service_1.collections.users.findOne({
+        _id: winner.userId,
+    }));
+    const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1;
+    await database_service_1.collections.users.findOneAndUpdate({ _id: winner.userId }, { $set: { yaoWins: updatedScore } });
+    const embedData = {
+        title: 'WINNER!!!',
+        description: `${winner.username}'s ${winner.asset.unitName} destroyed the competition`,
+        color: 'DARK_AQUA',
+        image: winner.asset.assetUrl,
+    };
+    // collections.players.deleteMany({})
+    interaction.followUp({ ephemeral: true, content: 'You WON!!!' });
+    return __1.game.embed.edit((0, embeds_1.default)(embedData));
+};
+exports.handleWin = handleWin;

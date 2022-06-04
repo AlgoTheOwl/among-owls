@@ -21,8 +21,6 @@ export default function doEmbed(data: EmbedData): EmbedReply {
     ...data,
   }
 
-  const file = new MessageAttachment('src/images/main.gif')
-
   const embed = new MessageEmbed()
 
   if (image?.slice(0, 4) === 'ipfs') {
@@ -41,6 +39,5 @@ export default function doEmbed(data: EmbedData): EmbedReply {
   return {
     embeds: [embed],
     fetchReply: true,
-    files: image !== 'attachment://main.gif' ? [] : [file],
   }
 }
