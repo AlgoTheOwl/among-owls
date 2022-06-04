@@ -175,8 +175,8 @@ const handleWin = async (playerArr, interaction) => {
         color: 'DARK_AQUA',
         image: winner.asset.assetUrl,
     };
-    database_service_1.collections.players.deleteMany({});
-    interaction.reply({ ephemeral: true, content: 'You WON!!!' });
+    // collections.players.deleteMany({})
+    interaction.followUp({ ephemeral: true, content: 'You WON!!!' });
     return __1.game.embed.edit((0, embeds_1.default)(embedData));
 };
 exports.handleWin = handleWin;

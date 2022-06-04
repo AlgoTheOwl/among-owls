@@ -124,8 +124,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         description: 'Which AOWLs rule them all?',
         image: undefined,
         fields: winningUsers.map((user, i) => {
-          //@ts-ignore
-          // const numberWithSuffix = getNumberSuffix(user.yaoWins)
           const place = i + 1
           const win = user.yaoWins === 1 ? 'win' : 'wins'
           return {
@@ -167,13 +165,16 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
 /*
  *****************
- * TEST COMMANDS *
+ **** HELPERS ****
  *****************
  */
 
 const handlePlayerTimeout = async (interaction: Interaction) => {
   if (!interaction.isCommand()) return
+
   await wait(20000)
+  console.log('already past wait')
+
   kickPlayerInterval = setInterval(async () => {
     if (game.active) {
       getPlayerArray(game.players).forEach((player) => {
@@ -181,6 +182,7 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
           delete game?.players[player.discordId]
         }
       })
+
       const playerArr = getPlayerArray(game.players)
 
       if (playerArr.length === 1) {
@@ -201,6 +203,7 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
         description:
           'Game has ended due to all players being removed for inactivity',
       }
+
       game.embed.edit(doEmbed(embedData))
       game.active = false
       clearInterval(kickPlayerInterval)
