@@ -107,7 +107,7 @@ export default async function attack(
       image: winner.asset.assetUrl,
     }
 
-    // collections.players.deleteMany({})
+    collections.players.deleteMany({})
 
     interaction.reply({ ephemeral: true, content: 'You WON!!!' })
 
