@@ -18,6 +18,8 @@ exports.emojis = {};
 // Settings
 const hp = 1000;
 const imageDir = 'dist/nftAssets';
+let kickPlayerInterval;
+const kickPlayerTimeout = 2000;
 const client = new discord_js_1.Client({
     intents: [
         discord_js_1.Intents.FLAGS.GUILDS,
@@ -41,8 +43,10 @@ client.on('interactionCreate', async (interaction) => {
     const { commandName, user, options } = interaction;
     if (commandName === 'start') {
         const gameState = await (0, start_1.default)(interaction, hp, imageDir);
-        if (gameState)
+        if (gameState) {
             exports.game = gameState;
+            await handlePlayerTimeout(interaction);
+        }
     }
     if (commandName === 'attack') {
         if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
@@ -59,6 +63,7 @@ client.on('interactionCreate', async (interaction) => {
                 ephemeral: true,
             });
         exports.game.active = false;
+        await clearInterval(kickPlayerInterval);
         return interaction.reply({ content: 'Game stopped', ephemeral: true });
     }
     if (commandName === 'register') {
@@ -123,4 +128,42 @@ client.on('interactionCreate', async (interaction) => {
     //     })
     //   }
 });
+/*
+ *****************
+ * TEST COMMANDS *
+ *****************
+ */
+const handlePlayerTimeout = async (interaction) => {
+    if (!interaction.isCommand())
+        return;
+    await (0, helpers_1.wait)(20000);
+    kickPlayerInterval = setInterval(async () => {
+        if (exports.game.active) {
+            (0, helpers_1.getPlayerArray)(exports.game.players).forEach((player) => {
+                if (!player.rolledRecently) {
+                    exports.game === null || exports.game === void 0 ? true : delete exports.game.players[player.discordId];
+                }
+            });
+            const playerArr = (0, helpers_1.getPlayerArray)(exports.game.players);
+            if (playerArr.length === 1) {
+                return (0, helpers_1.handleWin)(playerArr, interaction);
+            }
+            if (playerArr.length) {
+                const embedData = {
+                    fields: (0, helpers_1.mapPlayersForEmbed)((0, helpers_1.getPlayerArray)(exports.game.players)),
+                    image: undefined,
+                };
+                return exports.game.embed.edit((0, embeds_1.default)(embedData));
+            }
+            const embedData = {
+                image: undefined,
+                title: 'BOOOO',
+                description: 'Game has ended due to all players being removed for inactivity',
+            };
+            exports.game.embed.edit((0, embeds_1.default)(embedData));
+            exports.game.active = false;
+            clearInterval(kickPlayerInterval);
+        }
+    }, kickPlayerTimeout);
+};
 client.login(token);

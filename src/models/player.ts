@@ -9,6 +9,9 @@ export default class Player {
     public asset: Asset,
     public userId: ObjectId,
     public hp: number,
-    public coolDownTimeLeft?: number
-  ) {}
+    public coolDownTimeLeft?: number,
+    public rolledRecently?: boolean
+  ) {
+    this.rolledRecently = false
+  }
 }

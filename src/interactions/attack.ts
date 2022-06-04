@@ -13,6 +13,7 @@ import {
   wait,
   handleRolledRecently,
   mapPlayersForEmbed,
+  handleWin,
 } from '../utils/helpers'
 import { removeAllPlayers } from '../database/operations'
 import { Canvas } from 'canvas'
@@ -84,34 +85,7 @@ export default async function attack(
 
   // if there is only one player left, the game has been won
   if (playerArr.length === 1) {
-    const winner = playerArr[0]
-    // handle win
-    game.active = false
-
-    // Increment score of winning player
-    const winningUser = (await collections.users.findOne({
-      _id: winner.userId,
-    })) as WithId<User>
-
-    const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
-
-    await collections.users.findOneAndUpdate(
-      {},
-      { $set: { yaoWins: updatedScore } }
-    )
-
-    const embedData: EmbedData = {
-      title: 'WINNER!!!',
-      description: `${winner.username}'s ${winner.asset.unitName} destroyed the competition`,
-      color: 'DARK_AQUA',
-      image: winner.asset.assetUrl,
-    }
-
-    // collections.players.deleteMany({})
-
-    interaction.reply({ ephemeral: true, content: 'You WON!!!' })
-
-    return game.embed.edit(doEmbed(embedData))
+    handleWin(playerArr, interaction)
   }
 
   const { username: victimName } = victim
