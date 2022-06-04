@@ -15,6 +15,7 @@ declare global {
       GAME_COLLECTION_NAME: string
       UNIT_NAME: string
       IPFS_GATEWAY: string
+      ADMIN_ID: string
     }
   }
 }

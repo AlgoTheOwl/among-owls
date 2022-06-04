@@ -14,6 +14,7 @@ import {
   handleRolledRecently,
   mapPlayersForEmbed,
   handleWin,
+  randomNumber,
 } from '../utils/helpers'
 import { removeAllPlayers } from '../database/operations'
 import { Canvas } from 'canvas'
@@ -38,7 +39,7 @@ export default async function attack(
 
   if (victimId === attackerId) {
     return interaction.reply({
-      content: `Unfortunately, you can't attack yourself, please try again!`,
+      content: `Owls are supposed to be wise, but you’re clearly not. You can’t attack yourself!`,
       ephemeral: true,
     })
   }
@@ -63,7 +64,7 @@ export default async function attack(
 
   if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
     return interaction.reply({
-      content: `Ah, ah, not your turn yet wait ${
+      content: `HOO do you think you are? It’s not your turn! Wait ${
         attacker.coolDownTimeLeft / 1000
       } seconds`,
       ephemeral: true,
@@ -106,8 +107,8 @@ export default async function attack(
   await interaction.reply({
     files: [attachment],
     content: victimDead
-      ? `${attacker.asset.assetName} has eliminated ${victim.username}!!!`
-      : `${attacker.asset.assetName} attacks ${victim.username} for ${damage} damage`,
+      ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
+      : getAttackString(attacker.asset.assetName, victim.username, damage),
   })
 
   handleRolledRecently(attacker, coolDownInterval)
@@ -121,4 +122,23 @@ export default async function attack(
   await game.embed.edit(doEmbed(embedData))
   await wait(messageDeleteInterval)
   await interaction.deleteReply()
+}
+
+const attackStrings = [
+  'HOOT, HOOT! {assetName} slashes {victimName} for {damage} damage',
+  'HI-YAH!. {assetName} karate chops {victimName} for {damage} damage',
+  'SCREEEECH!. {assetName} chucks ninja stars {victimName} for {damage} damage',
+  'HMPH!. {assetName} throws a spear {victimName} for {damage} damage',
+  'SL-SL-SL-IIICE!. {assetName} slices and dices you {victimName} for {damange} damage',
+]
+
+const getAttackString = (
+  assetName: string,
+  victimName: string,
+  damage: number
+) => {
+  return attackStrings[randomNumber(0, attackStrings.length)]
+    .replace('{assetName}', assetName)
+    .replace('{victimName}', victimName)
+    .replace('{damage}', damage.toString())
 }

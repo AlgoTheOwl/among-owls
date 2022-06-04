@@ -2,11 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const canvas_1 = require("canvas");
 const promises_1 = require("fs/promises");
+const helpers_1 = require("../utils/helpers");
 const owlReplies = [
     'HOOOOOOT!!!',
     'SCREEETCH!!!',
     'RAAWWWRRR!!!',
-    'CHIIIIRP!!!',
+    'CHIIIIIIRP!!!',
 ];
 async function doAttackCanvas(damage, asset, victimUsername, attackerUsername) {
     const { localPath } = asset;
@@ -26,8 +27,7 @@ async function doAttackCanvas(damage, asset, victimUsername, attackerUsername) {
         ctx.font = '45px permanent-marker';
         // Select the style that will be used to fill the text in
         ctx.fillStyle = 'red';
-        const randomNumber = Math.floor(Math.random() * owlReplies.length);
-        const text = owlReplies[randomNumber === 1 ? 0 : 1];
+        const text = owlReplies[(0, helpers_1.randomNumber)(0, owlReplies.length)];
         // Actually fill the text with a solid color
         ctx.fillText(text, 5, 50);
     }

@@ -15,6 +15,7 @@ const roles_1 = require("./constants/roles");
 const database_service_2 = require("./database/database.service");
 const embeds_1 = __importDefault(require("./embeds"));
 const token = process.env.DISCORD_TOKEN;
+const roleId = process.env.ADMIN_ID;
 exports.emojis = {};
 // Settings
 const hp = 1000;
@@ -43,6 +44,13 @@ client.on('interactionCreate', async (interaction) => {
         return;
     const { commandName, user, options } = interaction;
     if (commandName === 'start') {
+        const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, user.id);
+        if (!hasRole) {
+            return await interaction.reply({
+                content: 'Only administrators can use this command',
+                ephemeral: true,
+            });
+        }
         const gameState = await (0, start_1.default)(interaction, hp, imageDir);
         if (gameState) {
             exports.game = gameState;
@@ -52,12 +60,19 @@ client.on('interactionCreate', async (interaction) => {
     if (commandName === 'attack') {
         if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
             return interaction.reply({
-                content: `The game hasn't started yet, please register if you haven't already and try again later`,
+                content: `HOO do you think you are? The game hasn’t started yet!`,
                 ephemeral: true,
             });
         (0, attack_1.default)(interaction, exports.game, user, hp);
     }
     if (commandName === 'stop') {
+        const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, user.id);
+        if (!hasRole) {
+            return await interaction.reply({
+                content: 'Only administrators can use this command',
+                ephemeral: true,
+            });
+        }
         if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
             return interaction.reply({
                 content: 'Game is not currently running',
@@ -72,7 +87,6 @@ client.on('interactionCreate', async (interaction) => {
         const address = options.getString('address');
         const assetId = options.getNumber('assetid');
         const { username, id } = user;
-        console.log(id);
         if (address && assetId) {
             const { status, registeredUser, asset } = await (0, register_1.processRegistration)(username, id, address, assetId, 'yao', hp);
             // add permissions if succesful
@@ -111,6 +125,13 @@ client.on('interactionCreate', async (interaction) => {
      */
     // test registring and selecting players
     if (commandName === 'test-register') {
+        const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, user.id);
+        if (!hasRole) {
+            return await interaction.reply({
+                content: 'Only administrators can use this command',
+                ephemeral: true,
+            });
+        }
         await (0, helpers_1.asyncForEach)(users_1.default, async (player, i) => {
             const { username, discordId, address, assetId } = player;
             const result = await (0, register_1.processRegistration)(username, discordId, address, assetId, 'yao', hp);
@@ -130,7 +151,6 @@ const handlePlayerTimeout = async (interaction) => {
     if (!interaction.isCommand())
         return;
     await (0, helpers_1.wait)(20000);
-    console.log('already past wait');
     kickPlayerInterval = setInterval(async () => {
         if (exports.game.active) {
             (0, helpers_1.getPlayerArray)(exports.game.players).forEach((player) => {
@@ -154,7 +174,7 @@ const handlePlayerTimeout = async (interaction) => {
             if (!playerArr.length) {
                 const embedData = {
                     image: undefined,
-                    title: 'BOOOO',
+                    title: 'BOOOO!!!',
                     description: 'Game has ended due to all players being removed for inactivity',
                 };
                 exports.game.embed.edit((0, embeds_1.default)(embedData));

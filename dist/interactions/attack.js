@@ -18,7 +18,7 @@ async function attack(interaction, game, user, hp) {
     const { id: attackerId } = user;
     if (victimId === attackerId) {
         return interaction.reply({
-            content: `Unfortunately, you can't attack yourself, please try again!`,
+            content: `Owls are supposed to be wise, but you’re clearly not. You can’t attack yourself!`,
             ephemeral: true,
         });
     }
@@ -38,7 +38,7 @@ async function attack(interaction, game, user, hp) {
     }
     if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
         return interaction.reply({
-            content: `Ah, ah, not your turn yet wait ${attacker.coolDownTimeLeft / 1000} seconds`,
+            content: `HOO do you think you are? It’s not your turn! Wait ${attacker.coolDownTimeLeft / 1000} seconds`,
             ephemeral: true,
         });
     }
@@ -66,8 +66,8 @@ async function attack(interaction, game, user, hp) {
     await interaction.reply({
         files: [attachment],
         content: victimDead
-            ? `${attacker.asset.assetName} has eliminated ${victim.username}!!!`
-            : `${attacker.asset.assetName} attacks ${victim.username} for ${damage} damage`,
+            ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
+            : getAttackString(attacker.asset.assetName, victim.username, damage),
     });
     (0, helpers_1.handleRolledRecently)(attacker, coolDownInterval);
     const embedData = {
@@ -81,3 +81,16 @@ async function attack(interaction, game, user, hp) {
     await interaction.deleteReply();
 }
 exports.default = attack;
+const attackStrings = [
+    'HOOT, HOOT! {assetName} slashes {victimName} for {damage} damage',
+    'HI-YAH!. {assetName} karate chops {victimName} for {damage} damage',
+    'SCREEEECH!. {assetName} chucks ninja stars {victimName} for {damage} damage',
+    'HMPH!. {assetName} throws a spear {victimName} for {damage} damage',
+    'SL-SL-SL-IIICE!. {assetName} slices and dices you {victimName} for {damange} damage',
+];
+const getAttackString = (assetName, victimName, damage) => {
+    return attackStrings[(0, helpers_1.randomNumber)(0, attackStrings.length)]
+        .replace('{assetName}', assetName)
+        .replace('{victimName}', victimName)
+        .replace('{damage}', damage.toString());
+};
