@@ -1,6 +1,14 @@
 import User from './models/user'
 import { Client, Intents, Interaction } from 'discord.js'
-import { addRole, asyncForEach, getNumberSuffix } from './utils/helpers'
+import {
+  addRole,
+  asyncForEach,
+  getNumberSuffix,
+  wait,
+  getPlayerArray,
+  mapPlayersForEmbed,
+  handleWin,
+} from './utils/helpers'
 import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'
 import Game from './models/game'
@@ -16,12 +24,14 @@ import doEmbed from './embeds'
 const token: string = process.env.DISCORD_TOKEN
 
 // Gloval vars
-export let game: Game | undefined
+export let game: Game
 export let emojis = {}
 
 // Settings
 const hp = 1000
 const imageDir = 'dist/nftAssets'
+let kickPlayerInterval: ReturnType<typeof setInterval>
+const kickPlayerTimeout = 2000
 
 const client: Client = new Client({
   intents: [
@@ -50,7 +60,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
   if (commandName === 'start') {
     const gameState = await startGame(interaction, hp, imageDir)
-    if (gameState) game = gameState
+    if (gameState) {
+      game = gameState
+      await handlePlayerTimeout(interaction)
+    }
   }
 
   if (commandName === 'attack') {
@@ -70,6 +83,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         ephemeral: true,
       })
     game.active = false
+    await clearInterval(kickPlayerInterval)
     return interaction.reply({ content: 'Game stopped', ephemeral: true })
   }
 
@@ -150,5 +164,48 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   //     })
   //   }
 })
+
+/*
+ *****************
+ * TEST COMMANDS *
+ *****************
+ */
+
+const handlePlayerTimeout = async (interaction: Interaction) => {
+  if (!interaction.isCommand()) return
+  await wait(20000)
+  kickPlayerInterval = setInterval(async () => {
+    if (game.active) {
+      getPlayerArray(game.players).forEach((player) => {
+        if (!player.rolledRecently) {
+          delete game?.players[player.discordId]
+        }
+      })
+      const playerArr = getPlayerArray(game.players)
+
+      if (playerArr.length === 1) {
+        return handleWin(playerArr, interaction)
+      }
+
+      if (playerArr.length) {
+        const embedData: EmbedData = {
+          fields: mapPlayersForEmbed(getPlayerArray(game.players)),
+          image: undefined,
+        }
+        return game.embed.edit(doEmbed(embedData))
+      }
+
+      const embedData: EmbedData = {
+        image: undefined,
+        title: 'BOOOO',
+        description:
+          'Game has ended due to all players being removed for inactivity',
+      }
+      game.embed.edit(doEmbed(embedData))
+      game.active = false
+      clearInterval(kickPlayerInterval)
+    }
+  }, kickPlayerTimeout)
+}
 
 client.login(token)

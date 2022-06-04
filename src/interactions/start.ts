@@ -74,6 +74,7 @@ export default async function startGame(
 
   // instansiate new game
   const game = new Game(gamePlayers, true, false, 1000)
+
   // send back game embed
   const embedData: EmbedData = {
     image: undefined,
