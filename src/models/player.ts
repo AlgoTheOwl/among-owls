@@ -10,8 +10,10 @@ export default class Player {
     public userId: ObjectId,
     public hp: number,
     public coolDownTimeLeft?: number,
-    public rolledRecently?: boolean
+    public rolledRecently?: boolean,
+    public timedOut?: boolean
   ) {
     this.rolledRecently = false
+    this.timedOut = false
   }
 }

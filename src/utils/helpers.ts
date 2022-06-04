@@ -123,10 +123,12 @@ export const handleRolledRecently = async (
 }
 
 export const mapPlayersForEmbed = (playerArr: Player[]) =>
-  playerArr.map((player) => ({
-    name: player.username,
-    value: `HP: ${player.hp}`,
-  }))
+  playerArr
+    .filter((player) => !player.timedOut)
+    .map((player) => ({
+      name: player.username,
+      value: `HP: ${player.hp}`,
+    }))
 
 export const emptyDir = (dirPath: string) => {
   try {
@@ -147,12 +149,12 @@ export const emptyDir = (dirPath: string) => {
 
 export const addRole = async (
   interaction: Interaction,
-  roleName: string,
+  roleId: string,
   user: User
 ) => {
   try {
     const role = interaction.guild?.roles.cache.find(
-      (role) => role.name === roleName
+      (role) => role.id === roleId
     )
     const member = interaction.guild?.members.cache.find(
       (member) => member.id === user.discordId
@@ -161,6 +163,18 @@ export const addRole = async (
   } catch (error) {
     throw new Error('Error adding role')
   }
+}
+
+const removeRole = async (
+  interaction: Interaction,
+  roleId: string,
+  discordId: string
+) => {
+  const role = interaction.guild?.roles.cache.find((role) => role.id === roleId)
+  const member = interaction.guild?.members.cache.find(
+    (member) => member.id === discordId
+  )
+  role && (await member?.roles.remove(role.id))
 }
 
 export const confirmRole = async (
@@ -217,8 +231,16 @@ export const handleWin = async (
 
   // collections.yaoPlayers.deleteMany({})
 
+  // asyncForEach(playerArr, (player: Player) => {
+  //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
+  // })
+
   return game.embed.edit(doEmbed(embedData))
 }
 
 export const randomNumber = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min) + min)
+
+export const determineWin = (playerArr: Player[]) => {
+  return playerArr.filter((player) => !player.timedOut).length === 1
+}
