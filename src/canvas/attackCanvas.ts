@@ -11,7 +11,7 @@ import { randomNumber } from '../utils/helpers'
 const owlReplies = [
   'HOOOOOOT!!!',
   'SCREEETCH!!!',
-  'RAAWWWRRR!!!',
+  'RAAWWRRR!!!',
   'CHIIIIIIRP!!!',
 ]
 

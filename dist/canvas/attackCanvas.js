@@ -6,7 +6,7 @@ const helpers_1 = require("../utils/helpers");
 const owlReplies = [
     'HOOOOOOT!!!',
     'SCREEETCH!!!',
-    'RAAWWWRRR!!!',
+    'RAAWWRRR!!!',
     'CHIIIIIIRP!!!',
 ];
 async function doAttackCanvas(damage, asset, victimUsername, attackerUsername) {

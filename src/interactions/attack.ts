@@ -15,6 +15,7 @@ import {
   mapPlayersForEmbed,
   handleWin,
   randomNumber,
+  determineWin,
 } from '../utils/helpers'
 import { removeAllPlayers } from '../database/operations'
 import { Canvas } from 'canvas'
@@ -46,6 +47,20 @@ export default async function attack(
 
   const victim = game.players[victimId] ? game.players[victimId] : null
   const attacker = game.players[attackerId] ? game.players[attackerId] : null
+
+  if (attacker?.timedOut) {
+    return interaction.reply({
+      content: `Unfortunately, you've timed out due to inactivty.`,
+      ephemeral: true,
+    })
+  }
+
+  if (victim?.timedOut) {
+    return interaction.reply({
+      content: 'Unfortunately, this player has timed out due to inactivity',
+      ephemeral: true,
+    })
+  }
 
   if (!attacker) {
     return interaction.reply({
@@ -84,8 +99,10 @@ export default async function attack(
 
   const playerArr = Object.values(game.players)
 
+  const isWin = determineWin(playerArr)
+
   // if there is only one player left, the game has been won
-  if (playerArr.length === 1) {
+  if ((playerArr.length === 1 && !attacker.timedOut) || isWin) {
     handleWin(playerArr, interaction)
   }
 
@@ -125,10 +142,10 @@ export default async function attack(
 }
 
 const attackStrings = [
-  'HOOT, HOOT! {assetName} slashes {victimName} for {damage} damage',
-  'HI-YAH!. {assetName} karate chops {victimName} for {damage} damage',
-  'SCREEEECH!. {assetName} chucks ninja stars {victimName} for {damage} damage',
-  'HMPH!. {assetName} throws a spear {victimName} for {damage} damage',
+  'HOOT, HOOT! {assetName} slashes at {victimName} for {damage} damage',
+  'HI-YAH!. {assetName} karate chops at {victimName} for {damage} damage',
+  'SCREEEECH!. {assetName} chucks ninja stars at {victimName} for {damage} damage',
+  'HMPH!. {assetName} throws a spear at {victimName} for {damage} damage',
   'SL-SL-SL-IIICE!. {assetName} slices and dices you {victimName} for {damange} damage',
 ]
 

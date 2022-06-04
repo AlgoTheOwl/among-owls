@@ -16,6 +16,7 @@ declare global {
       UNIT_NAME: string
       IPFS_GATEWAY: string
       ADMIN_ID: string
+      REGISTERED_ID: string
     }
   }
 }

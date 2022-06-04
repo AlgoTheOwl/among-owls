@@ -24,6 +24,18 @@ async function attack(interaction, game, user, hp) {
     }
     const victim = game.players[victimId] ? game.players[victimId] : null;
     const attacker = game.players[attackerId] ? game.players[attackerId] : null;
+    if (attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) {
+        return interaction.reply({
+            content: `Unfortunately, you've timed out due to inactivty.`,
+            ephemeral: true,
+        });
+    }
+    if (victim === null || victim === void 0 ? void 0 : victim.timedOut) {
+        return interaction.reply({
+            content: 'Unfortunately, this player has timed out due to inactivity',
+            ephemeral: true,
+        });
+    }
     if (!attacker) {
         return interaction.reply({
             content: 'Please register by using the /register slash command to attack',
@@ -52,8 +64,9 @@ async function attack(interaction, game, user, hp) {
         victimDead = true;
     }
     const playerArr = Object.values(game.players);
+    const isWin = (0, helpers_1.determineWin)(playerArr);
     // if there is only one player left, the game has been won
-    if (playerArr.length === 1) {
+    if ((playerArr.length === 1 && !attacker.timedOut) || isWin) {
         (0, helpers_1.handleWin)(playerArr, interaction);
     }
     const { username: victimName } = victim;
@@ -82,10 +95,10 @@ async function attack(interaction, game, user, hp) {
 }
 exports.default = attack;
 const attackStrings = [
-    'HOOT, HOOT! {assetName} slashes {victimName} for {damage} damage',
-    'HI-YAH!. {assetName} karate chops {victimName} for {damage} damage',
-    'SCREEEECH!. {assetName} chucks ninja stars {victimName} for {damage} damage',
-    'HMPH!. {assetName} throws a spear {victimName} for {damage} damage',
+    'HOOT, HOOT! {assetName} slashes at {victimName} for {damage} damage',
+    'HI-YAH!. {assetName} karate chops at {victimName} for {damage} damage',
+    'SCREEEECH!. {assetName} chucks ninja stars at {victimName} for {damage} damage',
+    'HMPH!. {assetName} throws a spear at {victimName} for {damage} damage',
     'SL-SL-SL-IIICE!. {assetName} slices and dices you {victimName} for {damange} damage',
 ];
 const getAttackString = (assetName, victimName, damage) => {

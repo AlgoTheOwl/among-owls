@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.determineWin = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -107,7 +107,9 @@ const handleRolledRecently = async (player, coolDownInterval) => {
     }, 20000);
 };
 exports.handleRolledRecently = handleRolledRecently;
-const mapPlayersForEmbed = (playerArr) => playerArr.map((player) => ({
+const mapPlayersForEmbed = (playerArr) => playerArr
+    .filter((player) => !player.timedOut)
+    .map((player) => ({
     name: player.username,
     value: `HP: ${player.hp}`,
 }));
@@ -133,10 +135,10 @@ const emptyDir = (dirPath) => {
     }
 };
 exports.emptyDir = emptyDir;
-const addRole = async (interaction, roleName, user) => {
+const addRole = async (interaction, roleId, user) => {
     var _a, _b;
     try {
-        const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.name === roleName);
+        const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.id === roleId);
         const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === user.discordId);
         role && (await (member === null || member === void 0 ? void 0 : member.roles.add(role.id)));
     }
@@ -145,6 +147,12 @@ const addRole = async (interaction, roleName, user) => {
     }
 };
 exports.addRole = addRole;
+const removeRole = async (interaction, roleId, discordId) => {
+    var _a, _b;
+    const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.id === roleId);
+    const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === discordId);
+    role && (await (member === null || member === void 0 ? void 0 : member.roles.remove(role.id)));
+};
 const confirmRole = async (roleId, interaction, userId) => {
     var _a;
     // const role = interaction.guild?.roles.cache.find((role) => role.id === roleId)
@@ -185,8 +193,15 @@ const handleWin = async (playerArr, interaction) => {
     };
     interaction.followUp({ ephemeral: true, content: 'Woo-Hoot! You won!' });
     // collections.yaoPlayers.deleteMany({})
+    // asyncForEach(playerArr, (player: Player) => {
+    //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
+    // })
     return __1.game.embed.edit((0, embeds_1.default)(embedData));
 };
 exports.handleWin = handleWin;
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 exports.randomNumber = randomNumber;
+const determineWin = (playerArr) => {
+    return playerArr.filter((player) => !player.timedOut).length === 1;
+};
+exports.determineWin = determineWin;

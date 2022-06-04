@@ -8,6 +8,7 @@ import {
   mapPlayersForEmbed,
   handleWin,
   confirmRole,
+  determineWin,
 } from './utils/helpers'
 import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'
@@ -121,7 +122,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       )
       // add permissions if succesful
       if (registeredUser && asset) {
-        addRole(interaction, DISCORD_ROLES.registered, registeredUser)
+        addRole(interaction, process.env.REGISTERED_ID, registeredUser)
       }
 
       await interaction.reply({ ephemeral: true, content: status })
@@ -201,27 +202,24 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
     if (game.active) {
       getPlayerArray(game.players).forEach((player) => {
         if (!player.rolledRecently) {
-          delete game?.players[player.discordId]
+          // delete game?.players[player.discordId]
+          game.players[player.discordId].timedOut = true
         }
       })
 
       const playerArr = getPlayerArray(game.players)
 
-      if (playerArr.length === 1) {
+      const isWin = determineWin(playerArr)
+
+      if (playerArr.length === 1 || isWin) {
         clearInterval(kickPlayerInterval)
         return handleWin(playerArr, interaction)
       }
 
-      if (playerArr.length) {
-        const embedData: EmbedData = {
-          fields: mapPlayersForEmbed(getPlayerArray(game.players)),
-          image: undefined,
-        }
-        clearInterval(kickPlayerInterval)
-        return game.embed.edit(doEmbed(embedData))
-      }
+      const usersTimedOut = playerArr.filter((player) => player.timedOut)
+      console.log('condition:', playerArr.length === usersTimedOut.length)
 
-      if (!playerArr.length) {
+      if (!playerArr.length || playerArr.length === usersTimedOut.length) {
         const embedData: EmbedData = {
           image: undefined,
           title: 'BOOOO!!!',
@@ -231,7 +229,15 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
 
         game.embed.edit(doEmbed(embedData))
         game.active = false
-        clearInterval(kickPlayerInterval)
+        return clearInterval(kickPlayerInterval)
+      }
+
+      if (playerArr.length) {
+        const embedData: EmbedData = {
+          fields: mapPlayersForEmbed(getPlayerArray(game.players)),
+          image: undefined,
+        }
+        return game.embed.edit(doEmbed(embedData))
       }
     }
   }, kickPlayerTimeout)
