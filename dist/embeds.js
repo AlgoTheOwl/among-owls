@@ -15,7 +15,6 @@ const defaultEmbedValues = {
 };
 function doEmbed(data) {
     let { title, description, color, image, thumbNail, fields, footer } = Object.assign(Object.assign({}, defaultEmbedValues), data);
-    const file = new discord_js_1.MessageAttachment('src/images/main.gif');
     const embed = new discord_js_1.MessageEmbed();
     if ((image === null || image === void 0 ? void 0 : image.slice(0, 4)) === 'ipfs') {
         const ifpsHash = image.slice(7);
@@ -31,7 +30,6 @@ function doEmbed(data) {
     return {
         embeds: [embed],
         fetchReply: true,
-        files: image !== 'attachment://main.gif' ? [] : [file],
     };
 }
 exports.default = doEmbed;

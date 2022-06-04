@@ -1,5 +1,4 @@
-import { Interaction } from 'discord.js'
-
+import { Interaction, MessageAttachment } from 'discord.js'
 import Game from '../models/game'
 import { asyncForEach, downloadFile, emptyDir } from '../utils/helpers'
 import { EmbedData } from '../types/game'
@@ -82,13 +81,10 @@ export default async function startGame(
     description: 'Leaderboard',
   }
 
-  // TODO: fill out intor embed
-  const intorEmbedData: EmbedData = {
-    thumbNail: undefined,
-  }
+  const file = new MessageAttachment('src/images/main.gif')
 
   // send embed here
-  await interaction.editReply(doEmbed(intorEmbedData))
+  await interaction.editReply({ files: [file] })
 
   game.embed = await interaction.followUp(doEmbed(embedData))
 

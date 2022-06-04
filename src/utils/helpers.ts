@@ -200,9 +200,9 @@ export const handleWin = async (
     image: winner.asset.assetUrl,
   }
 
-  collections.players.deleteMany({})
+  // collections.players.deleteMany({})
 
-  interaction.reply({ ephemeral: true, content: 'You WON!!!' })
+  interaction.followUp({ ephemeral: true, content: 'You WON!!!' })
 
   return game.embed.edit(doEmbed(embedData))
 }

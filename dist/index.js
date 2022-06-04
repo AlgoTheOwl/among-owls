@@ -91,8 +91,6 @@ client.on('interactionCreate', async (interaction) => {
                 description: 'Which AOWLs rule them all?',
                 image: undefined,
                 fields: winningUsers.map((user, i) => {
-                    //@ts-ignore
-                    // const numberWithSuffix = getNumberSuffix(user.yaoWins)
                     const place = i + 1;
                     const win = user.yaoWins === 1 ? 'win' : 'wins';
                     return {
@@ -130,13 +128,14 @@ client.on('interactionCreate', async (interaction) => {
 });
 /*
  *****************
- * TEST COMMANDS *
+ **** HELPERS ****
  *****************
  */
 const handlePlayerTimeout = async (interaction) => {
     if (!interaction.isCommand())
         return;
     await (0, helpers_1.wait)(20000);
+    console.log('already past wait');
     kickPlayerInterval = setInterval(async () => {
         if (exports.game.active) {
             (0, helpers_1.getPlayerArray)(exports.game.players).forEach((player) => {
