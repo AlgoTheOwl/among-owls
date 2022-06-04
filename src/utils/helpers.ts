@@ -89,11 +89,11 @@ export const downloadFile = async (
         writer.on('finish', () => {
           return resolve(path)
         })
-        writer.on('error', reject)
+        writer.on('error', (err) => console.log(err))
       })
     }
   } catch (error) {
-    throw new Error('Error downloading asset')
+    console.log('ERROR:', error)
   }
 }
 
@@ -140,6 +140,7 @@ export const emptyDir = (dirPath: string) => {
       } else fs.unlinkSync(fullPath)
     })
   } catch (error) {
+    console.log(error)
     throw new Error('Error deleting contents of image directory')
   }
 }
