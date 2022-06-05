@@ -231,9 +231,9 @@ export const handleWin = async (
 
   // collections.yaoPlayers.deleteMany({})
 
-  asyncForEach(playerArr, (player: Player) => {
-    removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
-  })
+  // asyncForEach(playerArr, (player: Player) => {
+  //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
+  // })
 
   return game.embed.edit(doEmbed(embedData))
 }
