@@ -213,7 +213,7 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
 
       const isWin = determineWin(playerArr)
 
-      if (playerArr.length === 1 || isWin) {
+      if ((playerArr.length === 1 || isWin) && game.active) {
         clearInterval(kickPlayerInterval)
         return handleWin(playerArr, interaction)
       }

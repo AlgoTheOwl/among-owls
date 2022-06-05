@@ -174,7 +174,7 @@ exports.getNumberSuffix = getNumberSuffix;
 const getPlayerArray = (players) => Object.values(players);
 exports.getPlayerArray = getPlayerArray;
 const handleWin = async (playerArr, interaction) => {
-    if (!interaction.isCommand())
+    if (!interaction.isCommand() || !__1.game.active)
         return;
     const winner = playerArr[0];
     // handle win

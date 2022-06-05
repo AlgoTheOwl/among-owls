@@ -102,7 +102,7 @@ export default async function attack(
   const isWin = determineWin(playerArr)
 
   // if there is only one player left, the game has been won
-  if (isWin) {
+  if (isWin && game.active) {
     handleWin(playerArr, interaction)
   }
 

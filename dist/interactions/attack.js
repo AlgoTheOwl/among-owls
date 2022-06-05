@@ -66,7 +66,7 @@ async function attack(interaction, game, user, hp) {
     const playerArr = Object.values(game.players);
     const isWin = (0, helpers_1.determineWin)(playerArr);
     // if there is only one player left, the game has been won
-    if (isWin) {
+    if (isWin && game.active) {
         (0, helpers_1.handleWin)(playerArr, interaction);
     }
     const { username: victimName } = victim;

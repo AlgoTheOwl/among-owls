@@ -203,7 +203,7 @@ export const handleWin = async (
   playerArr: Player[],
   interaction: Interaction
 ) => {
-  if (!interaction.isCommand()) return
+  if (!interaction.isCommand() || !game.active) return
   const winner = playerArr[0]
   // handle win
   game.active = false
