@@ -217,13 +217,13 @@ export const handleWin = async (player: Player, interaction: Interaction) => {
   )
 
   const embedData: EmbedData = {
-    title: 'player!!!',
+    title: 'WINNER!!!',
     description: `${player.username}'s ${player.asset.unitName} destroyed the competition`,
     color: 'DARK_AQUA',
     image: player.asset.assetUrl,
   }
 
-  interaction.followUp({ ephemeral: true, content: 'Woo-Hoot! You won!' })
+  interaction.editReply({ content: 'Woo-Hoot! You won!' })
 
   // collections.yaoPlayers.deleteMany({})
 
@@ -237,7 +237,7 @@ export const handleWin = async (player: Player, interaction: Interaction) => {
 export const randomNumber = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min) + min)
 
-export const getWinningPlayer = (playerArr: Player[]): Player | undefined =>
-  playerArr.filter((player) => !player.timedOut).length === 1
-    ? playerArr[0]
-    : undefined
+export const getWinningPlayer = (playerArr: Player[]): Player | undefined => {
+  const activePlayers = playerArr.filter((player) => !player.timedOut)
+  return activePlayers.length === 1 ? activePlayers[0] : undefined
+}
