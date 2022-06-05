@@ -223,7 +223,7 @@ export const handleWin = async (player: Player, interaction: Interaction) => {
     image: player.asset.assetUrl,
   }
 
-  interaction.editReply({ content: 'Woo-Hoot! You won!' })
+  interaction.followUp({ content: 'Woo-Hoot! You won!' })
 
   // collections.yaoPlayers.deleteMany({})
 
@@ -239,5 +239,8 @@ export const randomNumber = (min: number, max: number) =>
 
 export const getWinningPlayer = (playerArr: Player[]): Player | undefined => {
   const activePlayers = playerArr.filter((player) => !player.timedOut)
+  if (activePlayers.length === 1) {
+    console.log('ACTIVE PLAYERS', activePlayers)
+  }
   return activePlayers.length === 1 ? activePlayers[0] : undefined
 }
