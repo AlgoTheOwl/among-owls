@@ -10,7 +10,7 @@ const defaultEmbedValues: EmbedData = {
   image: 'attachment://main.gif',
   thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   footer: {
-    text: 'A Parliament of AOWLs creation',
+    text: 'A HootGang Production',
     iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   },
 }
