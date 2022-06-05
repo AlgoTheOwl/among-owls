@@ -162,10 +162,10 @@ const handlePlayerTimeout = async (interaction) => {
                 }
             });
             const playerArr = (0, helpers_1.getPlayerArray)(exports.game.players);
-            const isWin = (0, helpers_1.determineWin)(playerArr);
-            if ((playerArr.length === 1 || isWin) && exports.game.active) {
+            const winningPlayer = (0, helpers_1.getWinningPlayer)(playerArr);
+            if (winningPlayer && exports.game.active) {
                 clearInterval(kickPlayerInterval);
-                return (0, helpers_1.handleWin)(playerArr, interaction);
+                return (0, helpers_1.handleWin)(winningPlayer, interaction);
             }
             const usersTimedOut = playerArr.filter((player) => player.timedOut);
             if (!playerArr.length || playerArr.length === usersTimedOut.length) {

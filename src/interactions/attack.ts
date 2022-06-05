@@ -15,12 +15,13 @@ import {
   mapPlayersForEmbed,
   handleWin,
   randomNumber,
-  determineWin,
+  getWinningPlayer,
 } from '../utils/helpers'
 import { removeAllPlayers } from '../database/operations'
 import { Canvas } from 'canvas'
 import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
+import Player from '../models/player'
 
 // Settings
 const coolDownInterval = 5000
@@ -32,7 +33,7 @@ export default async function attack(
   user: DiscordUser,
   hp: number
 ) {
-  if (!interaction.isCommand()) return
+  if (!interaction.isCommand() || !game.active) return
   const { options } = interaction
 
   const { id: victimId } = options.getUser('victim') as ClientUser
@@ -99,11 +100,10 @@ export default async function attack(
 
   const playerArr = Object.values(game.players)
 
-  const isWin = determineWin(playerArr)
-
+  const winningPlayer: Player | undefined = getWinningPlayer(playerArr)
   // if there is only one player left, the game has been won
-  if (isWin && game.active) {
-    handleWin(playerArr, interaction)
+  if (winningPlayer && game.active) {
+    handleWin(winningPlayer, interaction)
   }
 
   const { username: victimName } = victim
@@ -137,7 +137,7 @@ export default async function attack(
   }
   // if lose, remove loser from players and play game again
   await game.embed.edit(doEmbed(embedData))
-  await wait(messageDeleteInterval)
+  await wait(victimDead ? 10000 : messageDeleteInterval)
   await interaction.deleteReply()
 }
 

@@ -11,7 +11,7 @@ const helpers_1 = require("../utils/helpers");
 const coolDownInterval = 5000;
 const messageDeleteInterval = 7000;
 async function attack(interaction, game, user, hp) {
-    if (!interaction.isCommand())
+    if (!interaction.isCommand() || !game.active)
         return;
     const { options } = interaction;
     const { id: victimId } = options.getUser('victim');
@@ -64,10 +64,10 @@ async function attack(interaction, game, user, hp) {
         victimDead = true;
     }
     const playerArr = Object.values(game.players);
-    const isWin = (0, helpers_1.determineWin)(playerArr);
+    const winningPlayer = (0, helpers_1.getWinningPlayer)(playerArr);
     // if there is only one player left, the game has been won
-    if (isWin && game.active) {
-        (0, helpers_1.handleWin)(playerArr, interaction);
+    if (winningPlayer && game.active) {
+        (0, helpers_1.handleWin)(winningPlayer, interaction);
     }
     const { username: victimName } = victim;
     const { username: attackerName, asset } = attacker;
@@ -90,7 +90,7 @@ async function attack(interaction, game, user, hp) {
     };
     // if lose, remove loser from players and play game again
     await game.embed.edit((0, embeds_1.default)(embedData));
-    await (0, helpers_1.wait)(messageDeleteInterval);
+    await (0, helpers_1.wait)(victimDead ? 10000 : messageDeleteInterval);
     await interaction.deleteReply();
 }
 exports.default = attack;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.determineWin = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -173,23 +173,22 @@ const getNumberSuffix = (num) => {
 exports.getNumberSuffix = getNumberSuffix;
 const getPlayerArray = (players) => Object.values(players);
 exports.getPlayerArray = getPlayerArray;
-const handleWin = async (playerArr, interaction) => {
+const handleWin = async (player, interaction) => {
     if (!interaction.isCommand() || !__1.game.active)
         return;
-    const winner = playerArr[0];
     // handle win
     __1.game.active = false;
     // Increment score of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
-        _id: winner.userId,
+        _id: player.userId,
     }));
     const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1;
-    await database_service_1.collections.users.findOneAndUpdate({ _id: winner.userId }, { $set: { yaoWins: updatedScore } });
+    await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { yaoWins: updatedScore } });
     const embedData = {
-        title: 'WINNER!!!',
-        description: `${winner.username}'s ${winner.asset.unitName} destroyed the competition`,
+        title: 'player!!!',
+        description: `${player.username}'s ${player.asset.unitName} destroyed the competition`,
         color: 'DARK_AQUA',
-        image: winner.asset.assetUrl,
+        image: player.asset.assetUrl,
     };
     interaction.followUp({ ephemeral: true, content: 'Woo-Hoot! You won!' });
     // collections.yaoPlayers.deleteMany({})
@@ -201,8 +200,7 @@ const handleWin = async (playerArr, interaction) => {
 exports.handleWin = handleWin;
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 exports.randomNumber = randomNumber;
-const determineWin = (playerArr) => {
-    return (playerArr.filter((player) => !player.timedOut).length === 1 ||
-        playerArr.length === 1);
-};
-exports.determineWin = determineWin;
+const getWinningPlayer = (playerArr) => playerArr.filter((player) => !player.timedOut).length === 1
+    ? playerArr[0]
+    : undefined;
+exports.getWinningPlayer = getWinningPlayer;
