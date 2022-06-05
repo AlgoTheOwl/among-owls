@@ -99,7 +99,7 @@ const attackStrings = [
     'HI-YAH!. {assetName} karate chops at {victimName} for {damage} damage',
     'SCREEEECH!. {assetName} chucks ninja stars at {victimName} for {damage} damage',
     'HMPH!. {assetName} throws a spear at {victimName} for {damage} damage',
-    'SL-SL-SL-IIICE!. {assetName} slices and dices you {victimName} for {damange} damage',
+    'SL-SL-SL-IIICE!. {assetName} slices and dices you {victimName} for {damage} damage',
 ];
 const getAttackString = (assetName, victimName, damage) => {
     return attackStrings[(0, helpers_1.randomNumber)(0, attackStrings.length)]
