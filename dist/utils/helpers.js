@@ -190,7 +190,7 @@ const handleWin = async (player, interaction) => {
         color: 'DARK_AQUA',
         image: player.asset.assetUrl,
     };
-    interaction.followUp({ content: 'Woo-Hoot! You won!' });
+    interaction.followUp({ content: 'Woo-Hoot! You won!', ephemeral: true });
     // collections.yaoPlayers.deleteMany({})
     // asyncForEach(playerArr, (player: Player) => {
     //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
