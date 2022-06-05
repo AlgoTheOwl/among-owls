@@ -107,6 +107,12 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   }
 
   if (commandName === 'register') {
+    if (!game.active) {
+      return interaction.reply({
+        content: 'Please wait until after the game ends to register',
+        ephemeral: true,
+      })
+    }
     // TODO: add ability to register for different games here
     const address = options.getString('address')
     const assetId = options.getNumber('assetid')
