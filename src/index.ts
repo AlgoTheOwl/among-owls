@@ -124,7 +124,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         addRole(interaction, process.env.REGISTERED_ID, registeredUser)
       }
 
-      await interaction.reply({ ephemeral: true, content: status })
+      await interaction.reply({
+        ephemeral: registeredUser ? false : true,
+        content: status,
+      })
     }
   }
 
