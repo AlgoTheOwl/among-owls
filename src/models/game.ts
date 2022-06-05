@@ -6,12 +6,14 @@ export default class Game {
     public active: boolean,
     public win: false,
     public coolDown: number,
-    public embed?: any
+    public embed?: any,
+    public attackEngaged?: boolean
   ) {
     this.players = players
     this.active = true
     this.win = false
     this.coolDown = coolDown
     this.embed = embed
+    this.attackEngaged = false
   }
 }

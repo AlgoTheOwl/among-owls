@@ -53,7 +53,6 @@ client.on('interactionCreate', async (interaction) => {
         const gameState = await (0, start_1.default)(interaction, hp, imageDir);
         if (gameState) {
             exports.game = gameState;
-            handlePlayerTimeout(interaction);
         }
     }
     if (commandName === 'attack') {
@@ -62,6 +61,10 @@ client.on('interactionCreate', async (interaction) => {
                 content: `HOO do you think you are? The game hasn’t started yet!`,
                 ephemeral: true,
             });
+        if (!exports.game.attackEngaged) {
+            handlePlayerTimeout(interaction);
+            exports.game.attackEngaged = true;
+        }
         (0, attack_1.default)(interaction, exports.game, user, hp);
     }
     if (commandName === 'stop') {
@@ -136,7 +139,7 @@ client.on('interactionCreate', async (interaction) => {
         }
         await (0, helpers_1.asyncForEach)(users_1.default, async (player, i) => {
             const { username, discordId, address, assetId } = player;
-            const result = await (0, register_1.processRegistration)(username, discordId, address, assetId, 'yao', hp);
+            await (0, register_1.processRegistration)(username, discordId, address, assetId, 'yao', hp);
         });
         await interaction.reply({
             content: 'all test users added',
