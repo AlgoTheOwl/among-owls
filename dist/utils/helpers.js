@@ -190,7 +190,7 @@ const handleWin = async (player, interaction) => {
         color: 'DARK_AQUA',
         image: player.asset.assetUrl,
     };
-    interaction.editReply({ content: 'Woo-Hoot! You won!' });
+    interaction.followUp({ content: 'Woo-Hoot! You won!' });
     // collections.yaoPlayers.deleteMany({})
     // asyncForEach(playerArr, (player: Player) => {
     //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
@@ -202,6 +202,9 @@ const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min)
 exports.randomNumber = randomNumber;
 const getWinningPlayer = (playerArr) => {
     const activePlayers = playerArr.filter((player) => !player.timedOut);
+    if (activePlayers.length === 1) {
+        console.log('ACTIVE PLAYERS', activePlayers);
+    }
     return activePlayers.length === 1 ? activePlayers[0] : undefined;
 };
 exports.getWinningPlayer = getWinningPlayer;
