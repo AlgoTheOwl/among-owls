@@ -92,7 +92,10 @@ client.on('interactionCreate', async (interaction) => {
             if (registeredUser && asset) {
                 (0, helpers_1.addRole)(interaction, process.env.REGISTERED_ID, registeredUser);
             }
-            await interaction.reply({ ephemeral: true, content: status });
+            await interaction.reply({
+                ephemeral: registeredUser ? false : true,
+                content: status,
+            });
         }
     }
     if (commandName === 'leaderboard') {
