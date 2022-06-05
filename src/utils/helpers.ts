@@ -229,11 +229,11 @@ export const handleWin = async (
 
   interaction.followUp({ ephemeral: true, content: 'Woo-Hoot! You won!' })
 
-  // collections.yaoPlayers.deleteMany({})
+  collections.yaoPlayers.deleteMany({})
 
-  // asyncForEach(playerArr, (player: Player) => {
-  //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
-  // })
+  asyncForEach(playerArr, (player: Player) => {
+    removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
+  })
 
   return game.embed.edit(doEmbed(embedData))
 }

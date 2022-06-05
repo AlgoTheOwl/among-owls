@@ -192,10 +192,10 @@ const handleWin = async (playerArr, interaction) => {
         image: winner.asset.assetUrl,
     };
     interaction.followUp({ ephemeral: true, content: 'Woo-Hoot! You won!' });
-    // collections.yaoPlayers.deleteMany({})
-    // asyncForEach(playerArr, (player: Player) => {
-    //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
-    // })
+    database_service_1.collections.yaoPlayers.deleteMany({});
+    (0, exports.asyncForEach)(playerArr, (player) => {
+        removeRole(interaction, process.env.REGISTERED_ID, player.discordId);
+    });
     return __1.game.embed.edit((0, embeds_1.default)(embedData));
 };
 exports.handleWin = handleWin;

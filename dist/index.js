@@ -165,7 +165,6 @@ const handlePlayerTimeout = async (interaction) => {
                 return (0, helpers_1.handleWin)(playerArr, interaction);
             }
             const usersTimedOut = playerArr.filter((player) => player.timedOut);
-            console.log('condition:', playerArr.length === usersTimedOut.length);
             if (!playerArr.length || playerArr.length === usersTimedOut.length) {
                 const embedData = {
                     image: undefined,
