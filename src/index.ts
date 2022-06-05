@@ -8,11 +8,12 @@ import {
   mapPlayersForEmbed,
   handleWin,
   confirmRole,
-  determineWin,
+  getWinningPlayer,
 } from './utils/helpers'
 import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'
 import Game from './models/game'
+import Player from './models/player'
 import mockUsers from './mocks/users'
 import startGame from './interactions/start'
 import attack from './interactions/attack'
@@ -211,11 +212,11 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
 
       const playerArr = getPlayerArray(game.players)
 
-      const isWin = determineWin(playerArr)
+      const winningPlayer: Player | undefined = getWinningPlayer(playerArr)
 
-      if ((playerArr.length === 1 || isWin) && game.active) {
+      if (winningPlayer && game.active) {
         clearInterval(kickPlayerInterval)
-        return handleWin(playerArr, interaction)
+        return handleWin(winningPlayer, interaction)
       }
 
       const usersTimedOut = playerArr.filter((player) => player.timedOut)

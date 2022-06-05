@@ -199,32 +199,28 @@ export const getNumberSuffix = (num: number): string => {
 export const getPlayerArray = (players: { [key: string]: Player }): Player[] =>
   Object.values(players)
 
-export const handleWin = async (
-  playerArr: Player[],
-  interaction: Interaction
-) => {
+export const handleWin = async (player: Player, interaction: Interaction) => {
   if (!interaction.isCommand() || !game.active) return
-  const winner = playerArr[0]
   // handle win
   game.active = false
 
   // Increment score of winning player
   const winningUser = (await collections.users.findOne({
-    _id: winner.userId,
+    _id: player.userId,
   })) as WithId<User>
 
   const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
 
   await collections.users.findOneAndUpdate(
-    { _id: winner.userId },
+    { _id: player.userId },
     { $set: { yaoWins: updatedScore } }
   )
 
   const embedData: EmbedData = {
-    title: 'WINNER!!!',
-    description: `${winner.username}'s ${winner.asset.unitName} destroyed the competition`,
+    title: 'player!!!',
+    description: `${player.username}'s ${player.asset.unitName} destroyed the competition`,
     color: 'DARK_AQUA',
-    image: winner.asset.assetUrl,
+    image: player.asset.assetUrl,
   }
 
   interaction.followUp({ ephemeral: true, content: 'Woo-Hoot! You won!' })
@@ -241,9 +237,7 @@ export const handleWin = async (
 export const randomNumber = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min) + min)
 
-export const determineWin = (playerArr: Player[]) => {
-  return (
-    playerArr.filter((player) => !player.timedOut).length === 1 ||
-    playerArr.length === 1
-  )
-}
+export const getWinningPlayer = (playerArr: Player[]): Player | undefined =>
+  playerArr.filter((player) => !player.timedOut).length === 1
+    ? playerArr[0]
+    : undefined
