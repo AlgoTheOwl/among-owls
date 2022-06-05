@@ -72,7 +72,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     const gameState = await startGame(interaction, hp, imageDir)
     if (gameState) {
       game = gameState
-      await handlePlayerTimeout(interaction)
+      handlePlayerTimeout(interaction)
     }
   }
 

@@ -53,7 +53,7 @@ client.on('interactionCreate', async (interaction) => {
         const gameState = await (0, start_1.default)(interaction, hp, imageDir);
         if (gameState) {
             exports.game = gameState;
-            await handlePlayerTimeout(interaction);
+            handlePlayerTimeout(interaction);
         }
     }
     if (commandName === 'attack') {
