@@ -223,7 +223,7 @@ export const handleWin = async (player: Player, interaction: Interaction) => {
     image: player.asset.assetUrl,
   }
 
-  interaction.followUp({ content: 'Woo-Hoot! You won!' })
+  interaction.followUp({ content: 'Woo-Hoot! You won!', ephemeral: true })
 
   // collections.yaoPlayers.deleteMany({})
 
