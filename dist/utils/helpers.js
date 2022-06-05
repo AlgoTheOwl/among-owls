@@ -202,6 +202,7 @@ exports.handleWin = handleWin;
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 exports.randomNumber = randomNumber;
 const determineWin = (playerArr) => {
-    return playerArr.filter((player) => !player.timedOut).length === 1;
+    return (playerArr.filter((player) => !player.timedOut).length === 1 ||
+        playerArr.length === 1);
 };
 exports.determineWin = determineWin;

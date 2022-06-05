@@ -242,5 +242,8 @@ export const randomNumber = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min) + min)
 
 export const determineWin = (playerArr: Player[]) => {
-  return playerArr.filter((player) => !player.timedOut).length === 1
+  return (
+    playerArr.filter((player) => !player.timedOut).length === 1 ||
+    playerArr.length === 1
+  )
 }
