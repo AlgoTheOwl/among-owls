@@ -72,7 +72,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     const gameState = await startGame(interaction, hp, imageDir)
     if (gameState) {
       game = gameState
-      handlePlayerTimeout(interaction)
     }
   }
 
@@ -82,7 +81,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         content: `HOO do you think you are? The game hasn’t started yet!`,
         ephemeral: true,
       })
-
+    if (!game.attackEngaged) {
+      handlePlayerTimeout(interaction)
+      game.attackEngaged = true
+    }
     attack(interaction, game, user, hp)
   }
 
@@ -173,7 +175,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     }
     await asyncForEach(mockUsers, async (player: any, i: number) => {
       const { username, discordId, address, assetId } = player
-      const result = await processRegistration(
+      await processRegistration(
         username,
         discordId,
         address,

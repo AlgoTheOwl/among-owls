@@ -5,7 +5,7 @@ import {
   User as DiscordUser,
 } from 'discord.js'
 import Game from '../models/game'
-import User from '../models/user'
+
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import doAttackCanvas from '../canvas/attackCanvas'
@@ -17,10 +17,8 @@ import {
   randomNumber,
   getWinningPlayer,
 } from '../utils/helpers'
-import { removeAllPlayers } from '../database/operations'
+
 import { Canvas } from 'canvas'
-import { collections } from '../database/database.service'
-import { WithId } from 'mongodb'
 import Player from '../models/player'
 
 // Settings
