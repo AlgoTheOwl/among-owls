@@ -132,11 +132,17 @@ client.on('interactionCreate', async (interaction) => {
         }
     }
     if (commandName === 'view-registration') {
-        const amountOfPlayers = await database_service_2.collections.yaoPlayers.find({}).toArray();
-        interaction.reply({
-            content: `There are currently ${amountOfPlayers.length} players registered`,
-            ephemeral: true,
-        });
+        try {
+            const amountOfPlayers = await database_service_2.collections.yaoPlayers.find({}).toArray();
+            console.log('amount of players', amountOfPlayers);
+            interaction.reply({
+                content: `There are currently ${amountOfPlayers.length} players registered`,
+                ephemeral: true,
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
     /*
      *****************
