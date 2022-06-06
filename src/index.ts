@@ -170,7 +170,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     try {
       const amountOfPlayers = await collections.yaoPlayers.find({}).toArray()
       console.log('amount of players', amountOfPlayers)
-      interaction.reply({
+      await interaction.reply({
         content: `There are currently ${amountOfPlayers.length} players registered`,
         ephemeral: true,
       })
