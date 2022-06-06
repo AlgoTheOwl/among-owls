@@ -26,14 +26,14 @@ const token: string = process.env.DISCORD_TOKEN
 const roleId: string = process.env.ADMIN_ID
 
 // Gloval vars
-export let game: Game = new Game({}, false, false, 0)
+export let game: Game
 export let emojis = {}
+export let kickPlayerInterval: ReturnType<typeof setInterval>
 
 // Settings
 const hp = 1000
 const imageDir = 'dist/nftAssets'
-let kickPlayerInterval: ReturnType<typeof setInterval>
-const kickPlayerTimeout = 2000
+const kickPlayerTimeout = 5000
 
 const client: Client = new Client({
   intents: [
@@ -213,6 +213,7 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
     if (game.active) {
       getPlayerArray(game.players).forEach((player) => {
         if (!player.rolledRecently) {
+          console.log('USER TIMED OUT')
           // delete game?.players[player.discordId]
           game.players[player.discordId].timedOut = true
         }
@@ -220,16 +221,16 @@ const handlePlayerTimeout = async (interaction: Interaction) => {
 
       const playerArr = getPlayerArray(game.players)
 
-      const winningPlayer: Player | undefined = getWinningPlayer(playerArr)
+      const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
 
       if (winningPlayer && game.active) {
         clearInterval(kickPlayerInterval)
-        return handleWin(winningPlayer, interaction)
+        return handleWin(winningPlayer, interaction, winByTimeout)
       }
 
       const usersTimedOut = playerArr.filter((player) => player.timedOut)
 
-      if (!playerArr.length || playerArr.length === usersTimedOut.length) {
+      if (playerArr.length === usersTimedOut.length) {
         const embedData: EmbedData = {
           image: undefined,
           title: 'BOOOO!!!',

@@ -12,6 +12,7 @@ import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
+import { kickPlayerInterval } from '..'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -105,21 +106,28 @@ export const normalizeLink = (imageUrl: string) => {
   return imageUrl
 }
 
+const playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> } = {}
+
 export const handleRolledRecently = async (
   player: Player,
   coolDownInterval: number
 ) => {
-  player.coolDownTimeLeft = coolDownInterval
-  while (player.coolDownTimeLeft > 0) {
+  const gamePlayer = game.players[player.discordId]
+  gamePlayer.coolDownTimeLeft = coolDownInterval
+  while (gamePlayer.coolDownTimeLeft > 0) {
     await wait(1000)
-    player.coolDownTimeLeft -= 1000
+    gamePlayer.coolDownTimeLeft -= 1000
   }
+
+  clearTimeout(playerTimeouts[player.discordId])
   // turn rolled recently to true
-  player.rolledRecently = true
+  gamePlayer.rolledRecently = true
   // set Timeout and remove after 20 seconds
-  setTimeout(() => {
-    player.rolledRecently = false
+  const rolledRecentlyTimeout = setTimeout(() => {
+    gamePlayer.rolledRecently = false
   }, 20000)
+
+  playerTimeouts[player.discordId] = rolledRecentlyTimeout
 }
 
 export const mapPlayersForEmbed = (playerArr: Player[]) =>
@@ -200,10 +208,15 @@ export const getNumberSuffix = (num: number): string => {
 export const getPlayerArray = (players: { [key: string]: Player }): Player[] =>
   Object.values(players)
 
-export const handleWin = async (player: Player, interaction: Interaction) => {
+export const handleWin = async (
+  player: Player,
+  interaction: Interaction,
+  winByTimeout: boolean
+) => {
   if (!interaction.isCommand() || !game.active) return
   // handle win
   game.active = false
+  clearInterval(kickPlayerInterval)
 
   // Increment score of winning player
   const winningUser = (await collections.users.findOne({
@@ -219,7 +232,11 @@ export const handleWin = async (player: Player, interaction: Interaction) => {
 
   const embedData: EmbedData = {
     title: 'WINNER!!!',
-    description: `${player.username}'s ${player.asset.unitName} destroyed the competition`,
+    description: `${player.username}'s ${player.asset.unitName} ${
+      winByTimeout
+        ? 'won by default - all other players timed out!'
+        : `destroyed the competition`
+    }`,
     color: 'DARK_AQUA',
     image: player.asset.assetUrl,
   }
@@ -238,10 +255,20 @@ export const handleWin = async (player: Player, interaction: Interaction) => {
 export const randomNumber = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min) + min)
 
-export const getWinningPlayer = (playerArr: Player[]): Player | undefined => {
+export const getWinningPlayer = (
+  playerArr: Player[]
+): { winningPlayer: Player | undefined; winByTimeout: boolean } => {
   const activePlayers = playerArr.filter((player) => !player.timedOut)
-  if (activePlayers.length === 1) {
-    console.log('ACTIVE PLAYERS', activePlayers)
-  }
-  return activePlayers.length === 1 ? activePlayers[0] : undefined
+
+  let winByTimeout = false
+
+  // const timedOutPlayers = playerArr.filter((player) => player.timedOut)
+
+  // if (timedOutPlayers.length === playerArr.length - activePlayers.length) {
+  //   winByTimeout = true
+  // }
+
+  return activePlayers.length === 1
+    ? { winningPlayer: activePlayers[0], winByTimeout }
+    : { winningPlayer: undefined, winByTimeout: false }
 }

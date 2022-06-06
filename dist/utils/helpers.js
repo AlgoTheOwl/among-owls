@@ -10,6 +10,7 @@ const axios_1 = __importDefault(require("axios"));
 const __1 = require("..");
 const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../embeds"));
+const __2 = require("..");
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -93,18 +94,22 @@ const normalizeLink = (imageUrl) => {
     return imageUrl;
 };
 exports.normalizeLink = normalizeLink;
+const playerTimeouts = {};
 const handleRolledRecently = async (player, coolDownInterval) => {
-    player.coolDownTimeLeft = coolDownInterval;
-    while (player.coolDownTimeLeft > 0) {
+    const gamePlayer = __1.game.players[player.discordId];
+    gamePlayer.coolDownTimeLeft = coolDownInterval;
+    while (gamePlayer.coolDownTimeLeft > 0) {
         await (0, exports.wait)(1000);
-        player.coolDownTimeLeft -= 1000;
+        gamePlayer.coolDownTimeLeft -= 1000;
     }
+    clearTimeout(playerTimeouts[player.discordId]);
     // turn rolled recently to true
-    player.rolledRecently = true;
+    gamePlayer.rolledRecently = true;
     // set Timeout and remove after 20 seconds
-    setTimeout(() => {
-        player.rolledRecently = false;
+    const rolledRecentlyTimeout = setTimeout(() => {
+        gamePlayer.rolledRecently = false;
     }, 20000);
+    playerTimeouts[player.discordId] = rolledRecentlyTimeout;
 };
 exports.handleRolledRecently = handleRolledRecently;
 const mapPlayersForEmbed = (playerArr) => playerArr
@@ -174,11 +179,12 @@ const getNumberSuffix = (num) => {
 exports.getNumberSuffix = getNumberSuffix;
 const getPlayerArray = (players) => Object.values(players);
 exports.getPlayerArray = getPlayerArray;
-const handleWin = async (player, interaction) => {
+const handleWin = async (player, interaction, winByTimeout) => {
     if (!interaction.isCommand() || !__1.game.active)
         return;
     // handle win
     __1.game.active = false;
+    clearInterval(__2.kickPlayerInterval);
     // Increment score of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
         _id: player.userId,
@@ -187,7 +193,9 @@ const handleWin = async (player, interaction) => {
     await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { yaoWins: updatedScore } });
     const embedData = {
         title: 'WINNER!!!',
-        description: `${player.username}'s ${player.asset.unitName} destroyed the competition`,
+        description: `${player.username}'s ${player.asset.unitName} ${winByTimeout
+            ? 'won by default - all other players timed out!'
+            : `destroyed the competition`}`,
         color: 'DARK_AQUA',
         image: player.asset.assetUrl,
     };
@@ -203,9 +211,13 @@ const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min)
 exports.randomNumber = randomNumber;
 const getWinningPlayer = (playerArr) => {
     const activePlayers = playerArr.filter((player) => !player.timedOut);
-    if (activePlayers.length === 1) {
-        console.log('ACTIVE PLAYERS', activePlayers);
-    }
-    return activePlayers.length === 1 ? activePlayers[0] : undefined;
+    let winByTimeout = false;
+    // const timedOutPlayers = playerArr.filter((player) => player.timedOut)
+    // if (timedOutPlayers.length === playerArr.length - activePlayers.length) {
+    //   winByTimeout = true
+    // }
+    return activePlayers.length === 1
+        ? { winningPlayer: activePlayers[0], winByTimeout }
+        : { winningPlayer: undefined, winByTimeout: false };
 };
 exports.getWinningPlayer = getWinningPlayer;

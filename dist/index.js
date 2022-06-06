@@ -3,12 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emojis = exports.game = void 0;
+exports.kickPlayerInterval = exports.emojis = exports.game = void 0;
 const discord_js_1 = require("discord.js");
 const helpers_1 = require("./utils/helpers");
 const register_1 = require("./interactions/register");
 const database_service_1 = require("./database/database.service");
-const game_1 = __importDefault(require("./models/game"));
 const users_1 = __importDefault(require("./mocks/users"));
 const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
@@ -16,14 +15,11 @@ const database_service_2 = require("./database/database.service");
 const embeds_1 = __importDefault(require("./embeds"));
 const token = process.env.DISCORD_TOKEN;
 const roleId = process.env.ADMIN_ID;
-// Gloval vars
-exports.game = new game_1.default({}, false, false, 0);
 exports.emojis = {};
 // Settings
 const hp = 1000;
 const imageDir = 'dist/nftAssets';
-let kickPlayerInterval;
-const kickPlayerTimeout = 2000;
+const kickPlayerTimeout = 5000;
 const client = new discord_js_1.Client({
     intents: [
         discord_js_1.Intents.FLAGS.GUILDS,
@@ -84,7 +80,7 @@ client.on('interactionCreate', async (interaction) => {
                 ephemeral: true,
             });
         exports.game.active = false;
-        clearInterval(kickPlayerInterval);
+        clearInterval(exports.kickPlayerInterval);
         return interaction.reply({ content: 'Game stopped', ephemeral: true });
     }
     if (commandName === 'register') {
@@ -165,22 +161,23 @@ const handlePlayerTimeout = async (interaction) => {
     if (!interaction.isCommand())
         return;
     await (0, helpers_1.wait)(20000);
-    kickPlayerInterval = setInterval(async () => {
+    exports.kickPlayerInterval = setInterval(async () => {
         if (exports.game.active) {
             (0, helpers_1.getPlayerArray)(exports.game.players).forEach((player) => {
                 if (!player.rolledRecently) {
+                    console.log('USER TIMED OUT');
                     // delete game?.players[player.discordId]
                     exports.game.players[player.discordId].timedOut = true;
                 }
             });
             const playerArr = (0, helpers_1.getPlayerArray)(exports.game.players);
-            const winningPlayer = (0, helpers_1.getWinningPlayer)(playerArr);
+            const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
             if (winningPlayer && exports.game.active) {
-                clearInterval(kickPlayerInterval);
-                return (0, helpers_1.handleWin)(winningPlayer, interaction);
+                clearInterval(exports.kickPlayerInterval);
+                return (0, helpers_1.handleWin)(winningPlayer, interaction, winByTimeout);
             }
             const usersTimedOut = playerArr.filter((player) => player.timedOut);
-            if (!playerArr.length || playerArr.length === usersTimedOut.length) {
+            if (playerArr.length === usersTimedOut.length) {
                 const embedData = {
                     image: undefined,
                     title: 'BOOOO!!!',
@@ -188,7 +185,7 @@ const handlePlayerTimeout = async (interaction) => {
                 };
                 exports.game.embed.edit((0, embeds_1.default)(embedData));
                 exports.game.active = false;
-                return clearInterval(kickPlayerInterval);
+                return clearInterval(exports.kickPlayerInterval);
             }
             if (playerArr.length) {
                 const embedData = {
