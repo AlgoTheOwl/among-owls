@@ -46,7 +46,7 @@ const client: Client = new Client({
 client.once('ready', async () => {
   await connectToDatabase()
   console.log('Ye Among AOWLs - Server ready')
-  // load emojis into game
+  // load emojis into gamej
 })
 
 /*
@@ -161,6 +161,8 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         }),
       }
       await interaction.reply(doEmbed(embedData))
+    } else {
+      await interaction.reply({ content: 'no winners yet!', ephemeral: true })
     }
   }
 
