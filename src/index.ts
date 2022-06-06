@@ -26,7 +26,7 @@ const token: string = process.env.DISCORD_TOKEN
 const roleId: string = process.env.ADMIN_ID
 
 // Gloval vars
-export let game: Game
+export let game: Game = new Game({}, false, false, 0)
 export let emojis = {}
 
 // Settings
@@ -107,7 +107,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   }
 
   if (commandName === 'register') {
-    if (!game.active) {
+    if (!game?.active) {
       return interaction.reply({
         content: 'Please wait until after the game ends to register',
         ephemeral: true,
