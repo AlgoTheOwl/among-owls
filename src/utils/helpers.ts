@@ -142,8 +142,8 @@ export const emptyDir = (dirPath: string) => {
       } else fs.unlinkSync(fullPath)
     })
   } catch (error) {
-    console.log(error)
-    throw new Error('Error deleting contents of image directory')
+    console.log('Error deleting contents of image directory', error)
+    // throw new Error('Error deleting contents of image directory')
   }
 }
 
@@ -161,7 +161,8 @@ export const addRole = async (
     )
     role && (await member?.roles.add(role.id))
   } catch (error) {
-    throw new Error('Error adding role')
+    console.log('Error adding role', error)
+    // throw new Error('Error adding role')
   }
 }
 

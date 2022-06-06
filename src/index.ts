@@ -102,12 +102,12 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         ephemeral: true,
       })
     game.active = false
-    await clearInterval(kickPlayerInterval)
+    clearInterval(kickPlayerInterval)
     return interaction.reply({ content: 'Game stopped', ephemeral: true })
   }
 
   if (commandName === 'register') {
-    if (!game?.active) {
+    if (game?.active) {
       return interaction.reply({
         content: 'Please wait until after the game ends to register',
         ephemeral: true,
