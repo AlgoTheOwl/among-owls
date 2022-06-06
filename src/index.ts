@@ -167,9 +167,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   }
 
   if (commandName === 'view-registration') {
-    const amountOfPlayers = collections.yaoPlayers.find({}).toArray.length
+    const amountOfPlayers = await collections.yaoPlayers.find({}).toArray()
     interaction.reply({
-      content: `There are currently ${amountOfPlayers} players registered`,
+      content: `There are currently ${amountOfPlayers.length} players registered`,
       ephemeral: true,
     })
   }
