@@ -8,6 +8,7 @@ const discord_js_1 = require("discord.js");
 const helpers_1 = require("./utils/helpers");
 const register_1 = require("./interactions/register");
 const database_service_1 = require("./database/database.service");
+const game_1 = __importDefault(require("./models/game"));
 const users_1 = __importDefault(require("./mocks/users"));
 const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
@@ -15,6 +16,8 @@ const database_service_2 = require("./database/database.service");
 const embeds_1 = __importDefault(require("./embeds"));
 const token = process.env.DISCORD_TOKEN;
 const roleId = process.env.ADMIN_ID;
+// Gloval vars
+exports.game = new game_1.default({}, false, false, 0);
 exports.emojis = {};
 // Settings
 const hp = 1000;
@@ -85,7 +88,7 @@ client.on('interactionCreate', async (interaction) => {
         return interaction.reply({ content: 'Game stopped', ephemeral: true });
     }
     if (commandName === 'register') {
-        if (!exports.game.active) {
+        if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active)) {
             return interaction.reply({
                 content: 'Please wait until after the game ends to register',
                 ephemeral: true,
