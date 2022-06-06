@@ -46,6 +46,9 @@ const commands = [
   new SlashCommandBuilder()
     .setName('leaderboard')
     .setDescription('show global leaderboard for AOWL games'),
+  new SlashCommandBuilder()
+    .setName('view-regisration')
+    .setDescription('View how many players have registered'),
 ].map((command) => command.toJSON())
 
 const rest = new REST({ version: '9' }).setToken(token)

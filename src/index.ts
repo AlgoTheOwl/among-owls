@@ -166,6 +166,14 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     }
   }
 
+  if (commandName === 'view-registration') {
+    const amountOfPlayers = collections.yaoPlayers.find({}).toArray.length
+    interaction.reply({
+      content: `There are currently ${amountOfPlayers} players registered`,
+      ephemeral: true,
+    })
+  }
+
   /*
    *****************
    * TEST COMMANDS *
