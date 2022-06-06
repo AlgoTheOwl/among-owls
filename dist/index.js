@@ -84,11 +84,11 @@ client.on('interactionCreate', async (interaction) => {
                 ephemeral: true,
             });
         exports.game.active = false;
-        await clearInterval(kickPlayerInterval);
+        clearInterval(kickPlayerInterval);
         return interaction.reply({ content: 'Game stopped', ephemeral: true });
     }
     if (commandName === 'register') {
-        if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active)) {
+        if (exports.game === null || exports.game === void 0 ? void 0 : exports.game.active) {
             return interaction.reply({
                 content: 'Please wait until after the game ends to register',
                 ephemeral: true,
