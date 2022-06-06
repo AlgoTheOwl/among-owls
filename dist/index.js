@@ -30,7 +30,7 @@ const client = new discord_js_1.Client({
 client.once('ready', async () => {
     await (0, database_service_1.connectToDatabase)();
     console.log('Ye Among AOWLs - Server ready');
-    // load emojis into game
+    // load emojis into gamej
 });
 /*
  *****************
@@ -126,6 +126,9 @@ client.on('interactionCreate', async (interaction) => {
                 }),
             };
             await interaction.reply((0, embeds_1.default)(embedData));
+        }
+        else {
+            await interaction.reply({ content: 'no winners yet!', ephemeral: true });
         }
     }
     /*
