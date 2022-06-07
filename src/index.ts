@@ -33,7 +33,7 @@ export let kickPlayerInterval: ReturnType<typeof setInterval>
 // Settings
 const hp = 1000
 const imageDir = 'dist/nftAssets'
-const kickPlayerTimeout = 5000
+const kickPlayerTimeout = 10000
 
 const client: Client = new Client({
   intents: [
@@ -169,7 +169,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   if (commandName === 'view-registration') {
     try {
       const amountOfPlayers = await collections.yaoPlayers.find({}).toArray()
-      console.log('amount of players', amountOfPlayers)
       await interaction.reply({
         content: `There are currently ${amountOfPlayers.length} players registered`,
         ephemeral: true,
