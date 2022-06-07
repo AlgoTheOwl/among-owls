@@ -11,10 +11,12 @@ export default class Player {
     public hp: number,
     public coolDownTimeLeft?: number,
     public rolledRecently?: boolean,
-    public timedOut?: boolean
+    public timedOut?: boolean,
+    public dead?: boolean
   ) {
     this.rolledRecently = false
     this.timedOut = false
     this.coolDownTimeLeft = 0
+    this.dead = false
   }
 }

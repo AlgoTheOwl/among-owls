@@ -31,6 +31,18 @@ async function attack(interaction, game, user, hp) {
                 ephemeral: true,
             });
         }
+        if (attacker.dead) {
+            return interaction.reply({
+                content: `You can't attack, you're dead!`,
+                ephemeral: true,
+            });
+        }
+        if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
+            return interaction.reply({
+                content: `HOO do you think you are? It’s not your turn! Wait ${attacker.coolDownTimeLeft / 1000} seconds`,
+                ephemeral: true,
+            });
+        }
         (0, helpers_1.handleRolledRecently)(attacker, coolDownInterval);
         if (attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) {
             return interaction.reply({
@@ -50,19 +62,13 @@ async function attack(interaction, game, user, hp) {
                 ephemeral: true,
             });
         }
-        if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
-            return interaction.reply({
-                content: `HOO do you think you are? It’s not your turn! Wait ${attacker.coolDownTimeLeft / 1000} seconds`,
-                ephemeral: true,
-            });
-        }
         const damage = Math.floor(Math.random() * (hp / 2));
         // const damage = 1000
         victim.hp -= damage;
         let victimDead = false;
         if (victim.hp <= 0) {
             // if victim is dead, delete from game
-            delete game.players[victimId];
+            game.players[victimId].dead = true;
             victimDead = true;
         }
         const playerArr = Object.values(game.players);

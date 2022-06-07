@@ -98,7 +98,7 @@ const playerTimeouts = {};
 const handleRolledRecently = async (player, coolDownInterval) => {
     const gamePlayer = __1.game.players[player.discordId];
     gamePlayer.coolDownTimeLeft = coolDownInterval;
-    while (gamePlayer.coolDownTimeLeft > 0) {
+    while (gamePlayer.coolDownTimeLeft >= 0) {
         await (0, exports.wait)(1000);
         gamePlayer.coolDownTimeLeft -= 1000;
     }
