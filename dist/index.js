@@ -19,7 +19,7 @@ exports.emojis = {};
 // Settings
 const hp = 1000;
 const imageDir = 'dist/nftAssets';
-const kickPlayerTimeout = 5000;
+const kickPlayerTimeout = 10000;
 const client = new discord_js_1.Client({
     intents: [
         discord_js_1.Intents.FLAGS.GUILDS,
@@ -134,7 +134,6 @@ client.on('interactionCreate', async (interaction) => {
     if (commandName === 'view-registration') {
         try {
             const amountOfPlayers = await database_service_2.collections.yaoPlayers.find({}).toArray();
-            console.log('amount of players', amountOfPlayers);
             await interaction.reply({
                 content: `There are currently ${amountOfPlayers.length} players registered`,
                 ephemeral: true,

@@ -106,9 +106,10 @@ const handleRolledRecently = async (player, coolDownInterval) => {
     // turn rolled recently to true
     gamePlayer.rolledRecently = true;
     // set Timeout and remove after 20 seconds
-    const rolledRecentlyTimeout = setTimeout(() => {
+    const rolledRecentlyTimeout = setTimeout(async () => {
+        await (0, exports.wait)(20000);
         gamePlayer.rolledRecently = false;
-    }, 20000);
+    }, 0);
     playerTimeouts[player.discordId] = rolledRecentlyTimeout;
 };
 exports.handleRolledRecently = handleRolledRecently;
