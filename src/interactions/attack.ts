@@ -34,7 +34,7 @@ export default async function attack(
   try {
     if (!interaction.isCommand() || !game.active) return
 
-    const { options } = interaction
+    const { options, id } = interaction
 
     const { id: victimId } = options.getUser('victim') as ClientUser
     const { id: attackerId } = user
@@ -50,7 +50,7 @@ export default async function attack(
     const attacker = game.players[attackerId] ? game.players[attackerId] : null
 
     //@ts-ignore
-    handleRolledRecently(attacker, coolDownInterval)
+    handleRolledRecently(id, coolDownInterval)
 
     if (attacker?.timedOut) {
       return interaction.reply({
