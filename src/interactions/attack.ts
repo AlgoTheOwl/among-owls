@@ -57,6 +57,22 @@ export default async function attack(
       })
     }
 
+    if (attacker.dead) {
+      return interaction.reply({
+        content: `You can't attack, you're dead!`,
+        ephemeral: true,
+      })
+    }
+
+    if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
+      return interaction.reply({
+        content: `HOO do you think you are? It’s not your turn! Wait ${
+          attacker.coolDownTimeLeft / 1000
+        } seconds`,
+        ephemeral: true,
+      })
+    }
+
     handleRolledRecently(attacker, coolDownInterval)
 
     if (attacker?.timedOut) {
@@ -81,15 +97,6 @@ export default async function attack(
       })
     }
 
-    if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
-      return interaction.reply({
-        content: `HOO do you think you are? It’s not your turn! Wait ${
-          attacker.coolDownTimeLeft / 1000
-        } seconds`,
-        ephemeral: true,
-      })
-    }
-
     const damage = Math.floor(Math.random() * (hp / 2))
     // const damage = 1000
     victim.hp -= damage
@@ -97,7 +104,7 @@ export default async function attack(
     let victimDead = false
     if (victim.hp <= 0) {
       // if victim is dead, delete from game
-      delete game.players[victimId]
+      game.players[victimId].dead = true
       victimDead = true
     }
 

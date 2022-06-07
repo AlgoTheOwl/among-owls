@@ -114,7 +114,7 @@ export const handleRolledRecently = async (
 ) => {
   const gamePlayer = game.players[player.discordId]
   gamePlayer.coolDownTimeLeft = coolDownInterval
-  while (gamePlayer.coolDownTimeLeft > 0) {
+  while (gamePlayer.coolDownTimeLeft >= 0) {
     await wait(1000)
     gamePlayer.coolDownTimeLeft -= 1000
   }
