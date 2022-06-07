@@ -13,6 +13,7 @@ class Player {
         this.timedOut = timedOut;
         this.rolledRecently = false;
         this.timedOut = false;
+        this.coolDownTimeLeft = 0;
     }
 }
 exports.default = Player;

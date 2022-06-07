@@ -15,6 +15,7 @@ async function attack(interaction, game, user, hp) {
         if (!interaction.isCommand() || !game.active)
             return;
         const { options, id } = interaction;
+        (0, helpers_1.handleRolledRecently)(id, coolDownInterval);
         const { id: victimId } = options.getUser('victim');
         const { id: attackerId } = user;
         if (victimId === attackerId) {
@@ -25,8 +26,6 @@ async function attack(interaction, game, user, hp) {
         }
         const victim = game.players[victimId] ? game.players[victimId] : null;
         const attacker = game.players[attackerId] ? game.players[attackerId] : null;
-        //@ts-ignore
-        (0, helpers_1.handleRolledRecently)(id, coolDownInterval);
         if (attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) {
             return interaction.reply({
                 content: `Unfortunately, you've timed out due to inactivty.`,
