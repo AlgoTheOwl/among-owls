@@ -15,5 +15,6 @@ export default class Player {
   ) {
     this.rolledRecently = false
     this.timedOut = false
+    this.coolDownTimeLeft = 0
   }
 }
