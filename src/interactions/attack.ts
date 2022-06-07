@@ -49,6 +49,9 @@ export default async function attack(
     const victim = game.players[victimId] ? game.players[victimId] : null
     const attacker = game.players[attackerId] ? game.players[attackerId] : null
 
+    //@ts-ignore
+    handleRolledRecently(attacker, coolDownInterval)
+
     if (attacker?.timedOut) {
       return interaction.reply({
         content: `Unfortunately, you've timed out due to inactivty.`,
@@ -122,8 +125,6 @@ export default async function attack(
         ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
         : getAttackString(attacker.asset.assetName, victim.username, damage),
     })
-
-    handleRolledRecently(attacker, coolDownInterval)
 
     const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
     // if there is only one player left, the game has been won
