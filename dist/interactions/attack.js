@@ -14,8 +14,7 @@ async function attack(interaction, game, user, hp) {
     try {
         if (!interaction.isCommand() || !game.active)
             return;
-        const { options, id } = interaction;
-        (0, helpers_1.handleRolledRecently)(id, coolDownInterval);
+        const { options } = interaction;
         const { id: victimId } = options.getUser('victim');
         const { id: attackerId } = user;
         if (victimId === attackerId) {
@@ -79,6 +78,7 @@ async function attack(interaction, game, user, hp) {
                 ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
                 : getAttackString(attacker.asset.assetName, victim.username, damage),
         });
+        (0, helpers_1.handleRolledRecently)(attacker, coolDownInterval);
         const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
         // if there is only one player left, the game has been won
         if (winningPlayer && game.active) {
