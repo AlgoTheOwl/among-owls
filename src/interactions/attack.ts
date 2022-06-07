@@ -34,9 +34,7 @@ export default async function attack(
   try {
     if (!interaction.isCommand() || !game.active) return
 
-    const { options, id } = interaction
-
-    handleRolledRecently(id, coolDownInterval)
+    const { options } = interaction
 
     const { id: victimId } = options.getUser('victim') as ClientUser
     const { id: attackerId } = user
@@ -124,6 +122,8 @@ export default async function attack(
         ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
         : getAttackString(attacker.asset.assetName, victim.username, damage),
     })
+
+    handleRolledRecently(attacker, coolDownInterval)
 
     const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
     // if there is only one player left, the game has been won

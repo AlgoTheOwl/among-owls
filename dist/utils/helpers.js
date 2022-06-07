@@ -95,14 +95,14 @@ const normalizeLink = (imageUrl) => {
 };
 exports.normalizeLink = normalizeLink;
 const playerTimeouts = {};
-const handleRolledRecently = async (discordId, coolDownInterval) => {
-    const gamePlayer = __1.game.players[discordId];
+const handleRolledRecently = async (player, coolDownInterval) => {
+    const gamePlayer = __1.game.players[player.discordId];
     gamePlayer.coolDownTimeLeft = coolDownInterval;
     while (gamePlayer.coolDownTimeLeft > 0) {
         await (0, exports.wait)(1000);
         gamePlayer.coolDownTimeLeft -= 1000;
     }
-    clearTimeout(playerTimeouts[discordId]);
+    clearTimeout(playerTimeouts[player.discordId]);
     // turn rolled recently to true
     gamePlayer.rolledRecently = true;
     // set Timeout and remove after 20 seconds
@@ -110,7 +110,7 @@ const handleRolledRecently = async (discordId, coolDownInterval) => {
         await (0, exports.wait)(20000);
         gamePlayer.rolledRecently = false;
     }, 0);
-    playerTimeouts[discordId] = rolledRecentlyTimeout;
+    playerTimeouts[player.discordId] = rolledRecentlyTimeout;
 };
 exports.handleRolledRecently = handleRolledRecently;
 const mapPlayersForEmbed = (playerArr) => playerArr
