@@ -180,8 +180,6 @@ const handlePlayerTimeout = async (interaction) => {
         if (exports.game.active) {
             (0, helpers_1.getPlayerArray)(exports.game.players).forEach((player) => {
                 if (!player.rolledRecently) {
-                    console.log('USER TIMED OUT');
-                    // delete game?.players[player.discordId]
                     exports.game.players[player.discordId].timedOut = true;
                 }
             });
