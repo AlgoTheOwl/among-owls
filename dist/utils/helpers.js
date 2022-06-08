@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.handleRolledRecently = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -94,27 +94,8 @@ const normalizeLink = (imageUrl) => {
     return imageUrl;
 };
 exports.normalizeLink = normalizeLink;
-const playerTimeouts = {};
-const handleRolledRecently = async (player, coolDownInterval) => {
-    const gamePlayer = __1.game.players[player.discordId];
-    gamePlayer.coolDownTimeLeft = coolDownInterval;
-    while (gamePlayer.coolDownTimeLeft >= 0) {
-        await (0, exports.wait)(1000);
-        gamePlayer.coolDownTimeLeft -= 1000;
-    }
-    clearTimeout(playerTimeouts[player.discordId]);
-    // turn rolled recently to true
-    gamePlayer.rolledRecently = true;
-    // set Timeout and remove after 20 seconds
-    const rolledRecentlyTimeout = setTimeout(async () => {
-        await (0, exports.wait)(20000);
-        gamePlayer.rolledRecently = false;
-    }, 0);
-    playerTimeouts[player.discordId] = rolledRecentlyTimeout;
-};
-exports.handleRolledRecently = handleRolledRecently;
 const mapPlayersForEmbed = (playerArr) => playerArr
-    .filter((player) => !player.timedOut)
+    .filter((player) => !player.timedOut && !player.dead)
     .map((player) => ({
     name: player.username,
     value: `HP: ${player.hp}`,

@@ -106,34 +106,9 @@ export const normalizeLink = (imageUrl: string) => {
   return imageUrl
 }
 
-const playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> } = {}
-
-export const handleRolledRecently = async (
-  player: Player,
-  coolDownInterval: number
-) => {
-  const gamePlayer = game.players[player.discordId]
-  gamePlayer.coolDownTimeLeft = coolDownInterval
-  while (gamePlayer.coolDownTimeLeft >= 0) {
-    await wait(1000)
-    gamePlayer.coolDownTimeLeft -= 1000
-  }
-
-  clearTimeout(playerTimeouts[player.discordId])
-  // turn rolled recently to true
-  gamePlayer.rolledRecently = true
-  // set Timeout and remove after 20 seconds
-  const rolledRecentlyTimeout = setTimeout(async () => {
-    await wait(20000)
-    gamePlayer.rolledRecently = false
-  }, 0)
-
-  playerTimeouts[player.discordId] = rolledRecentlyTimeout
-}
-
 export const mapPlayersForEmbed = (playerArr: Player[]) =>
   playerArr
-    .filter((player) => !player.timedOut)
+    .filter((player) => !player.timedOut && !player.dead)
     .map((player) => ({
       name: player.username,
       value: `HP: ${player.hp}`,
