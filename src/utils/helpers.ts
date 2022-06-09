@@ -13,6 +13,7 @@ import { WithId } from 'mongodb'
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import { kickPlayerInterval } from '..'
+import Game from '../models/game'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -217,7 +218,9 @@ export const handleWin = async (
     image: player.asset.assetUrl,
   }
 
-  interaction.followUp({ content: 'Woo-Hoot! You won!', ephemeral: true })
+  // if (game.active && player.discordId === winningUser.discordId) {
+  //   interaction.followUp({ content: 'Woo-Hoot! You won!', ephemeral: true })
+  // }
 
   // collections.yaoPlayers.deleteMany({})
 
@@ -234,7 +237,9 @@ export const randomNumber = (min: number, max: number) =>
 export const getWinningPlayer = (
   playerArr: Player[]
 ): { winningPlayer: Player | undefined; winByTimeout: boolean } => {
-  const activePlayers = playerArr.filter((player) => !player.timedOut)
+  const activePlayers = playerArr.filter(
+    (player) => !player.timedOut && !player.dead
+  )
 
   let winByTimeout = false
 

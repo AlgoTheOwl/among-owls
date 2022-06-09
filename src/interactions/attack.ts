@@ -16,12 +16,11 @@ import {
   getWinningPlayer,
 } from '../utils/helpers'
 import { game } from '..'
-
 import { Canvas } from 'canvas'
 
 // Settings
 const coolDownInterval = 5000
-const messageDeleteInterval = 7000
+const messageDeleteInterval = 2000
 const timeoutInterval = 30000
 
 export default async function attack(
@@ -47,6 +46,9 @@ export default async function attack(
   const victim = game.players[victimId] ? game.players[victimId] : null
   const attacker = game.players[attackerId] ? game.players[attackerId] : null
 
+  // Begin watching for player inactivity
+  handlePlayerTimeout(attackerId, timeoutInterval)
+
   if (!attacker) {
     return interaction.reply({
       content: 'Please register by using the /register slash command to attack',
@@ -61,6 +63,13 @@ export default async function attack(
     })
   }
 
+  if (victim?.dead) {
+    return interaction.reply({
+      content: `Your intended victim is already dead!`,
+      ephemeral: true,
+    })
+  }
+
   if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
     return interaction.reply({
       content: `HOO do you think you are? It’s not your turn! Wait ${
@@ -69,9 +78,6 @@ export default async function attack(
       ephemeral: true,
     })
   }
-
-  handleRolledRecently(attackerId, coolDownInterval)
-  setPlayerTimeout(attackerId, timeoutInterval)
 
   if (attacker?.timedOut) {
     return interaction.reply({
@@ -95,6 +101,9 @@ export default async function attack(
     })
   }
 
+  // Only start cooldown if attack actually happens
+  handlePlayerCooldown(attackerId, coolDownInterval)
+
   const damage = Math.floor(Math.random() * (hp / 2))
   // const damage = 1000
   victim.hp -= damage
@@ -105,38 +114,30 @@ export default async function attack(
     game.players[victimId].dead = true
     victimDead = true
   }
+  const { username: victimName } = victim
+  const { asset: attackerAsset } = attacker
 
   const playerArr = Object.values(game.players)
 
-  const { username: victimName } = victim
-  const { username: attackerName, asset } = attacker
-
-  // do canvas with attacker, hp drained and victim
-  const canvas: Canvas = await doAttackCanvas(
-    damage,
-    asset,
-    victimName,
-    attackerName
-  )
-
-  // temporary guard
   if (victimDead) {
-    const attachment = victimDead
-      ? new MessageAttachment('src/images/death.gif', 'death.gif')
-      : new MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png')
-
+    const attachment = new MessageAttachment(
+      'src/images/death.gif',
+      'death.gif'
+    )
     await interaction.reply({
       files: [attachment],
-      content: victimDead
-        ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
-        : getAttackString(attacker.asset.assetName, victim.username, damage),
+      content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
     })
+  } else {
+    interaction.reply(
+      getAttackString(attackerAsset.assetName, victimName, damage)
+    )
   }
 
   const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
 
   if (winningPlayer && game.active) {
-    handleWin(winningPlayer, interaction, winByTimeout)
+    return handleWin(winningPlayer, interaction, winByTimeout)
   }
 
   const embedData: EmbedData = {
@@ -177,7 +178,7 @@ const getAttackString = (
 
 const playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> } = {}
 
-const setPlayerTimeout = (playerId: string, timeoutInterval: number) => {
+const handlePlayerTimeout = (playerId: string, timeoutInterval: number) => {
   const gamePlayer = game.players[playerId]
 
   clearTimeout(playerTimeouts[playerId])
@@ -191,7 +192,7 @@ const setPlayerTimeout = (playerId: string, timeoutInterval: number) => {
   playerTimeouts[playerId] = rolledRecentlyTimeout
 }
 
-const handleRolledRecently = async (
+const handlePlayerCooldown = async (
   playerId: string,
   coolDownInterval: number
 ) => {
