@@ -119,16 +119,19 @@ export default async function attack(
     attackerName
   )
 
-  const attachment = victimDead
-    ? new MessageAttachment('src/images/death.gif', 'death.gif')
-    : new MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png')
+  // temporary guard
+  if (victimDead) {
+    const attachment = victimDead
+      ? new MessageAttachment('src/images/death.gif', 'death.gif')
+      : new MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png')
 
-  await interaction.reply({
-    files: [attachment],
-    content: victimDead
-      ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
-      : getAttackString(attacker.asset.assetName, victim.username, damage),
-  })
+    await interaction.reply({
+      files: [attachment],
+      content: victimDead
+        ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
+        : getAttackString(attacker.asset.assetName, victim.username, damage),
+    })
+  }
 
   const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
 

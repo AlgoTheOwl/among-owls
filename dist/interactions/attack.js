@@ -78,15 +78,18 @@ async function attack(interaction, game, user, hp) {
     const { username: attackerName, asset } = attacker;
     // do canvas with attacker, hp drained and victim
     const canvas = await (0, attackCanvas_1.default)(damage, asset, victimName, attackerName);
-    const attachment = victimDead
-        ? new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif')
-        : new discord_js_1.MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png');
-    await interaction.reply({
-        files: [attachment],
-        content: victimDead
-            ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
-            : getAttackString(attacker.asset.assetName, victim.username, damage),
-    });
+    // temporary guard
+    if (victimDead) {
+        const attachment = victimDead
+            ? new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif')
+            : new discord_js_1.MessageAttachment(canvas.toBuffer('image/png'), 'attacker.png');
+        await interaction.reply({
+            files: [attachment],
+            content: victimDead
+                ? `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`
+                : getAttackString(attacker.asset.assetName, victim.username, damage),
+        });
+    }
     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
     if (winningPlayer && game.active) {
         (0, helpers_1.handleWin)(winningPlayer, interaction, winByTimeout);
