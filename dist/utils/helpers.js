@@ -181,7 +181,9 @@ const handleWin = async (player, interaction, winByTimeout) => {
         color: 'DARK_AQUA',
         image: player.asset.assetUrl,
     };
-    interaction.followUp({ content: 'Woo-Hoot! You won!', ephemeral: true });
+    // if (game.active && player.discordId === winningUser.discordId) {
+    //   interaction.followUp({ content: 'Woo-Hoot! You won!', ephemeral: true })
+    // }
     // collections.yaoPlayers.deleteMany({})
     // asyncForEach(playerArr, (player: Player) => {
     //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
@@ -192,7 +194,7 @@ exports.handleWin = handleWin;
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 exports.randomNumber = randomNumber;
 const getWinningPlayer = (playerArr) => {
-    const activePlayers = playerArr.filter((player) => !player.timedOut);
+    const activePlayers = playerArr.filter((player) => !player.timedOut && !player.dead);
     let winByTimeout = false;
     // const timedOutPlayers = playerArr.filter((player) => player.timedOut)
     // if (timedOutPlayers.length === playerArr.length - activePlayers.length) {
