@@ -6,20 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.kickPlayerInterval = exports.emojis = exports.game = void 0;
 const discord_js_1 = require("discord.js");
 const helpers_1 = require("./utils/helpers");
-const register_1 = require("./interactions/register");
 const database_service_1 = require("./database/database.service");
-const users_1 = __importDefault(require("./mocks/users"));
-const start_1 = __importDefault(require("./interactions/start"));
 const attack_1 = __importDefault(require("./interactions/attack"));
-const database_service_2 = require("./database/database.service");
 const embeds_1 = __importDefault(require("./embeds"));
+const node_fs_1 = __importDefault(require("node:fs"));
+const node_path_1 = __importDefault(require("node:path"));
+const settings_1 = __importDefault(require("./settings"));
+const game_1 = __importDefault(require("./models/game"));
 const token = process.env.DISCORD_TOKEN;
-const roleId = process.env.ADMIN_ID;
+const { hp, kickPlayerTimeout, coolDownInterval } = settings_1.default;
+// Gloval vars
+exports.game = new game_1.default({}, false, false, coolDownInterval);
 exports.emojis = {};
 // Settings
-const hp = 1000;
-const imageDir = 'dist/nftAssets';
-const kickPlayerTimeout = 10000;
 const client = new discord_js_1.Client({
     intents: [
         discord_js_1.Intents.FLAGS.GUILDS,
@@ -27,6 +26,16 @@ const client = new discord_js_1.Client({
         discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
     ],
 });
+client.commands = new discord_js_1.Collection();
+const commandsPath = node_path_1.default.join(__dirname, 'commands');
+const commandFiles = node_fs_1.default
+    .readdirSync(commandsPath)
+    .filter((file) => file.endsWith('.js'));
+for (const file of commandFiles) {
+    const filePath = node_path_1.default.join(commandsPath, file);
+    const command = require(filePath);
+    client.commands.set(command.data.name, command);
+}
 client.once('ready', async () => {
     await (0, database_service_1.connectToDatabase)();
     console.log('Ye Among AOWLs - Server ready');
@@ -38,133 +47,40 @@ client.once('ready', async () => {
  *****************
  */
 client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isCommand())
-        return;
-    const { commandName, user, options } = interaction;
-    if (commandName === 'start') {
-        const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, user.id);
-        if (!hasRole) {
-            return await interaction.reply({
-                content: 'Only administrators can use this command',
-                ephemeral: true,
-            });
-        }
-        const gameState = await (0, start_1.default)(interaction, hp, imageDir);
-        if (gameState) {
-            exports.game = gameState;
-        }
-    }
-    if (commandName === 'attack') {
-        if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
-            return interaction.reply({
-                content: `HOO do you think you are? The game hasn’t started yet!`,
-                ephemeral: true,
-            });
-        if (!exports.game.attackEngaged) {
-            handlePlayerTimeout(interaction);
-            exports.game.attackEngaged = true;
-        }
-        (0, attack_1.default)(interaction, exports.game, user, hp);
-    }
-    if (commandName === 'stop') {
-        const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, user.id);
-        if (!hasRole) {
-            return await interaction.reply({
-                content: 'Only administrators can use this command',
-                ephemeral: true,
-            });
-        }
-        if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
-            return interaction.reply({
-                content: 'Game is not currently running',
-                ephemeral: true,
-            });
-        exports.game.active = false;
-        clearInterval(exports.kickPlayerInterval);
-        return interaction.reply({ content: 'Game stopped', ephemeral: true });
-    }
-    if (commandName === 'register') {
-        if (exports.game === null || exports.game === void 0 ? void 0 : exports.game.active) {
-            return interaction.reply({
-                content: 'Please wait until after the game ends to register',
-                ephemeral: true,
-            });
-        }
-        // TODO: add ability to register for different games here
-        const address = options.getString('address');
-        const assetId = options.getNumber('assetid');
-        const { username, id } = user;
-        if (address && assetId) {
-            const { status, registeredUser, asset } = await (0, register_1.processRegistration)(username, id, address, assetId, 'yao', hp);
-            // add permissions if succesful
-            if (registeredUser && asset) {
-                (0, helpers_1.addRole)(interaction, process.env.REGISTERED_ID, registeredUser);
-            }
-            await interaction.reply({
-                ephemeral: registeredUser ? false : true,
-                content: status,
-            });
-        }
-    }
-    if (commandName === 'leaderboard') {
-        const winningUsers = (await database_service_2.collections.users
-            .find({ yaoWins: { $gt: 0 } })
-            .sort({ yaoWins: 'desc' })
-            .toArray());
-        if (winningUsers.length) {
-            const embedData = {
-                title: 'Leaderboard',
-                description: 'Which AOWLs rule them all?',
-                image: undefined,
-                fields: winningUsers.map((user, i) => {
-                    const place = i + 1;
-                    const win = user.yaoWins === 1 ? 'win' : 'wins';
-                    return {
-                        name: `#${place}: ${user.username}`,
-                        value: `${user.yaoWins} ${win}`,
-                    };
-                }),
-            };
-            await interaction.reply((0, embeds_1.default)(embedData));
-        }
-        else {
-            await interaction.reply({ content: 'no winners yet!', ephemeral: true });
-        }
-    }
-    if (commandName === 'view-registration') {
+    if (interaction.isCommand()) {
+        const command = client.commands.get(interaction.commandName);
+        if (!command)
+            return;
         try {
-            const amountOfPlayers = await database_service_2.collections.yaoPlayers.find({}).toArray();
+            await command.execute(interaction);
+        }
+        catch (error) {
+            console.error(error);
             await interaction.reply({
-                content: `There are currently ${amountOfPlayers.length} players registered`,
+                content: 'There was an error while executing this command!',
                 ephemeral: true,
             });
+        }
+    }
+    if (interaction.isSelectMenu()) {
+        try {
+            if (interaction.customId === 'attack') {
+                const { user } = interaction;
+                if (!(exports.game === null || exports.game === void 0 ? void 0 : exports.game.active))
+                    return interaction.reply({
+                        content: `HOO do you think you are? The game hasn’t started yet!`,
+                        ephemeral: true,
+                    });
+                if (!exports.game.attackEngaged) {
+                    handlePlayerTimeout(interaction);
+                    exports.game.attackEngaged = true;
+                }
+                (0, attack_1.default)(interaction, exports.game, user, hp);
+            }
         }
         catch (error) {
             console.log(error);
         }
-    }
-    /*
-     *****************
-     * TEST COMMANDS *
-     *****************
-     */
-    // test registring and selecting players
-    if (commandName === 'test-register') {
-        const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, user.id);
-        if (!hasRole) {
-            return await interaction.reply({
-                content: 'Only administrators can use this command',
-                ephemeral: true,
-            });
-        }
-        await (0, helpers_1.asyncForEach)(users_1.default, async (player, i) => {
-            const { username, discordId, address, assetId } = player;
-            await (0, register_1.processRegistration)(username, discordId, address, assetId, 'yao', hp);
-        });
-        await interaction.reply({
-            content: 'all test users added',
-            ephemeral: true,
-        });
     }
 });
 /*

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
+exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.findAsset = exports.determineOwnership = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -141,6 +141,7 @@ const removeRole = async (interaction, roleId, discordId) => {
     const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === discordId);
     role && (await (member === null || member === void 0 ? void 0 : member.roles.remove(role.id)));
 };
+exports.removeRole = removeRole;
 const confirmRole = async (roleId, interaction, userId) => {
     var _a;
     // const role = interaction.guild?.roles.cache.find((role) => role.id === roleId)
@@ -161,9 +162,7 @@ const getNumberSuffix = (num) => {
 exports.getNumberSuffix = getNumberSuffix;
 const getPlayerArray = (players) => Object.values(players);
 exports.getPlayerArray = getPlayerArray;
-const handleWin = async (player, interaction, winByTimeout) => {
-    if (!interaction.isCommand() || !__1.game.active)
-        return;
+const handleWin = async (player, winByTimeout) => {
     // handle win
     __1.game.active = false;
     clearInterval(__2.kickPlayerInterval);
