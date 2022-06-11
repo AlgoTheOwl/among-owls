@@ -1,13 +1,12 @@
 import {
-  ClientUser,
-  Interaction,
   MessageAttachment,
+  SelectMenuInteraction,
   User as DiscordUser,
 } from 'discord.js'
 import Game from '../models/game'
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
-import doAttackCanvas from '../canvas/attackCanvas'
+// import doAttackCanvas from '../canvas/attackCanvas'
 import {
   wait,
   mapPlayersForEmbed,
@@ -16,138 +15,172 @@ import {
   getWinningPlayer,
 } from '../utils/helpers'
 import { game } from '..'
-import { Canvas } from 'canvas'
+import settings from '../settings'
 
-// Settings
-const coolDownInterval = 5000
-const messageDeleteInterval = 2000
-const timeoutInterval = 30000
+const {
+  timeoutInterval,
+  coolDownInterval,
+  messageDeleteInterval,
+  deathDeleteInterval,
+} = settings
 
 export default async function attack(
-  interaction: Interaction,
+  interaction: SelectMenuInteraction,
   game: Game,
   user: DiscordUser,
   hp: number
 ) {
-  if (!interaction.isCommand() || !game.active) return
+  if (!game.active) return
 
-  const { options } = interaction
+  const { values: idArr } = interaction
 
-  const { id: victimId } = options.getUser('victim') as ClientUser
+  const victimId = idArr[0]
   const { id: attackerId } = user
-
-  if (victimId === attackerId) {
-    return interaction.reply({
-      content: `Owls are supposed to be wise, but you’re clearly not. You can’t attack yourself!`,
-      ephemeral: true,
-    })
-  }
 
   const victim = game.players[victimId] ? game.players[victimId] : null
   const attacker = game.players[attackerId] ? game.players[attackerId] : null
 
+  const stillCoolingDown =
+    attacker?.coolDownTimeLeft && attacker?.coolDownTimeLeft > 0
+
+  const canAttack =
+    attacker &&
+    victim &&
+    !stillCoolingDown &&
+    !victim.timedOut &&
+    !attacker.timedOut &&
+    victimId !== attackerId
+
+  const playerArr = Object.values(game.players)
+
+  let victimDead
+  let isWin
+
   // Begin watching for player inactivity
   handlePlayerTimeout(attackerId, timeoutInterval)
 
-  if (!attacker) {
-    return interaction.reply({
+  let replied
+
+  if (victimId === attackerId) {
+    interaction.reply({
+      content: `Owls are supposed to be wise, but you’re clearly not. You can’t attack yourself!`,
+      ephemeral: true,
+    })
+    replied = true
+  }
+
+  if (!attacker && !replied) {
+    interaction.reply({
       content: 'Please register by using the /register slash command to attack',
       ephemeral: true,
     })
+    replied = true
   }
 
-  if (attacker.dead) {
-    return interaction.reply({
+  if (!victim && !replied) {
+    interaction.reply({
+      content:
+        'Intended victim is currently not registered, please try attacking another player',
+      ephemeral: true,
+    })
+    replied = true
+  }
+
+  if (attacker?.dead && !replied) {
+    interaction.reply({
       content: `You can't attack, you're dead!`,
       ephemeral: true,
     })
+    replied = true
   }
 
-  if (victim?.dead) {
-    return interaction.reply({
+  if (victim?.dead && !replied) {
+    interaction.reply({
       content: `Your intended victim is already dead!`,
       ephemeral: true,
     })
+    replied = true
   }
 
-  if (attacker.coolDownTimeLeft && attacker.coolDownTimeLeft > 0) {
-    return interaction.reply({
+  if (attacker?.coolDownTimeLeft && stillCoolingDown && !replied) {
+    interaction.reply({
       content: `HOO do you think you are? It’s not your turn! Wait ${
         attacker.coolDownTimeLeft / 1000
       } seconds`,
       ephemeral: true,
     })
+    replied = true
   }
 
-  if (attacker?.timedOut) {
-    return interaction.reply({
+  if (attacker?.timedOut && !replied) {
+    interaction.reply({
       content: `Unfortunately, you've timed out due to inactivty.`,
       ephemeral: true,
     })
+    replied = true
   }
 
-  if (victim?.timedOut) {
-    return interaction.reply({
+  if (victim?.timedOut && !replied) {
+    interaction.reply({
       content: 'Unfortunately, this player has timed out due to inactivity',
       ephemeral: true,
     })
+    replied = true
   }
 
-  if (!victim) {
-    return interaction.reply({
-      content:
-        'Intended victim is currently not registered, please try attacking another player',
-      ephemeral: true,
-    })
-  }
+  if (canAttack) {
+    // Only start cooldown if attack actually happens
+    handlePlayerCooldown(attackerId, coolDownInterval)
 
-  // Only start cooldown if attack actually happens
-  handlePlayerCooldown(attackerId, coolDownInterval)
+    const damage = Math.floor(Math.random() * (hp / 2))
+    // const damage = 1000
+    victim.hp -= damage
 
-  const damage = Math.floor(Math.random() * (hp / 2))
-  // const damage = 1000
-  victim.hp -= damage
+    victimDead = false
+    if (victim.hp <= 0) {
+      // if victim is dead, delete from game
+      game.players[victimId].dead = true
+      victimDead = true
+    }
+    const { username: victimName } = victim
+    const { asset: attackerAsset } = attacker
 
-  let victimDead = false
-  if (victim.hp <= 0) {
-    // if victim is dead, delete from game
-    game.players[victimId].dead = true
-    victimDead = true
-  }
-  const { username: victimName } = victim
-  const { asset: attackerAsset } = attacker
+    if (victimDead) {
+      const attachment = new MessageAttachment(
+        'src/images/death.gif',
+        'death.gif'
+      )
+      await interaction.reply({
+        files: [attachment],
+        content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
+      })
+    } else {
+      interaction.reply(
+        getAttackString(attackerAsset.assetName, victimName, damage)
+      )
+    }
 
-  const playerArr = Object.values(game.players)
+    const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
 
-  if (victimDead) {
-    const attachment = new MessageAttachment(
-      'src/images/death.gif',
-      'death.gif'
-    )
-    await interaction.reply({
-      files: [attachment],
-      content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
-    })
-  } else {
-    interaction.reply(
-      getAttackString(attackerAsset.assetName, victimName, damage)
-    )
-  }
+    isWin = !!winningPlayer
 
-  const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
+    console.log('is Win', isWin)
+    console.log('winning player', winningPlayer)
 
-  if (winningPlayer && game.active) {
-    return handleWin(winningPlayer, interaction, winByTimeout)
+    if (isWin && winningPlayer && game.active) {
+      handleWin(winningPlayer, winByTimeout)
+    }
   }
 
   const embedData: EmbedData = {
     color: 'RED',
     fields: mapPlayersForEmbed(playerArr),
     image: undefined,
+    isMain: true,
   }
 
   await game.embed.edit(doEmbed(embedData))
-  await wait(victimDead || winningPlayer ? 10000 : messageDeleteInterval)
+  await wait(victimDead || isWin ? deathDeleteInterval : messageDeleteInterval)
   await interaction.deleteReply()
 }
 

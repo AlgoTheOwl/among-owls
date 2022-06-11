@@ -6,6 +6,11 @@ import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
 import Asset from '../models/asset'
 import Player from '../models/player'
+import { SlashCommandBuilder } from '@discordjs/builders'
+import { Interaction } from 'discord.js'
+import { game } from '..'
+import { addRole } from '../utils/helpers'
+import settings from '../settings'
 
 const algoNode: string = process.env.ALGO_NODE
 const pureStakeApi: string = process.env.PURESTAKE_API
@@ -19,6 +24,62 @@ const token = {
 const server: string = algoNode
 const indexerServer: string = algoIndexerNode
 const port = ''
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('register')
+    .setDescription('register for When AOWLS Attack')
+    .addStringOption((option) =>
+      option
+        .setName('address')
+        .setDescription('enter the your wallet address')
+        .setRequired(true)
+    )
+    .addNumberOption((option) =>
+      option
+        .setName('assetid')
+        .setDescription('enter your AOWLS asset ID')
+        .setRequired(true)
+    ),
+  async execute(interaction: Interaction) {
+    if (!interaction.isCommand()) return
+
+    const { user, options } = interaction
+    const { hp } = settings
+
+    if (game?.active) {
+      return interaction.reply({
+        content: 'Please wait until after the game ends to register',
+        ephemeral: true,
+      })
+    }
+    // TODO: add ability to register for different games here
+    const address = options.getString('address')
+    const assetId = options.getNumber('assetid')
+
+    const { username, id } = user
+
+    if (address && assetId) {
+      const { status, registeredUser, asset } = await processRegistration(
+        username,
+        id,
+        address,
+        assetId,
+        'yao',
+        hp
+      )
+      // add permissions if succesful
+      if (registeredUser && asset) {
+        addRole(interaction, process.env.REGISTERED_ID, registeredUser)
+      }
+
+      await interaction.reply({
+        ephemeral: registeredUser ? false : true,
+        content: status,
+      })
+    }
+  },
+}
 
 const processRegistration = async (
   username: string,

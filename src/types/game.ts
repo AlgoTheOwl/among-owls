@@ -1,4 +1,5 @@
-import { ColorResolvable, MessageEmbed } from 'discord.js'
+import { ColorResolvable, MessageActionRow, MessageEmbed } from 'discord.js'
+import Player from '../models/player'
 import User from '../models/user'
 
 export interface EmbedData {
@@ -9,6 +10,7 @@ export interface EmbedData {
   thumbNail?: string
   fields?: Field[]
   footer?: Footer
+  isMain?: boolean
 }
 
 type Field = {
@@ -24,4 +26,5 @@ type Footer = {
 export interface EmbedReply {
   embeds: [MessageEmbed]
   fetchReply: boolean
+  components?: MessageActionRow[]
 }
