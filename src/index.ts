@@ -1,39 +1,35 @@
-import User from './models/user'
-import { Client, Intents, Interaction } from 'discord.js'
 import {
-  addRole,
-  asyncForEach,
+  Client,
+  Intents,
+  Interaction,
+  Collection,
+  SelectMenuInteraction,
+} from 'discord.js'
+import {
   wait,
   getPlayerArray,
   mapPlayersForEmbed,
   handleWin,
-  confirmRole,
   getWinningPlayer,
 } from './utils/helpers'
-import { processRegistration } from './interactions/register'
 import { connectToDatabase } from './database/database.service'
-import Game from './models/game'
-import Player from './models/player'
-import mockUsers from './mocks/users'
-import startGame from './interactions/start'
 import attack from './interactions/attack'
-import { collections } from './database/database.service'
 import { EmbedData } from './types/game'
-import { WithId } from 'mongodb'
 import doEmbed from './embeds'
+import fs from 'node:fs'
+import path from 'node:path'
+import settings from './settings'
+import Game from './models/game'
 
 const token: string = process.env.DISCORD_TOKEN
-const roleId: string = process.env.ADMIN_ID
 
+const { hp, kickPlayerTimeout, coolDownInterval } = settings
 // Gloval vars
-export let game: Game
+export let game: Game = new Game({}, false, false, coolDownInterval)
 export let emojis = {}
 export let kickPlayerInterval: ReturnType<typeof setInterval>
 
 // Settings
-const hp = 1000
-const imageDir = 'dist/nftAssets'
-const kickPlayerTimeout = 10000
 
 const client: Client = new Client({
   intents: [
@@ -42,6 +38,18 @@ const client: Client = new Client({
     Intents.FLAGS.GUILD_MEMBERS,
   ],
 })
+
+client.commands = new Collection()
+const commandsPath = path.join(__dirname, 'commands')
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith('.js'))
+
+for (const file of commandFiles) {
+  const filePath = path.join(commandsPath, file)
+  const command = require(filePath)
+  client.commands.set(command.data.name, command)
+}
 
 client.once('ready', async () => {
   await connectToDatabase()
@@ -55,162 +63,46 @@ client.once('ready', async () => {
  *****************
  */
 
-client.on('interactionCreate', async (interaction: Interaction) => {
-  if (!interaction.isCommand()) return
+client.on(
+  'interactionCreate',
+  async (interaction: Interaction | SelectMenuInteraction) => {
+    if (interaction.isCommand()) {
+      const command = client.commands.get(interaction.commandName)
 
-  const { commandName, user, options } = interaction
+      if (!command) return
 
-  if (commandName === 'start') {
-    const hasRole = await confirmRole(roleId, interaction, user.id)
-    if (!hasRole) {
-      return await interaction.reply({
-        content: 'Only administrators can use this command',
-        ephemeral: true,
-      })
-    }
-
-    const gameState = await startGame(interaction, hp, imageDir)
-    if (gameState) {
-      game = gameState
-    }
-  }
-
-  if (commandName === 'attack') {
-    if (!game?.active)
-      return interaction.reply({
-        content: `HOO do you think you are? The game hasn’t started yet!`,
-        ephemeral: true,
-      })
-    if (!game.attackEngaged) {
-      handlePlayerTimeout(interaction)
-      game.attackEngaged = true
-    }
-    attack(interaction, game, user, hp)
-  }
-
-  if (commandName === 'stop') {
-    const hasRole = await confirmRole(roleId, interaction, user.id)
-    if (!hasRole) {
-      return await interaction.reply({
-        content: 'Only administrators can use this command',
-        ephemeral: true,
-      })
-    }
-    if (!game?.active)
-      return interaction.reply({
-        content: 'Game is not currently running',
-        ephemeral: true,
-      })
-    game.active = false
-    clearInterval(kickPlayerInterval)
-    return interaction.reply({ content: 'Game stopped', ephemeral: true })
-  }
-
-  if (commandName === 'register') {
-    if (game?.active) {
-      return interaction.reply({
-        content: 'Please wait until after the game ends to register',
-        ephemeral: true,
-      })
-    }
-    // TODO: add ability to register for different games here
-    const address = options.getString('address')
-    const assetId = options.getNumber('assetid')
-
-    const { username, id } = user
-
-    if (address && assetId) {
-      const { status, registeredUser, asset } = await processRegistration(
-        username,
-        id,
-        address,
-        assetId,
-        'yao',
-        hp
-      )
-      // add permissions if succesful
-      if (registeredUser && asset) {
-        addRole(interaction, process.env.REGISTERED_ID, registeredUser)
+      try {
+        await command.execute(interaction)
+      } catch (error) {
+        console.error(error)
+        await interaction.reply({
+          content: 'There was an error while executing this command!',
+          ephemeral: true,
+        })
       }
-
-      await interaction.reply({
-        ephemeral: registeredUser ? false : true,
-        content: status,
-      })
     }
-  }
 
-  if (commandName === 'leaderboard') {
-    const winningUsers = (await collections.users
-      .find({ yaoWins: { $gt: 0 } })
-      .sort({ yaoWins: 'desc' })
-      .toArray()) as WithId<User>[]
-
-    if (winningUsers.length) {
-      const embedData: EmbedData = {
-        title: 'Leaderboard',
-        description: 'Which AOWLs rule them all?',
-        image: undefined,
-        fields: winningUsers.map((user, i) => {
-          const place = i + 1
-          const win = user.yaoWins === 1 ? 'win' : 'wins'
-          return {
-            name: `#${place}: ${user.username}`,
-            value: `${user.yaoWins} ${win}`,
+    if (interaction.isSelectMenu()) {
+      try {
+        if (interaction.customId === 'attack') {
+          const { user } = interaction
+          if (!game?.active)
+            return interaction.reply({
+              content: `HOO do you think you are? The game hasn’t started yet!`,
+              ephemeral: true,
+            })
+          if (!game.attackEngaged) {
+            handlePlayerTimeout(interaction)
+            game.attackEngaged = true
           }
-        }),
+          attack(interaction, game, user, hp)
+        }
+      } catch (error) {
+        console.log(error)
       }
-      await interaction.reply(doEmbed(embedData))
-    } else {
-      await interaction.reply({ content: 'no winners yet!', ephemeral: true })
     }
   }
-
-  if (commandName === 'view-registration') {
-    try {
-      const amountOfPlayers = await collections.yaoPlayers.find({}).toArray()
-      await interaction.reply({
-        content: `There are currently ${amountOfPlayers.length} players registered`,
-        ephemeral: true,
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  /*
-   *****************
-   * TEST COMMANDS *
-   *****************
-   */
-
-  // test registring and selecting players
-  if (commandName === 'test-register') {
-    const hasRole = await confirmRole(roleId, interaction, user.id)
-    if (!hasRole) {
-      return await interaction.reply({
-        content: 'Only administrators can use this command',
-        ephemeral: true,
-      })
-    }
-    await asyncForEach(mockUsers, async (player: any, i: number) => {
-      const { username, discordId, address, assetId } = player
-      await processRegistration(
-        username,
-        discordId,
-        address,
-        assetId,
-        'yao',
-        hp
-      )
-    })
-
-    await interaction.reply({
-      content: 'all test users added',
-      ephemeral: true,
-    })
-  }
-})
+)
 
 /*
  *****************

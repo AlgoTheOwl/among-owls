@@ -9,7 +9,7 @@ class Game {
         this.embed = embed;
         this.attackEngaged = attackEngaged;
         this.players = players;
-        this.active = true;
+        this.active = false;
         this.win = false;
         this.coolDown = coolDown;
         this.embed = embed;
