@@ -1,5 +1,12 @@
-import { MessageAttachment, MessageEmbed } from 'discord.js'
+import {
+  MessageEmbed,
+  MessageActionRow,
+  MessageButton,
+  MessageSelectMenu,
+} from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
+import { game } from '.'
+import Player from './models/player'
 
 const ipfsGateway = process.env.IPFS_GATEWAY
 
@@ -13,12 +20,35 @@ const defaultEmbedValues: EmbedData = {
     text: 'A HootGang Production',
     iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   },
+  isMain: true,
 }
 
 export default function doEmbed(data: EmbedData): EmbedReply {
-  let { title, description, color, image, thumbNail, fields, footer } = {
-    ...defaultEmbedValues,
-    ...data,
+  let { title, description, color, image, thumbNail, fields, footer, isMain } =
+    {
+      ...defaultEmbedValues,
+      ...data,
+    }
+
+  let components = []
+
+  if (isMain && game.active) {
+    const playerArr = Object.values(game.players)
+    const attackSelectMenuOptions = playerArr
+      .filter((player: Player) => !player.timedOut || !player.dead)
+      .map((player: Player) => ({
+        label: player.username,
+        description: player.asset.assetName,
+        value: player.discordId,
+      }))
+    components.push(
+      new MessageActionRow().addComponents(
+        new MessageSelectMenu()
+          .setCustomId('attack')
+          .setPlaceholder('Select a victim to attack')
+          .addOptions(attackSelectMenuOptions)
+      )
+    )
   }
 
   const embed = new MessageEmbed()
@@ -39,5 +69,6 @@ export default function doEmbed(data: EmbedData): EmbedReply {
   return {
     embeds: [embed],
     fetchReply: true,
+    components,
   }
 }

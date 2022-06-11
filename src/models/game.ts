@@ -10,7 +10,7 @@ export default class Game {
     public attackEngaged?: boolean
   ) {
     this.players = players
-    this.active = true
+    this.active = false
     this.win = false
     this.coolDown = coolDown
     this.embed = embed

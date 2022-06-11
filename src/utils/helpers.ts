@@ -5,7 +5,7 @@ import axios from 'axios'
 import { Indexer } from 'algosdk'
 import { Asset } from '../types/user'
 import User from '../models/user'
-import { Interaction } from 'discord.js'
+import { Interaction, SelectMenuInteraction } from 'discord.js'
 import Player from '../models/player'
 import { game } from '..'
 import { collections } from '../database/database.service'
@@ -13,7 +13,6 @@ import { WithId } from 'mongodb'
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import { kickPlayerInterval } from '..'
-import Game from '../models/game'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -151,7 +150,7 @@ export const addRole = async (
   }
 }
 
-const removeRole = async (
+export const removeRole = async (
   interaction: Interaction,
   roleId: string,
   discordId: string
@@ -185,12 +184,7 @@ export const getNumberSuffix = (num: number): string => {
 export const getPlayerArray = (players: { [key: string]: Player }): Player[] =>
   Object.values(players)
 
-export const handleWin = async (
-  player: Player,
-  interaction: Interaction,
-  winByTimeout: boolean
-) => {
-  if (!interaction.isCommand() || !game.active) return
+export const handleWin = async (player: Player, winByTimeout: boolean) => {
   // handle win
   game.active = false
   clearInterval(kickPlayerInterval)
