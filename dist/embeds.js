@@ -23,8 +23,8 @@ function doEmbed(data) {
         const attackSelectMenuOptions = playerArr
             .filter((player) => !player.timedOut || !player.dead)
             .map((player) => ({
-            label: player.username,
-            description: player.asset.assetName,
+            label: `Attack ${player.username}`,
+            description: '',
             value: player.discordId,
         }));
         components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()

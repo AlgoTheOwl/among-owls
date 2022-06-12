@@ -15,6 +15,7 @@ module.exports = {
             return;
         const winningUsers = (await database_service_1.collections.users
             .find({ yaoWins: { $gt: 0 } })
+            .limit(10)
             .sort({ yaoWins: 'desc' })
             .toArray());
         if (winningUsers.length) {

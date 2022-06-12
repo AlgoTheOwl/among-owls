@@ -1,9 +1,4 @@
-import {
-  MessageEmbed,
-  MessageActionRow,
-  MessageButton,
-  MessageSelectMenu,
-} from 'discord.js'
+import { MessageEmbed, MessageActionRow, MessageSelectMenu } from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
 import Player from './models/player'
@@ -37,8 +32,8 @@ export default function doEmbed(data: EmbedData): EmbedReply {
     const attackSelectMenuOptions = playerArr
       .filter((player: Player) => !player.timedOut || !player.dead)
       .map((player: Player) => ({
-        label: player.username,
-        description: player.asset.assetName,
+        label: `Attack ${player.username}`,
+        description: '',
         value: player.discordId,
       }))
     components.push(

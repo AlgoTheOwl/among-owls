@@ -7,10 +7,9 @@ exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.ge
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
-const __1 = require("..");
 const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../embeds"));
-const __2 = require("..");
+const __1 = require("..");
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -162,10 +161,10 @@ const getNumberSuffix = (num) => {
 exports.getNumberSuffix = getNumberSuffix;
 const getPlayerArray = (players) => Object.values(players);
 exports.getPlayerArray = getPlayerArray;
-const handleWin = async (player, winByTimeout) => {
+const handleWin = async (player, winByTimeout, game) => {
     // handle win
-    __1.game.active = false;
-    clearInterval(__2.kickPlayerInterval);
+    game.active = false;
+    __1.intervals.timeoutInterval && clearInterval(__1.intervals.timeoutInterval);
     // Increment score of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
         _id: player.userId,
@@ -187,7 +186,7 @@ const handleWin = async (player, winByTimeout) => {
     // asyncForEach(playerArr, (player: Player) => {
     //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
     // })
-    return __1.game.embed.edit((0, embeds_1.default)(embedData));
+    return game.embed.edit((0, embeds_1.default)(embedData));
 };
 exports.handleWin = handleWin;
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);

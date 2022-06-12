@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
 const helpers_1 = require("../utils/helpers");
-const start_1 = require("./start");
 const __1 = require("..");
+const __2 = require("..");
 const roleId = process.env.ADMIN_ID;
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
@@ -20,13 +20,13 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        if (!(start_1.game === null || start_1.game === void 0 ? void 0 : start_1.game.active))
+        if (!(__1.game === null || __1.game === void 0 ? void 0 : __1.game.active))
             return interaction.reply({
                 content: 'Game is not currently running',
                 ephemeral: true,
             });
-        start_1.game.active = false;
-        clearInterval(__1.kickPlayerInterval);
+        __1.game.active = false;
+        __2.intervals.timeoutInterval && clearInterval(__2.intervals.timeoutInterval);
         return interaction.reply({ content: 'Game stopped', ephemeral: true });
     },
 };
