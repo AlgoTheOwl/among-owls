@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
-import { collections } from '../database/database.service'
 import { confirmRole, asyncForEach } from '../utils/helpers'
 import { processRegistration } from './register'
 import mockUsers from '../mocks/users'
