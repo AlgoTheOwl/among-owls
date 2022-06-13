@@ -1,4 +1,10 @@
-import { MessageEmbed, MessageActionRow, MessageSelectMenu } from 'discord.js'
+import {
+  MessageEmbed,
+  MessageActionRow,
+  MessageSelectMenu,
+  ButtonInteraction,
+  MessageButton,
+} from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
 import Player from './models/player'
@@ -38,8 +44,14 @@ export default function doEmbed(data: EmbedData): EmbedReply {
       }))
     components.push(
       new MessageActionRow().addComponents(
-        new MessageSelectMenu()
+        new MessageButton()
           .setCustomId('attack')
+          .setLabel('Attack!')
+          .setStyle('DANGER')
+      ),
+      new MessageActionRow().addComponents(
+        new MessageSelectMenu()
+          .setCustomId('select-victim')
           .setPlaceholder('Select a victim to attack')
           .addOptions(attackSelectMenuOptions)
       )

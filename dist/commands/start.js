@@ -60,7 +60,7 @@ module.exports = {
             }
             else {
                 // error downloading
-                await interaction.followUp({
+                return await interaction.reply({
                     content: 'Error downloading assets from the blockchain, please try again',
                     ephemeral: true,
                 });

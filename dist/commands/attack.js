@@ -12,7 +12,7 @@ const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
 const __2 = require("..");
 const __3 = require("..");
-const { timeoutInterval, coolDownInterval, hp, waitBeforeTimeoutInterval, kickPlayerTimeout, } = settings_1.default;
+const { timeoutInterval, coolDownInterval, hp, waitBeforeTimeoutInterval, kickPlayerTimeout, deathDeleteInterval, } = settings_1.default;
 const attackStrings = [
     'HOOT, HOOT! {assetName} slashes at {victimName} for {damage} damage',
     'HI-YAH!. {assetName} karate chops at {victimName} for {damage} damage',
@@ -60,7 +60,7 @@ const doPlayerTimeout = async (id) => {
             console.log('running timeout');
             let isTimeout = false;
             (0, helpers_1.getPlayerArray)(__1.game.players).forEach((player) => {
-                if (!player.rolledRecently) {
+                if (!player.rolledRecently && !player.timedOut) {
                     __1.game.players[player.discordId].timedOut = true;
                     isTimeout = true;
                     console.log('user is timed out');
@@ -103,7 +103,7 @@ module.exports = {
         .setName('attack')
         .setDescription('Attack another user!'),
     async execute(interaction) {
-        if (!interaction.isSelectMenu())
+        if (!interaction.isButton())
             return;
         if (!__1.game.active) {
             return interaction.reply({
@@ -111,10 +111,14 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        interaction.deferUpdate();
         const { user } = interaction;
-        const { values: idArr } = interaction;
-        const victimId = idArr[0];
+        const victimId = __1.game.players[user.id].victimId || null;
+        if (!victimId) {
+            return interaction.reply({
+                content: `Please select a victim before attacking!`,
+                ephemeral: true,
+            });
+        }
         const { id: attackerId } = user;
         const victim = __1.game.players[victimId] ? __1.game.players[victimId] : null;
         const attacker = __1.game.players[attackerId] ? __1.game.players[attackerId] : null;
@@ -147,10 +151,9 @@ module.exports = {
             content = errorMessages.timedOut;
         if (victim === null || victim === void 0 ? void 0 : victim.timedOut)
             content = errorMessages.victimTimedOut;
-        if (content) {
-            interaction.followUp({ content, ephemeral: true });
-        }
-        else if (victim && attacker) {
+        if (content)
+            return interaction.reply({ content, ephemeral: true });
+        if (victim && attacker) {
             handlePlayerCooldown(attackerId, coolDownInterval);
             const damage = Math.floor(Math.random() * (hp / 2));
             // const damage = 1000
@@ -163,12 +166,16 @@ module.exports = {
             }
             if (victimDead && attacker) {
                 const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
-                await interaction.editReply({
+                await interaction.reply({
                     files: [attachment],
                     content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
                 });
+                setTimeout(() => {
+                    interaction.deleteReply();
+                }, deathDeleteInterval);
             }
             else {
+                interaction.deferUpdate();
             }
             const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
             isWin = !!winningPlayer;

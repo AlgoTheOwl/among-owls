@@ -12,7 +12,8 @@ export default class Player {
     public coolDownTimeLeft?: number,
     public rolledRecently?: boolean,
     public timedOut?: boolean,
-    public dead?: boolean
+    public dead?: boolean,
+    public victimId?: string
   ) {
     this.rolledRecently = false
     this.timedOut = false

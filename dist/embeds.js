@@ -27,8 +27,11 @@ function doEmbed(data) {
             description: '',
             value: player.discordId,
         }));
-        components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
+        components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
             .setCustomId('attack')
+            .setLabel('Attack!')
+            .setStyle('DANGER')), new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
+            .setCustomId('select-victim')
             .setPlaceholder('Select a victim to attack')
             .addOptions(attackSelectMenuOptions)));
     }

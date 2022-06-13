@@ -53,7 +53,7 @@ client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
         command = client.commands.get(interaction.commandName);
     }
-    if (interaction.isSelectMenu()) {
+    if (interaction.isSelectMenu() || interaction.isButton()) {
         command = client.commands.get(interaction.customId);
     }
     if (!command)
