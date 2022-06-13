@@ -18,10 +18,11 @@ const defaultEmbedValues = {
 function doEmbed(data) {
     let { title, description, color, image, thumbNail, fields, footer, isMain } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     let components = [];
+    // If it's the main embed, add all the good stuff
     if (isMain && _1.game.active) {
         const playerArr = Object.values(_1.game.players);
         const attackSelectMenuOptions = playerArr
-            .filter((player) => !player.timedOut || !player.dead)
+            .filter((player) => !player.timedOut && !player.dead)
             .map((player) => ({
             label: `Attack ${player.username}`,
             description: '',

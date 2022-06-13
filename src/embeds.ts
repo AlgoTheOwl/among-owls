@@ -33,10 +33,11 @@ export default function doEmbed(data: EmbedData): EmbedReply {
 
   let components = []
 
+  // If it's the main embed, add all the good stuff
   if (isMain && game.active) {
     const playerArr = Object.values(game.players)
     const attackSelectMenuOptions = playerArr
-      .filter((player: Player) => !player.timedOut || !player.dead)
+      .filter((player: Player) => !player.timedOut && !player.dead)
       .map((player: Player) => ({
         label: `Attack ${player.username}`,
         description: '',
