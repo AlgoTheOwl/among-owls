@@ -9,10 +9,17 @@ module.exports = {
   async execute(interaction: SelectMenuInteraction) {
     const { values: idArr, user } = interaction
 
-    const victimId = idArr[0]
+    const victimId = idArr[0] || null
 
-    game.players[user.id].victimId = victimId
+    if (!victimId) {
+      return interaction.reply({
+        content: 'Something went wrong selecting a player, please try again',
+        ephemeral: true,
+      })
+    }
 
     interaction.deferUpdate()
+
+    game.players[user.id].victimId = victimId
   },
 }

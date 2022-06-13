@@ -8,8 +8,14 @@ module.exports = {
         .setDescription('Choose a new victim to attack'),
     async execute(interaction) {
         const { values: idArr, user } = interaction;
-        const victimId = idArr[0];
-        __1.game.players[user.id].victimId = victimId;
+        const victimId = idArr[0] || null;
+        if (!victimId) {
+            return interaction.reply({
+                content: 'Something went wrong selecting a player, please try again',
+                ephemeral: true,
+            });
+        }
         interaction.deferUpdate();
+        __1.game.players[user.id].victimId = victimId;
     },
 };
