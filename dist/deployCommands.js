@@ -1,51 +1,25 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const builders_1 = require("@discordjs/builders");
 const rest_1 = require("@discordjs/rest");
 const v9_1 = require("discord-api-types/v9");
+const node_fs_1 = __importDefault(require("node:fs"));
+const node_path_1 = __importDefault(require("node:path"));
 const clientId = process.env.DISCORD_CLIENT_ID;
 const guildId = process.env.DISCORD_GUILD_ID;
 const token = process.env.DISCORD_TOKEN;
-const commands = [
-    new builders_1.SlashCommandBuilder()
-        .setName('start')
-        .setDescription('start When AOWLS Attack'),
-    new builders_1.SlashCommandBuilder()
-        .setName('register')
-        .setDescription('register for When AOWLS Attack')
-        .addStringOption((option) => option
-        .setName('address')
-        .setDescription('enter the your wallet address')
-        .setRequired(true))
-        .addNumberOption((option) => option
-        .setName('assetid')
-        .setDescription('enter your AOWLS asset ID')
-        .setRequired(true)),
-    new builders_1.SlashCommandBuilder()
-        .setName('attack')
-        .setDescription('Attack another user!')
-        .addUserOption((option) => {
-        return option
-            .setName('victim')
-            .setDescription('The user')
-            .setRequired(true);
-    }),
-    new builders_1.SlashCommandBuilder()
-        .setName('stop')
-        .setDescription('Stop the current game'),
-    new builders_1.SlashCommandBuilder()
-        .setName('test-attack')
-        .setDescription('test attacking'),
-    new builders_1.SlashCommandBuilder()
-        .setName('test-register')
-        .setDescription('register multiple mock users'),
-    new builders_1.SlashCommandBuilder()
-        .setName('leaderboard')
-        .setDescription('show global leaderboard for AOWL games'),
-    new builders_1.SlashCommandBuilder()
-        .setName('view-registration')
-        .setDescription('View how many players have registered'),
-].map((command) => command.toJSON());
+const commands = [];
+const commandsPath = node_path_1.default.join(__dirname, 'commands');
+const commandFiles = node_fs_1.default
+    .readdirSync(commandsPath)
+    .filter((file) => file.endsWith('.js'));
+for (const file of commandFiles) {
+    const filePath = node_path_1.default.join(commandsPath, file);
+    const command = require(filePath);
+    commands.push(command.data.toJSON());
+}
 const rest = new rest_1.REST({ version: '9' }).setToken(token);
 rest
     .put(v9_1.Routes.applicationGuildCommands(clientId, guildId), { body: commands })

@@ -1,8 +1,9 @@
 import {
   MessageEmbed,
   MessageActionRow,
-  MessageButton,
   MessageSelectMenu,
+  ButtonInteraction,
+  MessageButton,
 } from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
@@ -32,19 +33,26 @@ export default function doEmbed(data: EmbedData): EmbedReply {
 
   let components = []
 
+  // If it's the main embed, add all the good stuff
   if (isMain && game.active) {
     const playerArr = Object.values(game.players)
     const attackSelectMenuOptions = playerArr
-      .filter((player: Player) => !player.timedOut || !player.dead)
+      .filter((player: Player) => !player.timedOut && !player.dead)
       .map((player: Player) => ({
-        label: player.username,
-        description: player.asset.assetName,
+        label: `Attack ${player.username}`,
+        description: '',
         value: player.discordId,
       }))
     components.push(
       new MessageActionRow().addComponents(
-        new MessageSelectMenu()
+        new MessageButton()
           .setCustomId('attack')
+          .setLabel('Attack!')
+          .setStyle('DANGER')
+      ),
+      new MessageActionRow().addComponents(
+        new MessageSelectMenu()
+          .setCustomId('select-victim')
           .setPlaceholder('Select a victim to attack')
           .addOptions(attackSelectMenuOptions)
       )

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Player {
-    constructor(username, discordId, address, asset, userId, hp, coolDownTimeLeft, rolledRecently, timedOut, dead) {
+    constructor(username, discordId, address, asset, userId, hp, coolDownTimeLeft, rolledRecently, timedOut, dead, victimId) {
         this.username = username;
         this.discordId = discordId;
         this.address = address;
@@ -12,6 +12,7 @@ class Player {
         this.rolledRecently = rolledRecently;
         this.timedOut = timedOut;
         this.dead = dead;
+        this.victimId = victimId;
         this.rolledRecently = false;
         this.timedOut = false;
         this.coolDownTimeLeft = 0;

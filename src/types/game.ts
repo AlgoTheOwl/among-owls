@@ -8,14 +8,14 @@ export interface EmbedData {
   color?: ColorResolvable
   image?: string
   thumbNail?: string
-  fields?: Field[]
+  fields?: Field[] | []
   footer?: Footer
   isMain?: boolean
 }
 
-type Field = {
+export type Field = {
   name: string
-  value: string
+  value: string | ''
 }
 
 type Footer = {
@@ -27,4 +27,9 @@ export interface EmbedReply {
   embeds: [MessageEmbed]
   fetchReply: boolean
   components?: MessageActionRow[]
+}
+
+export interface Intervals {
+  timeoutInterval: ReturnType<typeof setInterval> | null
+  playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> }
 }

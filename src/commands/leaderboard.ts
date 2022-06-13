@@ -15,6 +15,7 @@ module.exports = {
 
     const winningUsers = (await collections.users
       .find({ yaoWins: { $gt: 0 } })
+      .limit(10)
       .sort({ yaoWins: 'desc' })
       .toArray()) as WithId<User>[]
 
