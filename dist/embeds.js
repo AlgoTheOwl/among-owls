@@ -18,17 +18,21 @@ const defaultEmbedValues = {
 function doEmbed(data) {
     let { title, description, color, image, thumbNail, fields, footer, isMain } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     let components = [];
+    // If it's the main embed, add all the good stuff
     if (isMain && _1.game.active) {
         const playerArr = Object.values(_1.game.players);
         const attackSelectMenuOptions = playerArr
-            .filter((player) => !player.timedOut || !player.dead)
+            .filter((player) => !player.timedOut && !player.dead)
             .map((player) => ({
-            label: player.username,
-            description: player.asset.assetName,
+            label: `Attack ${player.username}`,
+            description: '',
             value: player.discordId,
         }));
-        components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
+        components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
             .setCustomId('attack')
+            .setLabel('Attack!')
+            .setStyle('DANGER')), new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
+            .setCustomId('select-victim')
             .setPlaceholder('Select a victim to attack')
             .addOptions(attackSelectMenuOptions)));
     }
