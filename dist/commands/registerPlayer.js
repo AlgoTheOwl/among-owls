@@ -31,7 +31,7 @@ module.exports = {
         if (!localPath) {
             return;
         }
-        const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, undefined, localPath);
+        const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath);
         index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp);
         interaction.reply(`${asset.assetName} has entered the game`);
         await (0, helpers_1.wait)(messageDeleteInterval);
