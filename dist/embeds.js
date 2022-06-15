@@ -16,10 +16,16 @@ const defaultEmbedValues = {
     isMain: true,
 };
 function doEmbed(data) {
-    let { title, description, color, image, thumbNail, fields, footer, isMain } = Object.assign(Object.assign({}, defaultEmbedValues), data);
+    let { title, description, color, image, thumbNail, fields, footer, isMain, isWaitingRoom, } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     let components = [];
+    if (isWaitingRoom && !_1.game.active) {
+        components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
+            .setCustomId('select-attacker')
+            .setLabel('Choose your AOWL')
+            .setStyle('DANGER')));
+    }
     // If it's the main embed, add all the good stuff
-    if (isMain && _1.game.active) {
+    if (!isWaitingRoom && isMain && _1.game.active) {
         const playerArr = Object.values(_1.game.players);
         const attackSelectMenuOptions = playerArr
             .filter((player) => !player.timedOut && !player.dead)
@@ -46,7 +52,7 @@ function doEmbed(data) {
     color && embed.setColor(color);
     image && embed.setImage(image);
     thumbNail && embed.setThumbnail(thumbNail);
-    fields && embed.addFields(fields);
+    (fields === null || fields === void 0 ? void 0 : fields.length) && embed.addFields(fields);
     footer && embed.setFooter(footer);
     return {
         embeds: [embed],

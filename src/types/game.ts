@@ -11,6 +11,7 @@ export interface EmbedData {
   fields?: Field[] | []
   footer?: Footer
   isMain?: boolean
+  isWaitingRoom?: boolean
 }
 
 export type Field = {

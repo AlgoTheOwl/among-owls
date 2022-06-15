@@ -2,7 +2,6 @@ import {
   MessageEmbed,
   MessageActionRow,
   MessageSelectMenu,
-  ButtonInteraction,
   MessageButton,
 } from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
@@ -25,17 +24,38 @@ const defaultEmbedValues: EmbedData = {
 }
 
 export default function doEmbed(data: EmbedData): EmbedReply {
-  let { title, description, color, image, thumbNail, fields, footer, isMain } =
-    {
-      ...defaultEmbedValues,
-      ...data,
-    }
+  let {
+    title,
+    description,
+    color,
+    image,
+    thumbNail,
+    fields,
+    footer,
+    isMain,
+    isWaitingRoom,
+  } = {
+    ...defaultEmbedValues,
+    ...data,
+  }
 
   let components = []
 
+  if (isWaitingRoom && !game.active) {
+    components.push(
+      new MessageActionRow().addComponents(
+        new MessageButton()
+          .setCustomId('select-attacker')
+          .setLabel('Choose your AOWL')
+          .setStyle('DANGER')
+      )
+    )
+  }
+
   // If it's the main embed, add all the good stuff
-  if (isMain && game.active) {
+  if (!isWaitingRoom && isMain && game.active) {
     const playerArr = Object.values(game.players)
+
     const attackSelectMenuOptions = playerArr
       .filter((player: Player) => !player.timedOut && !player.dead)
       .map((player: Player) => ({
@@ -43,6 +63,7 @@ export default function doEmbed(data: EmbedData): EmbedReply {
         description: '',
         value: player.discordId,
       }))
+
     components.push(
       new MessageActionRow().addComponents(
         new MessageButton()
@@ -71,7 +92,7 @@ export default function doEmbed(data: EmbedData): EmbedReply {
   color && embed.setColor(color)
   image && embed.setImage(image)
   thumbNail && embed.setThumbnail(thumbNail)
-  fields && embed.addFields(fields)
+  fields?.length && embed.addFields(fields)
   footer && embed.setFooter(footer)
 
   return {
