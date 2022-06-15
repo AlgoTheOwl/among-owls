@@ -1,13 +1,52 @@
 import { SelectMenuInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { game } from '../index'
+import { downloadFile, wait } from '../utils/helpers'
+import Asset from '../models/asset'
+import { collections } from '../database/database.service'
+import { WithId } from 'mongodb'
+import User from '../models/user'
+import settings from '../settings'
+import Player from '../models/player'
 
-// add player object to db here
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('register-player')
     .setDescription('Register an active player'),
   async execute(interaction: SelectMenuInteraction) {
-    if (!interaction.isSelectMenu() || !game?.active) return
+    if (!interaction.isSelectMenu()) return
+    const { values, user } = interaction
+    const { username, id } = user
+    const { imageDir, hp, messageDeleteInterval } = settings
+
+    const { assets, address, _id } = (await collections.users.findOne({
+      discordId: user.id,
+    })) as WithId<User>
+
+    const asset = assets.find((asset) => asset.assetId === Number(values[0]))
+
+    if (!asset) {
+      return
+    }
+
+    const localPath = await downloadFile(asset, imageDir, username)
+
+    if (!localPath) {
+      return
+    }
+
+    const gameAsset = new Asset(
+      asset.assetId,
+      asset.assetName,
+      asset.assetUrl,
+      asset.unitName,
+      undefined,
+      localPath
+    )
+
+    game.players[id] = new Player(username, id, address, gameAsset, _id, hp)
+    interaction.reply(`${asset.assetName} has entered the game`)
+    await wait(messageDeleteInterval)
+    interaction.deleteReply()
   },
 }

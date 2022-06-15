@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import axios from 'axios'
 import { Indexer } from 'algosdk'
-import { AlgoAsset, AlgoAssetData, Asset } from '../types/user'
+import { AlgoAsset, AlgoAssetData } from '../types/user'
 import User from '../models/user'
 import { Interaction } from 'discord.js'
 import Player from '../models/player'
@@ -14,6 +14,7 @@ import doEmbed from '../embeds'
 import { intervals } from '..'
 import Game from '../models/game'
 import IndexerClient from 'algosdk/dist/types/src/client/v2/indexer/indexer'
+import Asset from '../models/asset'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -36,18 +37,24 @@ export const determineOwnership = async function (
   try {
     let accountInfo = await algodclient.accountInformation(address).do()
 
-    let assetOwned = false
+    // let assetOwned = false
     let walletOwned = false
-    const nftsOwned: number[] = []
+    const nftsOwned: Asset[] = []
     await asyncForEach(accountInfo.assets, async (asset: AlgoAsset) => {
       // Collect array of owned assetIds
       const assetData = await findAsset(asset[`asset-id`], indexer)
+      if (assetData) {
+        const { params } = assetData
 
-      if (
-        assetData?.params[`unit-name`].includes(process.env.UNIT_NAME) &&
-        asset.amount > 0
-      ) {
-        nftsOwned.push(asset[`asset-id`])
+        if (
+          params[`unit-name`].includes(process.env.UNIT_NAME) &&
+          asset.amount > 0
+        ) {
+          const { name, url } = params
+          nftsOwned.push(
+            new Asset(asset['asset-id'], name, url, params['unit-name'])
+          )
+        }
       }
       // Check for opt-in asset
       if (asset[`asset-id`] === Number(process.env.OPT_IN_ASSET_ID)) {

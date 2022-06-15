@@ -13,10 +13,8 @@ import { confirmRole } from '../utils/helpers'
 import { game } from '..'
 import settings from '../settings'
 
-const { hp, minimumPlayers } = settings
+const { minimumPlayers } = settings
 const roleId: string = process.env.ADMIN_ID
-
-const imageDir = 'dist/nftAssets'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -51,16 +49,13 @@ module.exports = {
 
     await interaction.deferReply()
 
-    let players
     let playerCount = 0
 
     while (playerCount < minimumPlayers) {
       try {
         await wait(3000)
-        players = (await collections.yaoPlayers
-          .find({})
-          .toArray()) as WithId<Player>[]
-        playerCount = players.length
+        console.log(Object.values(game.players))
+        playerCount = Object.values(game.players).length
 
         const waitingRoomEmbedData: EmbedData = {
           image: undefined,
@@ -93,37 +88,37 @@ module.exports = {
     const gamePlayers: { [key: string]: Player } = {}
 
     // empty image directory
-    emptyDir(imageDir)
+    // emptyDir(imageDir)
 
-    if (players) {
-      await asyncForEach(players, async (player: Player) => {
-        const { username, discordId, address, asset, userId } = player
+    // if (players) {
+    //   await asyncForEach(players, async (player: Player) => {
+    //     const { username, discordId, address, asset, userId } = player
 
-        // save each image locally for use later
-        const localPath = await downloadFile(asset, imageDir, username)
+    //     // save each image locally for use later
+    //     const localPath = await downloadFile(asset, imageDir, username)
 
-        if (localPath) {
-          const assetWithLocalPath: Asset = { ...asset, localPath }
+    //     if (localPath) {
+    //       const assetWithLocalPath: Asset = { ...asset, localPath }
 
-          gamePlayers[discordId] = new Player(
-            username,
-            discordId,
-            address,
-            assetWithLocalPath,
-            userId,
-            hp,
-            0
-          )
-        } else {
-          // error downloading
-          return await interaction.reply({
-            content:
-              'Error downloading assets from the blockchain, please try again',
-            ephemeral: true,
-          })
-        }
-      })
-    }
+    //       gamePlayers[discordId] = new Player(
+    //         username,
+    //         discordId,
+    //         address,
+    //         assetWithLocalPath,
+    //         userId,
+    //         hp,
+    //         0
+    //       )
+    //     } else {
+    //       // error downloading
+    //       return await interaction.reply({
+    //         content:
+    //           'Error downloading assets from the blockchain, please try again',
+    //         ephemeral: true,
+    //       })
+    //     }
+    //   })
+    // }
 
     const playerArr = Object.values(gamePlayers)
 

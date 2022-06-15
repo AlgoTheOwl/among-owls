@@ -10,6 +10,7 @@ const axios_1 = __importDefault(require("axios"));
 const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../embeds"));
 const __1 = require("..");
+const asset_1 = __importDefault(require("../models/asset"));
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -27,15 +28,19 @@ const determineOwnership = async function (algodclient, indexer, address
 ) {
     try {
         let accountInfo = await algodclient.accountInformation(address).do();
-        let assetOwned = false;
+        // let assetOwned = false
         let walletOwned = false;
         const nftsOwned = [];
         await (0, exports.asyncForEach)(accountInfo.assets, async (asset) => {
             // Collect array of owned assetIds
             const assetData = await (0, exports.findAsset)(asset[`asset-id`], indexer);
-            if ((assetData === null || assetData === void 0 ? void 0 : assetData.params[`unit-name`].includes(process.env.UNIT_NAME)) &&
-                asset.amount > 0) {
-                nftsOwned.push(asset[`asset-id`]);
+            if (assetData) {
+                const { params } = assetData;
+                if (params[`unit-name`].includes(process.env.UNIT_NAME) &&
+                    asset.amount > 0) {
+                    const { name, url } = params;
+                    nftsOwned.push(new asset_1.default(asset['asset-id'], name, url, params['unit-name']));
+                }
             }
             // Check for opt-in asset
             if (asset[`asset-id`] === Number(process.env.OPT_IN_ASSET_ID)) {
