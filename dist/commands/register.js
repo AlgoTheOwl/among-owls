@@ -8,8 +8,6 @@ const algosdk_1 = __importDefault(require("algosdk"));
 const helpers_1 = require("../utils/helpers");
 const user_1 = __importDefault(require("../models/user"));
 const database_service_1 = require("../database/database.service");
-const asset_1 = __importDefault(require("../models/asset"));
-const player_1 = __importDefault(require("../models/player"));
 const builders_1 = require("@discordjs/builders");
 const __1 = require("..");
 const helpers_2 = require("../utils/helpers");
@@ -32,11 +30,13 @@ module.exports = {
         .addStringOption((option) => option
         .setName('address')
         .setDescription('enter the your wallet address')
-        .setRequired(true))
-        .addNumberOption((option) => option
-        .setName('assetid')
-        .setDescription('enter your AOWLS asset ID')
         .setRequired(true)),
+    // .addNumberOption((option) =>
+    //   option
+    //     .setName('assetid')
+    //     .setDescription('enter your AOWLS asset ID')
+    //     .setRequired(true)
+    // ),
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
@@ -50,10 +50,12 @@ module.exports = {
         }
         // TODO: add ability to register for different games here
         const address = options.getString('address');
-        const assetId = options.getNumber('assetid');
+        // const assetId = options.getNumber('assetid')
         const { username, id } = user;
-        if (address && assetId) {
-            const { status, registeredUser, asset } = await processRegistration(username, id, address, assetId, 'yao', hp);
+        if (address) {
+            const { status, registeredUser, asset } = await (0, exports.processRegistration)(username, id, address, 
+            // assetId,
+            'yao', hp);
             // add permissions if succesful
             if (registeredUser && asset) {
                 (0, helpers_2.addRole)(interaction, process.env.REGISTERED_ID, registeredUser);
@@ -65,7 +67,9 @@ module.exports = {
         }
     },
 };
-const processRegistration = async (username, discordId, address, assetId, gameType = 'yao', hp) => {
+const processRegistration = async (username, discordId, address, 
+// assetId: number,
+gameType = 'yao', hp) => {
     var _a, _b, _c;
     try {
         const algodClient = new algosdk_1.default.Algodv2(token, server, port);
@@ -74,9 +78,14 @@ const processRegistration = async (username, discordId, address, assetId, gameTy
         let user = (await ((_a = database_service_1.collections.users) === null || _a === void 0 ? void 0 : _a.findOne({
             discordId,
         })));
+        // Check if asset is owned and wallet has opt-in asset
+        // Retreive assetIds from specific collections
+        const { walletOwned, nftsOwned } = await (0, helpers_1.determineOwnership)(algodClient, algoIndexer, address
+        // assetId
+        );
         // If user doesn't exist, add to db and grab instance
         if (!user) {
-            const userEntry = new user_1.default(username, discordId, address, []);
+            const userEntry = new user_1.default(username, discordId, address, nftsOwned);
             const { acknowledged, insertedId } = await ((_b = database_service_1.collections.users) === null || _b === void 0 ? void 0 : _b.insertOne(userEntry));
             if (acknowledged) {
                 user = (await ((_c = database_service_1.collections.users) === null || _c === void 0 ? void 0 : _c.findOne({
@@ -89,77 +98,100 @@ const processRegistration = async (username, discordId, address, assetId, gameTy
                 };
             }
         }
-        // Check if asset is owned and wallet has opt-in asset
-        const { walletOwned, assetOwned } = await (0, helpers_1.determineOwnership)(algodClient, address, assetId);
-        const isOwned = walletOwned && assetOwned;
-        if (!isOwned) {
-            const status = walletOwned
-                ? `Looks like the wallet address entered doesn't hold this asset, please try again!`
-                : `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`;
+        else {
+            database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: [...user.assets, ...nftsOwned], address } });
+        }
+        // const isOwned = walletOwned && assetOwned
+        if (!walletOwned) {
             return {
-                status,
+                status: `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`,
             };
         }
         // // // // If owned, find full player and asset data
-        const player = (await database_service_1.collections.yaoPlayers.findOne({
-            discordId,
-        }));
-        const asset = await (0, helpers_1.findAsset)(assetId, algoIndexer);
+        // const player = (await collections.yaoPlayers.findOne({
+        //   discordId,
+        // })) as WithId<Player>
+        // const asset = await findAsset(assetId, algoIndexer)
         // if there's no asset, return right away
-        if (!asset) {
-            return {
-                status: "Looks like you don't own this NFT, try again with one in your possession.",
-            };
-        }
+        // if (!asset) {
+        //   return {
+        //     status:
+        //       "Looks like you don't own this NFT, try again with one in your possession.",
+        //   }
+        // }
         // Destructure asset values and store in db
-        const { name: assetName, url: assetUrl, 'unit-name': unitName, } = asset === null || asset === void 0 ? void 0 : asset.assets[0].params;
-        let assetEntry;
-        let assetStored = false;
-        if (user === null || user === void 0 ? void 0 : user._id) {
-            const dbAssetEntry = (await database_service_1.collections.assets.findOne({
-                assetId,
-            }));
-            if (dbAssetEntry) {
-                assetEntry = dbAssetEntry;
-                assetStored = true;
-            }
-            else {
-                assetEntry = new asset_1.default(user === null || user === void 0 ? void 0 : user._id, assetId, assetName, assetUrl, unitName);
-                // Add asset
-                await database_service_1.collections.assets.insertOne(assetEntry);
-                // Add asset ref to user object
-                await database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: [...user.assets, assetId] } });
-            }
-            // add error handling here
-        }
+        // const {
+        //   name: assetName,
+        //   url: assetUrl,
+        //   'unit-name': unitName,
+        // } = asset?.params
+        // let assetEntry: Asset | undefined
+        // let assetStored = false
+        // if (user?._id) {
+        //   const dbAssetEntry = (await collections.assets.findOne({
+        //     assetId,
+        //   })) as WithId<Asset>
+        //   if (dbAssetEntry) {
+        //     assetEntry = dbAssetEntry
+        //     assetStored = true
+        //   } else {
+        //     assetEntry = new Asset(
+        //       user?._id,
+        //       assetId,
+        //       assetName,
+        //       assetUrl,
+        //       unitName
+        //     )
+        //     // Add asset
+        //     await collections.assets.insertOne(assetEntry)
+        //     // Add asset ref to user object
+        //     await collections.users.findOneAndUpdate(
+        //       { _id: user._id },
+        //       { $set: { assets: [...user.assets, assetId] } }
+        //     )
+        //   }
+        //   // add error handling here
+        // }
         // Check to make sure NFT is in correct series
-        const incorrectCollection = unitName.slice(0, unitPrefix.length) !== unitPrefix;
-        if (incorrectCollection) {
-            return {
-                status: `This asset is not a ${unitPrefix}, please try again`,
-            };
-        }
-        if (player) {
-            // if player exists and asset is stored, return
-            if (assetStored) {
-                return {
-                    status: "Looks like you've already registered",
-                };
-            }
-            // if player and new asset, update player entry
-            await database_service_1.collections.yaoPlayers.findOneAndUpdate({ _id: player._id }, { $set: { asset: assetEntry } });
-            return {
-                status: `Replaced previous asset with ${assetEntry === null || assetEntry === void 0 ? void 0 : assetEntry.unitName} `,
-            };
-        }
-        // Player doesn't exist, add to db
-        if (assetEntry) {
-            const playerEntry = new player_1.default(username, discordId, address, assetEntry, user._id, hp);
-            await database_service_1.collections.yaoPlayers.insertOne(playerEntry);
-        }
+        // const incorrectCollection =
+        //   unitName.slice(0, unitPrefix.length) !== unitPrefix
+        // if (incorrectCollection) {
+        //   return {
+        //     status: `This asset is not a ${unitPrefix}, please try again`,
+        //   }
+        // }
+        // if (player) {
+        // if player exists and asset is stored, return
+        // if (assetStored) {
+        //   return {
+        //     status: "Looks like you've already registered",
+        //   }
+        // }
+        // if player and new asset, update player entry
+        //   await collections.yaoPlayers.findOneAndUpdate(
+        //     { _id: player._id },
+        //     { $set: { asset: assetEntry } }
+        //   )
+        //   return {
+        //     status: `Replaced previous asset with ${assetEntry?.unitName} `,
+        //   }
+        // }
+        // // Player doesn't exist, add to db
+        // if (assetEntry) {
+        //   const playerEntry = new Player(
+        //     username,
+        //     discordId,
+        //     address,
+        //     assetEntry,
+        //     user._id,
+        //     hp
+        //   )
+        //   await collections.yaoPlayers.insertOne(playerEntry)
+        // }
         return {
-            status: `Added ${unitName} - Prepare to attack!`,
-            asset: assetEntry,
+            // status: `Added ${unitName} - Prepare to attack!`,
+            status: `Thanks for registering!`,
+            // asset: assetEntry,
             registeredUser: user,
         };
     }

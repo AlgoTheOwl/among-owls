@@ -7,6 +7,8 @@ module.exports = {
         .setName('select-victim')
         .setDescription('Choose a new victim to attack'),
     async execute(interaction) {
+        if (!__1.game)
+            return;
         const { values: idArr, user } = interaction;
         const victimId = idArr[0] || null;
         if (!victimId) {
@@ -16,6 +18,8 @@ module.exports = {
             });
         }
         interaction.deferUpdate();
-        __1.game.players[user.id].victimId = victimId;
+        if (__1.game.players[user.id]) {
+            __1.game.players[user.id].victimId = victimId;
+        }
     },
 };

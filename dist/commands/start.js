@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
 const helpers_2 = require("../utils/helpers");
@@ -13,7 +12,7 @@ const builders_1 = require("@discordjs/builders");
 const helpers_3 = require("../utils/helpers");
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
-const { hp } = settings_1.default;
+const { hp, minimumPlayers } = settings_1.default;
 const roleId = process.env.ADMIN_ID;
 const imageDir = 'dist/nftAssets';
 module.exports = {
@@ -37,35 +36,63 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        const players = (await database_service_1.collections.yaoPlayers
-            .find({})
-            .toArray());
-        if (players.length < 2) {
-            return await interaction.reply({
-                content: 'There are not enough players to start the game',
-                ephemeral: true,
-            });
-        }
+        // const players = (await collections.yaoPlayers
+        //   .find({})
+        //   .toArray()) as WithId<Player>[]
+        // implement waiting room here
         await interaction.deferReply();
+        let players;
+        let playerCount = 0;
+        while (playerCount < minimumPlayers) {
+            try {
+                await (0, helpers_1.wait)(3000);
+                players = (await database_service_1.collections.yaoPlayers
+                    .find({})
+                    .toArray());
+                playerCount = players.length;
+                const waitingRoomEmbedData = {
+                    image: undefined,
+                    title: 'Waiting Room',
+                    description: `${playerCount} ${playerCount === 1 ? 'player' : 'players'} have joined the game`,
+                    isWaitingRoom: true,
+                };
+                // player clicks join, which sends them a list of the AOWLS they own and can select from
+                // they are then sent a select menu, which
+                await interaction.editReply((0, embeds_1.default)(waitingRoomEmbedData));
+            }
+            catch (error) {
+                // @ts-ignore
+                console.log('ERROR', error);
+            }
+            // implement countdown here
+        }
+        // if (players.length < 2) {
+        //   return await interaction.reply({
+        //     content: 'There are not enough players to start the game',
+        //     ephemeral: true,
+        //   })
+        // }
         const gamePlayers = {};
         // empty image directory
         (0, helpers_1.emptyDir)(imageDir);
-        await (0, helpers_1.asyncForEach)(players, async (player) => {
-            const { username, discordId, address, asset, userId } = player;
-            // save each image locally for use later
-            const localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
-            if (localPath) {
-                const assetWithLocalPath = Object.assign(Object.assign({}, asset), { localPath });
-                gamePlayers[discordId] = new player_1.default(username, discordId, address, assetWithLocalPath, userId, hp, 0);
-            }
-            else {
-                // error downloading
-                return await interaction.reply({
-                    content: 'Error downloading assets from the blockchain, please try again',
-                    ephemeral: true,
-                });
-            }
-        });
+        if (players) {
+            await (0, helpers_1.asyncForEach)(players, async (player) => {
+                const { username, discordId, address, asset, userId } = player;
+                // save each image locally for use later
+                const localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
+                if (localPath) {
+                    const assetWithLocalPath = Object.assign(Object.assign({}, asset), { localPath });
+                    gamePlayers[discordId] = new player_1.default(username, discordId, address, assetWithLocalPath, userId, hp, 0);
+                }
+                else {
+                    // error downloading
+                    return await interaction.reply({
+                        content: 'Error downloading assets from the blockchain, please try again',
+                        ephemeral: true,
+                    });
+                }
+            });
+        }
         const playerArr = Object.values(gamePlayers);
         // send back game embed
         const embedData = {
@@ -74,9 +101,10 @@ module.exports = {
             description: 'Leaderboard',
             isMain: true,
         };
-        const file = new discord_js_1.MessageAttachment('src/images/main.gif');
-        // send embed here
-        await interaction.editReply({ files: [file] });
+        console.log((0, embeds_1.default)(embedData));
+        // const file = new MessageAttachment('src/images/main.gif')
+        // // send embed here
+        // await interaction.editReply({ files: [file] })
         // start game
         __1.game.players = gamePlayers;
         __1.game.active = true;
