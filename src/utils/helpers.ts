@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import axios from 'axios'
 import { Indexer } from 'algosdk'
-import { Asset } from '../types/user'
+import { AlgoAsset, AlgoAssetData } from '../types/user'
 import User from '../models/user'
 import { Interaction } from 'discord.js'
 import Player from '../models/player'
@@ -13,6 +13,8 @@ import { EmbedData, Field } from '../types/game'
 import doEmbed from '../embeds'
 import { intervals } from '..'
 import Game from '../models/game'
+import IndexerClient from 'algosdk/dist/types/src/client/v2/indexer/indexer'
+import Asset from '../models/asset'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -28,45 +30,66 @@ export const asyncForEach = async (array: Array<any>, callback: Function) => {
 
 export const determineOwnership = async function (
   algodclient: AlgodClient,
-  address: string,
-  assetId: number
+  indexer: IndexerClient,
+  address: string
+  // assetId: number
 ): Promise<any> {
   try {
     let accountInfo = await algodclient.accountInformation(address).do()
 
-    let assetOwned = false
+    // let assetOwned = false
     let walletOwned = false
-    accountInfo.assets.forEach((asset: any) => {
+    const nftsOwned: Asset[] = []
+    await asyncForEach(accountInfo.assets, async (asset: AlgoAsset) => {
+      // Collect array of owned assetIds
+      const assetData = await findAsset(asset[`asset-id`], indexer)
+      if (assetData) {
+        const { params } = assetData
+
+        if (
+          params[`unit-name`].includes(process.env.UNIT_NAME) &&
+          asset.amount > 0
+        ) {
+          const { name, url } = params
+          nftsOwned.push(
+            new Asset(asset['asset-id'], name, url, params['unit-name'])
+          )
+        }
+      }
       // Check for opt-in asset
       if (asset[`asset-id`] === Number(process.env.OPT_IN_ASSET_ID)) {
         walletOwned = true
       }
-      // Check for entered asset
-      if (
-        // test case option
-        asset['asset-id'] === assetId &&
-        asset.amount > 0
-      ) {
-        assetOwned = true
-      }
+
+      // // Check for entered asset
+      // if (asset['asset-id'] === assetId && asset.amount > 0) {
+      //   assetOwned = true
+      // }
     })
+
     return {
-      assetOwned,
+      // assetOwned,
       walletOwned,
+      nftsOwned,
     }
   } catch (error) {
     console.log(error)
-    throw new Error('error determening ownership')
   }
 }
 
-export const findAsset = async (assetId: number, indexer: Indexer) => {
+export const findAsset = async (
+  assetId: number,
+  indexer: Indexer
+): Promise<AlgoAssetData | undefined> => {
   try {
-    return await indexer.searchForAssets().index(assetId).do()
+    const assetData = await indexer.lookupAssetByID(assetId).do()
+    if (assetData?.asset) return assetData.asset
   } catch (error) {
-    throw new Error('Error finding asset')
+    console.log(error)
   }
 }
+
+// const getCollectionAssetIds = (unitName: string,)
 
 const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/'
 
@@ -129,7 +152,6 @@ export const emptyDir = (dirPath: string) => {
     })
   } catch (error) {
     console.log('Error deleting contents of image directory', error)
-    // throw new Error('Error deleting contents of image directory')
   }
 }
 
@@ -148,7 +170,6 @@ export const addRole = async (
     role && (await member?.roles.add(role.id))
   } catch (error) {
     console.log('Error adding role', error)
-    // throw new Error('Error adding role')
   }
 }
 
@@ -169,7 +190,6 @@ export const confirmRole = async (
   interaction: Interaction,
   userId: string
 ) => {
-  // const role = interaction.guild?.roles.cache.find((role) => role.id === roleId)
   const member = interaction.guild?.members.cache.find(
     (member) => member.id === userId
   )

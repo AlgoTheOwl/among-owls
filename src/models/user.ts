@@ -1,11 +1,12 @@
 import { ObjectId } from 'mongodb'
+import Asset from './asset'
 
 export default class User {
   constructor(
     public username: string,
     public discordId: string,
     public address: string,
-    public assets: number[], // assetId
+    public assets: Asset[], // assetId
     public _id?: ObjectId,
     public yaoWins?: number
   ) {
