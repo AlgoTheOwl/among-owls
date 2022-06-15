@@ -40,7 +40,7 @@ module.exports = {
       asset.assetName,
       asset.assetUrl,
       asset.unitName,
-      undefined,
+      _id,
       localPath
     )
 
