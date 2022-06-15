@@ -4,37 +4,44 @@ import {
   MessageSelectMenu,
 } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import { collections } from '../database/database.service'
+import User from '../models/user'
+import { WithId } from 'mongodb'
+import Asset from '../models/asset'
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('select-attacker')
     .setDescription(`Pick which AOWL you'd like to compete`),
   async execute(interaction: ButtonInteraction) {
-    // This step gets all of your NFTs from your user object
-    // It should also download asset from the blockchain
+    const {
+      user: { id },
+    } = interaction
+    const { assets } = (await collections.users.findOne({
+      discordId: id,
+    })) as WithId<User>
 
-    const row = new MessageActionRow().addComponents(
-      new MessageSelectMenu()
-        .setCustomId('create-player')
-        .setPlaceholder('Select an AOWL to attack')
-        .addOptions([
-          {
-            label: 'Select me',
-            description: 'This is a description',
-            value: 'first_option',
-          },
-          {
-            label: 'You can select me too',
-            description: 'This is also a description',
-            value: 'second_option',
-          },
-        ])
-    )
+    if (assets?.length) {
+      const options = assets.map((asset: Asset) => {
+        return {
+          label: asset.assetName,
+          description: 'Select to play',
+          value: asset.assetId.toString(),
+        }
+      })
 
-    await interaction.reply({
-      content: 'Choose your AOWL',
-      components: [row],
-      ephemeral: true,
-    })
+      const row = new MessageActionRow().addComponents(
+        new MessageSelectMenu()
+          .setCustomId('register-player')
+          .setPlaceholder('Select an AOWL to attack')
+          .addOptions(options)
+      )
+
+      await interaction.reply({
+        content: 'Choose your AOWL',
+        components: [row],
+        ephemeral: true,
+      })
+    }
   },
 }

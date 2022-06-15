@@ -6,15 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
 const helpers_2 = require("../utils/helpers");
-const player_1 = __importDefault(require("../models/player"));
-const database_service_1 = require("../database/database.service");
 const builders_1 = require("@discordjs/builders");
 const helpers_3 = require("../utils/helpers");
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
-const { hp, minimumPlayers } = settings_1.default;
+const { minimumPlayers } = settings_1.default;
 const roleId = process.env.ADMIN_ID;
-const imageDir = 'dist/nftAssets';
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('start')
@@ -41,15 +38,12 @@ module.exports = {
         //   .toArray()) as WithId<Player>[]
         // implement waiting room here
         await interaction.deferReply();
-        let players;
         let playerCount = 0;
         while (playerCount < minimumPlayers) {
             try {
                 await (0, helpers_1.wait)(3000);
-                players = (await database_service_1.collections.yaoPlayers
-                    .find({})
-                    .toArray());
-                playerCount = players.length;
+                console.log(Object.values(__1.game.players));
+                playerCount = Object.values(__1.game.players).length;
                 const waitingRoomEmbedData = {
                     image: undefined,
                     title: 'Waiting Room',
@@ -74,25 +68,33 @@ module.exports = {
         // }
         const gamePlayers = {};
         // empty image directory
-        (0, helpers_1.emptyDir)(imageDir);
-        if (players) {
-            await (0, helpers_1.asyncForEach)(players, async (player) => {
-                const { username, discordId, address, asset, userId } = player;
-                // save each image locally for use later
-                const localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
-                if (localPath) {
-                    const assetWithLocalPath = Object.assign(Object.assign({}, asset), { localPath });
-                    gamePlayers[discordId] = new player_1.default(username, discordId, address, assetWithLocalPath, userId, hp, 0);
-                }
-                else {
-                    // error downloading
-                    return await interaction.reply({
-                        content: 'Error downloading assets from the blockchain, please try again',
-                        ephemeral: true,
-                    });
-                }
-            });
-        }
+        // emptyDir(imageDir)
+        // if (players) {
+        //   await asyncForEach(players, async (player: Player) => {
+        //     const { username, discordId, address, asset, userId } = player
+        //     // save each image locally for use later
+        //     const localPath = await downloadFile(asset, imageDir, username)
+        //     if (localPath) {
+        //       const assetWithLocalPath: Asset = { ...asset, localPath }
+        //       gamePlayers[discordId] = new Player(
+        //         username,
+        //         discordId,
+        //         address,
+        //         assetWithLocalPath,
+        //         userId,
+        //         hp,
+        //         0
+        //       )
+        //     } else {
+        //       // error downloading
+        //       return await interaction.reply({
+        //         content:
+        //           'Error downloading assets from the blockchain, please try again',
+        //         ephemeral: true,
+        //       })
+        //     }
+        //   })
+        // }
         const playerArr = Object.values(gamePlayers);
         // send back game embed
         const embedData = {
