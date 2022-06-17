@@ -15,6 +15,7 @@ module.exports = {
     .setDescription('Register an active player'),
   async execute(interaction: SelectMenuInteraction) {
     if (!interaction.isSelectMenu()) return
+    if (!game.waitingRoom) return
     const { values, user } = interaction
     const { username, id } = user
     const { imageDir, hp, messageDeleteInterval } = settings
@@ -29,7 +30,13 @@ module.exports = {
       return
     }
 
-    const localPath = await downloadFile(asset, imageDir, username)
+    let localPath
+
+    try {
+      localPath = await downloadFile(asset, imageDir, username)
+    } catch (error) {
+      console.log('download error', error)
+    }
 
     if (!localPath) {
       return
@@ -44,7 +51,15 @@ module.exports = {
       localPath
     )
 
-    game.players[id] = new Player(username, id, address, gameAsset, _id, hp)
+    game.players[id] = new Player(
+      username,
+      id,
+      address,
+      gameAsset,
+      _id,
+      hp,
+      assets.length
+    )
     interaction.reply(`${asset.assetName} has entered the game`)
     await wait(messageDeleteInterval)
     interaction.deleteReply()

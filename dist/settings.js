@@ -9,5 +9,5 @@ exports.default = {
     deathDeleteInterval: 8000,
     timeoutInterval: 30000,
     waitBeforeTimeoutInterval: 5000,
-    minimumPlayers: 10,
+    minimumPlayers: 2,
 };

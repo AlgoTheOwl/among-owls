@@ -15,6 +15,7 @@ import { intervals } from '..'
 import Game from '../models/game'
 import IndexerClient from 'algosdk/dist/types/src/client/v2/indexer/indexer'
 import Asset from '../models/asset'
+import { AssetParams } from 'algosdk/dist/types/src/client/v2/algod/models/types'
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -25,67 +26,6 @@ export const wait = async (duration: number) => {
 export const asyncForEach = async (array: Array<any>, callback: Function) => {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array)
-  }
-}
-
-export const determineOwnership = async function (
-  algodclient: AlgodClient,
-  indexer: IndexerClient,
-  address: string
-  // assetId: number
-): Promise<any> {
-  try {
-    let accountInfo = await algodclient.accountInformation(address).do()
-
-    // let assetOwned = false
-    let walletOwned = false
-    const nftsOwned: Asset[] = []
-    await asyncForEach(accountInfo.assets, async (asset: AlgoAsset) => {
-      // Collect array of owned assetIds
-      const assetData = await findAsset(asset[`asset-id`], indexer)
-      if (assetData) {
-        const { params } = assetData
-
-        if (
-          params[`unit-name`].includes(process.env.UNIT_NAME) &&
-          asset.amount > 0
-        ) {
-          const { name, url } = params
-          nftsOwned.push(
-            new Asset(asset['asset-id'], name, url, params['unit-name'])
-          )
-        }
-      }
-      // Check for opt-in asset
-      if (asset[`asset-id`] === Number(process.env.OPT_IN_ASSET_ID)) {
-        walletOwned = true
-      }
-
-      // // Check for entered asset
-      // if (asset['asset-id'] === assetId && asset.amount > 0) {
-      //   assetOwned = true
-      // }
-    })
-
-    return {
-      // assetOwned,
-      walletOwned,
-      nftsOwned,
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-export const findAsset = async (
-  assetId: number,
-  indexer: Indexer
-): Promise<AlgoAssetData | undefined> => {
-  try {
-    const assetData = await indexer.lookupAssetByID(assetId).do()
-    if (assetData?.asset) return assetData.asset
-  } catch (error) {
-    console.log(error)
   }
 }
 

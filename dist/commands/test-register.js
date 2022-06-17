@@ -27,7 +27,7 @@ module.exports = {
         }
         await (0, helpers_1.asyncForEach)(users_1.default, async (player, i) => {
             const { username, discordId, address, assetId } = player;
-            await (0, register_1.processRegistration)(username, discordId, address, assetId, 'yao', hp);
+            await (0, register_1.processRegistration)(username, discordId, address);
         });
         await interaction.reply({
             content: 'all test users added',

@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
 const helpers_2 = require("../utils/helpers");
@@ -33,69 +34,43 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        // const players = (await collections.yaoPlayers
-        //   .find({})
-        //   .toArray()) as WithId<Player>[]
-        // implement waiting room here
         await interaction.deferReply();
+        const file = new discord_js_1.MessageAttachment('src/images/main.gif');
+        // send embed here
+        await interaction.editReply({ files: [file] });
+        // Do waiting room
+        __1.game.waitingRoom = true;
         let playerCount = 0;
+        const waitingRoomEmbedData = {
+            image: undefined,
+            title: 'Waiting Room',
+            description: '0 players have joined the game',
+            isWaitingRoom: true,
+        };
+        __1.game.embed = await interaction.followUp((0, embeds_1.default)(waitingRoomEmbedData));
         while (playerCount < minimumPlayers) {
             try {
-                await (0, helpers_1.wait)(3000);
-                console.log(Object.values(__1.game.players));
+                await (0, helpers_1.wait)(2000);
                 playerCount = Object.values(__1.game.players).length;
-                const waitingRoomEmbedData = {
-                    image: undefined,
-                    title: 'Waiting Room',
-                    description: `${playerCount} ${playerCount === 1 ? 'player' : 'players'} have joined the game`,
-                    isWaitingRoom: true,
-                };
-                // player clicks join, which sends them a list of the AOWLS they own and can select from
-                // they are then sent a select menu, which
-                await interaction.editReply((0, embeds_1.default)(waitingRoomEmbedData));
+                await __1.game.embed.edit((0, embeds_1.default)(Object.assign(Object.assign({}, waitingRoomEmbedData), { description: `${playerCount} ${playerCount === 1 ? 'player' : 'players'} have joined the game` })));
             }
             catch (error) {
                 // @ts-ignore
                 console.log('ERROR', error);
             }
-            // implement countdown here
         }
-        // if (players.length < 2) {
-        //   return await interaction.reply({
-        //     content: 'There are not enough players to start the game',
-        //     ephemeral: true,
-        //   })
-        // }
-        const gamePlayers = {};
-        // empty image directory
-        // emptyDir(imageDir)
-        // if (players) {
-        //   await asyncForEach(players, async (player: Player) => {
-        //     const { username, discordId, address, asset, userId } = player
-        //     // save each image locally for use later
-        //     const localPath = await downloadFile(asset, imageDir, username)
-        //     if (localPath) {
-        //       const assetWithLocalPath: Asset = { ...asset, localPath }
-        //       gamePlayers[discordId] = new Player(
-        //         username,
-        //         discordId,
-        //         address,
-        //         assetWithLocalPath,
-        //         userId,
-        //         hp,
-        //         0
-        //       )
-        //     } else {
-        //       // error downloading
-        //       return await interaction.reply({
-        //         content:
-        //           'Error downloading assets from the blockchain, please try again',
-        //         ephemeral: true,
-        //       })
-        //     }
-        //   })
-        // }
-        const playerArr = Object.values(gamePlayers);
+        // Do countdown
+        let countDown = 5;
+        while (countDown >= 1) {
+            countDown--;
+            await (0, helpers_1.wait)(1000);
+            const embedData = {
+                title: 'Ready your AOWLS!',
+                description: `Game starting in ${countDown}...`,
+            };
+            await __1.game.embed.edit((0, embeds_1.default)(embedData));
+        }
+        const playerArr = Object.values(__1.game.players);
         // send back game embed
         const embedData = {
             image: undefined,
@@ -103,13 +78,8 @@ module.exports = {
             description: 'Leaderboard',
             isMain: true,
         };
-        console.log((0, embeds_1.default)(embedData));
-        // const file = new MessageAttachment('src/images/main.gif')
-        // // send embed here
-        // await interaction.editReply({ files: [file] })
         // start game
-        __1.game.players = gamePlayers;
         __1.game.active = true;
-        __1.game.embed = await interaction.followUp((0, embeds_1.default)(embedData));
+        __1.game.embed.edit((0, embeds_1.default)(embedData));
     },
 };
