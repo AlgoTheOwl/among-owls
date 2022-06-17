@@ -7,7 +7,8 @@ export default class Game {
     public win: false,
     public coolDown: number,
     public embed?: any,
-    public attackEngaged?: boolean
+    public attackEngaged?: boolean,
+    public waitingRoom?: boolean
   ) {
     this.players = players
     this.active = false
@@ -15,5 +16,6 @@ export default class Game {
     this.coolDown = coolDown
     this.embed = embed
     this.attackEngaged = false
+    this.waitingRoom = false
   }
 }

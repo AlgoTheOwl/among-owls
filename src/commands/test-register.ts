@@ -28,14 +28,7 @@ module.exports = {
 
     await asyncForEach(mockUsers, async (player: any, i: number) => {
       const { username, discordId, address, assetId } = player
-      await processRegistration(
-        username,
-        discordId,
-        address,
-        assetId,
-        'yao',
-        hp
-      )
+      await processRegistration(username, discordId, address)
     })
 
     await interaction.reply({

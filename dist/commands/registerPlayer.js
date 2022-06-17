@@ -17,6 +17,8 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isSelectMenu())
             return;
+        if (!index_1.game.waitingRoom)
+            return;
         const { values, user } = interaction;
         const { username, id } = user;
         const { imageDir, hp, messageDeleteInterval } = settings_1.default;
@@ -27,12 +29,18 @@ module.exports = {
         if (!asset) {
             return;
         }
-        const localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
+        let localPath;
+        try {
+            localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
+        }
+        catch (error) {
+            console.log('download error', error);
+        }
         if (!localPath) {
             return;
         }
         const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath);
-        index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp);
+        index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, assets.length);
         interaction.reply(`${asset.assetName} has entered the game`);
         await (0, helpers_1.wait)(messageDeleteInterval);
         interaction.deleteReply();

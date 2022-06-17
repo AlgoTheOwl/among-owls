@@ -8,6 +8,7 @@ import { collections } from '../database/database.service'
 import User from '../models/user'
 import { WithId } from 'mongodb'
 import Asset from '../models/asset'
+import { game } from '..'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -21,6 +22,13 @@ module.exports = {
       discordId: id,
     })) as WithId<User>
 
+    if (!game.waitingRoom) {
+      return interaction.reply({
+        content: 'Game is not currently active',
+        ephemeral: true,
+      })
+    }
+
     if (assets?.length) {
       const options = assets.map((asset: Asset) => {
         return {
@@ -29,6 +37,12 @@ module.exports = {
           value: asset.assetId.toString(),
         }
       })
+
+      console.log(options)
+
+      // const uniqueOptions = options.filter((option, index) => {})
+
+      // console.log(uniqueOptions)
 
       const row = new MessageActionRow().addComponents(
         new MessageSelectMenu()
