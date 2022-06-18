@@ -7,6 +7,7 @@ import {
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
 import Player from './models/player'
+import { randomSort } from './utils/helpers'
 
 const ipfsGateway = process.env.IPFS_GATEWAY
 
@@ -56,13 +57,15 @@ export default function doEmbed(data: EmbedData): EmbedReply {
   if (!isWaitingRoom && isMain && game.active) {
     const playerArr = Object.values(game.players)
 
-    const attackSelectMenuOptions = playerArr
+    const victims = playerArr
       .filter((player: Player) => !player.timedOut && !player.dead)
       .map((player: Player) => ({
         label: `Attack ${player.username}`,
         description: '',
         value: player.discordId,
       }))
+
+    const attackSelectMenuOptions = randomSort(victims)
 
     components.push(
       new MessageActionRow().addComponents(

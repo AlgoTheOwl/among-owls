@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const _1 = require(".");
+const helpers_1 = require("./utils/helpers");
 const ipfsGateway = process.env.IPFS_GATEWAY;
 const defaultEmbedValues = {
     title: '🔥 Ye Among AOWLs 🔥',
@@ -27,13 +28,14 @@ function doEmbed(data) {
     // If it's the main embed, add all the good stuff
     if (!isWaitingRoom && isMain && _1.game.active) {
         const playerArr = Object.values(_1.game.players);
-        const attackSelectMenuOptions = playerArr
+        const victims = playerArr
             .filter((player) => !player.timedOut && !player.dead)
             .map((player) => ({
             label: `Attack ${player.username}`,
             description: '',
             value: player.discordId,
         }));
+        const attackSelectMenuOptions = (0, helpers_1.randomSort)(victims);
         components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
             .setCustomId('attack')
             .setLabel('Attack!')

@@ -27,9 +27,6 @@ module.exports = {
                     value: asset.assetId.toString(),
                 };
             });
-            console.log(options);
-            // const uniqueOptions = options.filter((option, index) => {})
-            // console.log(uniqueOptions)
             const row = new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
                 .setCustomId('register-player')
                 .setPlaceholder('Select an AOWL to attack')
