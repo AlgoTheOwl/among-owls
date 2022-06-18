@@ -1,12 +1,7 @@
-import {
-  ButtonInteraction,
-  MessageAttachment,
-  SelectMenuInteraction,
-} from 'discord.js'
+import { ButtonInteraction, MessageAttachment } from 'discord.js'
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import { SlashCommandBuilder } from '@discordjs/builders'
-// import doAttackCanvas from '../canvas/attackCanvas'
 import {
   wait,
   mapPlayersForEmbed,
@@ -19,11 +14,13 @@ import { game } from '..'
 import settings from '../settings'
 import { playerTimeouts } from '..'
 import { intervals } from '..'
+import Player from '../models/player'
 
 const {
   timeoutInterval,
   coolDownInterval,
   hp,
+  damagePerAowl,
   waitBeforeTimeoutInterval,
   kickPlayerTimeout,
   deathDeleteInterval,
@@ -48,6 +45,133 @@ const errorMessages = {
   timedOut: `Unfortunately, you've timed out due to inactivty.`,
   victimTimedOut: 'Unfortunately, this player has timed out due to inactivity',
   coolingDown: `HOO do you think you are? It's not your turn! Wait {seconds} seconds`,
+  gameNotStarted: `HOO do you think you are? The game hasn’t started yet!`,
+  noVictim: `Please select a victim before attacking!`,
+}
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('attack')
+    .setDescription('Attack another user!'),
+  async execute(interaction: ButtonInteraction) {
+    if (!interaction.isButton()) return
+
+    if (!game.active) {
+      return interaction.reply({
+        content: errorMessages.gameNotStarted,
+        ephemeral: true,
+      })
+    }
+
+    const { user } = interaction
+    const victimId = game.players[user.id].victimId || null
+
+    if (!victimId) {
+      return interaction.reply({
+        content: errorMessages.noVictim,
+        ephemeral: true,
+      })
+    }
+
+    const { id: attackerId } = user
+
+    const victim = game.players[victimId] ? game.players[victimId] : null
+    const attacker = game.players[attackerId] ? game.players[attackerId] : null
+
+    const stillCoolingDown =
+      attacker?.coolDownTimeLeft && attacker?.coolDownTimeLeft > 0
+
+    const playerArr = Object.values(game.players)
+
+    const attackRow = []
+
+    let victimDead
+    let isWin
+
+    // Begin watching for player inactivity
+    handlePlayerTimeout(attackerId, timeoutInterval)
+
+    if (!game.attackEngaged) {
+      doPlayerTimeout(attackerId)
+      game.attackEngaged = true
+    }
+
+    // Handle errors
+    let content
+    if (victimId === attackerId) content = errorMessages.attackSelf
+    if (!attacker) content = errorMessages.unRegistered
+    if (!victim) content = errorMessages.victimUnRegistered
+    if (attacker?.dead) content = errorMessages.attackerDead
+    if (victim?.dead) content = victimDead
+    if (attacker?.coolDownTimeLeft && stillCoolingDown)
+      content = errorMessages.coolingDown.replace(
+        '{seconds}',
+        (attacker.coolDownTimeLeft / 1000).toString()
+      )
+    if (attacker?.timedOut) content = errorMessages.timedOut
+    if (victim?.timedOut) content = errorMessages.victimTimedOut
+    if (content) return interaction.reply({ content, ephemeral: true })
+
+    if (victim && attacker) {
+      handlePlayerCooldown(attackerId, coolDownInterval)
+
+      const damage = doDamage(attacker)
+      // const damage = 1000
+      victim.hp -= damage
+
+      victimDead = false
+      if (victim.hp <= 0) {
+        // if victim is dead, delete from game
+        game.players[victimId].dead = true
+        victimDead = true
+      }
+
+      if (victimDead && attacker) {
+        const attachment = new MessageAttachment(
+          'src/images/death.gif',
+          'death.gif'
+        )
+        await interaction.reply({
+          files: [attachment],
+          content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
+        })
+
+        setTimeout(() => {
+          interaction.deleteReply()
+        }, deathDeleteInterval)
+      } else {
+        interaction.deferUpdate()
+      }
+
+      const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
+
+      isWin = !!winningPlayer
+
+      if (isWin && winningPlayer && game.active) {
+        return handleWin(winningPlayer, winByTimeout, game)
+      }
+      // push attack value into embed
+      attackRow.push({
+        name: 'ATTACK',
+        value: getAttackString(
+          attacker.asset.assetName,
+          victim.username,
+          damage
+        ),
+      })
+    }
+
+    const fields = [...mapPlayersForEmbed(playerArr), ...attackRow]
+
+    const embedData: EmbedData = {
+      color: 'RED',
+      fields,
+      image: undefined,
+      isMain: true,
+    }
+
+    await game.embed.edit(doEmbed(embedData))
+  },
 }
 
 const getAttackString = (
@@ -144,122 +268,9 @@ const doPlayerTimeout = async (id: string) => {
   }, kickPlayerTimeout)
 }
 
-module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('attack')
-    .setDescription('Attack another user!'),
-  async execute(interaction: ButtonInteraction) {
-    if (!interaction.isButton()) return
-
-    if (!game.active) {
-      return interaction.reply({
-        content: `HOO do you think you are? The game hasn’t started yet!`,
-        ephemeral: true,
-      })
-    }
-
-    const { user } = interaction
-    const victimId = game.players[user.id].victimId || null
-
-    if (!victimId) {
-      return interaction.reply({
-        content: `Please select a victim before attacking!`,
-        ephemeral: true,
-      })
-    }
-
-    const { id: attackerId } = user
-    const victim = game.players[victimId] ? game.players[victimId] : null
-    const attacker = game.players[attackerId] ? game.players[attackerId] : null
-    const stillCoolingDown =
-      attacker?.coolDownTimeLeft && attacker?.coolDownTimeLeft > 0
-    const playerArr = Object.values(game.players)
-    const attackRow = []
-    let victimDead
-    let isWin
-
-    // Begin watching for player inactivity
-    handlePlayerTimeout(attackerId, timeoutInterval)
-
-    if (!game.attackEngaged) {
-      doPlayerTimeout(attackerId)
-      game.attackEngaged = true
-    }
-
-    // Handle errors
-    let content
-    if (victimId === attackerId) content = errorMessages.attackSelf
-    if (!attacker) content = errorMessages.unRegistered
-    if (!victim) content = errorMessages.victimUnRegistered
-    if (attacker?.dead) content = errorMessages.attackerDead
-    if (victim?.dead) content = victimDead
-    if (attacker?.coolDownTimeLeft && stillCoolingDown)
-      content = errorMessages.coolingDown.replace(
-        '{seconds}',
-        (attacker.coolDownTimeLeft / 1000).toString()
-      )
-    if (attacker?.timedOut) content = errorMessages.timedOut
-    if (victim?.timedOut) content = errorMessages.victimTimedOut
-    if (content) return interaction.reply({ content, ephemeral: true })
-
-    if (victim && attacker) {
-      handlePlayerCooldown(attackerId, coolDownInterval)
-
-      const damage = Math.floor(Math.random() * (hp / 2))
-      // const damage = 1000
-      victim.hp -= damage
-
-      victimDead = false
-      if (victim.hp <= 0) {
-        // if victim is dead, delete from game
-        game.players[victimId].dead = true
-        victimDead = true
-      }
-
-      if (victimDead && attacker) {
-        const attachment = new MessageAttachment(
-          'src/images/death.gif',
-          'death.gif'
-        )
-        await interaction.reply({
-          files: [attachment],
-          content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
-        })
-
-        setTimeout(() => {
-          interaction.deleteReply()
-        }, deathDeleteInterval)
-      } else {
-        interaction.deferUpdate()
-      }
-
-      const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
-
-      isWin = !!winningPlayer
-
-      if (isWin && winningPlayer && game.active) {
-        return handleWin(winningPlayer, winByTimeout, game)
-      }
-      // push attack value into embed
-      attackRow.push({
-        name: 'ATTACK',
-        value: getAttackString(
-          attacker.asset.assetName,
-          victim.username,
-          damage
-        ),
-      })
-    }
-
-    const fields = [...mapPlayersForEmbed(playerArr), ...attackRow]
-
-    const embedData: EmbedData = {
-      color: 'RED',
-      fields,
-      image: undefined,
-      isMain: true,
-    }
-
-    await game.embed.edit(doEmbed(embedData))
-  },
+const doDamage = (player: Player): number => {
+  const { assetMultiplier } = player
+  const multiplierDamage =
+    (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl
+  return Math.floor(Math.random() * (hp / 10)) + multiplierDamage
 }

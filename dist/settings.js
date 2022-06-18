@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     hp: 1000,
+    damagePerAowl: 5,
     imageDir: 'dist/nftAssets',
     kickPlayerTimeout: 5000,
     coolDownInterval: 5000,

@@ -32,8 +32,8 @@ const determineOwnership = async function (address) {
             if (asset['asset-id'] === Number(optInAssetId)) {
                 walletOwned = true;
             }
-            const result = uniqueAssets.findIndex((item) => asset['asset-id'] === item['asset-id']);
             // ensure no duplicate assets
+            const result = uniqueAssets.findIndex((item) => asset['asset-id'] === item['asset-id']);
             if (result <= -1 && asset.amount > 0) {
                 uniqueAssets.push(asset);
             }
