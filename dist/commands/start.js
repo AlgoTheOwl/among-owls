@@ -16,11 +16,16 @@ const roleId = process.env.ADMIN_ID;
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('start')
-        .setDescription('start When AOWLS Attack'),
+        .setDescription('start When AOWLS Attack')
+        .addNumberOption((option) => option
+        .setName('capacity')
+        .setDescription('max amount of players allowed in a single game')),
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
-        const { user } = interaction;
+        const { user, options } = interaction;
+        const capacity = options.getNumber('capacity') || minimumPlayers;
+        console.log(capacity);
         const hasRole = await (0, helpers_3.confirmRole)(roleId, interaction, user.id);
         if (!hasRole) {
             return await interaction.reply({
@@ -48,7 +53,7 @@ module.exports = {
             isWaitingRoom: true,
         };
         __1.game.embed = await interaction.followUp((0, embeds_1.default)(waitingRoomEmbedData));
-        while (playerCount < minimumPlayers) {
+        while (playerCount < capacity) {
             try {
                 await (0, helpers_1.wait)(2000);
                 playerCount = Object.values(__1.game.players).length;
