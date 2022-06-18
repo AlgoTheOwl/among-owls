@@ -14,11 +14,18 @@ const roleId: string = process.env.ADMIN_ID
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('start')
-    .setDescription('start When AOWLS Attack'),
+    .setDescription('start When AOWLS Attack')
+    .addNumberOption((option) =>
+      option
+        .setName('capacity')
+        .setDescription('max amount of players allowed in a single game')
+    ),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 
-    const { user } = interaction
+    const { user, options } = interaction
+    const capacity = options.getNumber('capacity') || minimumPlayers
+    console.log(capacity)
 
     const hasRole = await confirmRole(roleId, interaction, user.id)
 
@@ -56,7 +63,7 @@ module.exports = {
 
     game.embed = await interaction.followUp(doEmbed(waitingRoomEmbedData))
 
-    while (playerCount < minimumPlayers) {
+    while (playerCount < capacity) {
       try {
         await wait(2000)
         playerCount = Object.values(game.players).length
