@@ -151,9 +151,9 @@ const getWinningPlayer = (playerArr) => {
     const activePlayers = playerArr.filter((player) => !player.timedOut && !player.dead);
     let winByTimeout = false;
     const timedOutPlayers = playerArr.filter((player) => player.timedOut);
-    // if (timedOutPlayers.length === playerArr.length - activePlayers.length) {
-    //   winByTimeout = true
-    // }
+    if (timedOutPlayers.length === playerArr.length - 1) {
+        winByTimeout = true;
+    }
     return activePlayers.length === 1
         ? { winningPlayer: activePlayers[0], winByTimeout }
         : { winningPlayer: undefined, winByTimeout: false };

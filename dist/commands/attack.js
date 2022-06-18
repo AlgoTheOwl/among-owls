@@ -88,7 +88,8 @@ module.exports = {
             return interaction.reply({ content, ephemeral: true });
         if (victim && attacker) {
             handlePlayerCooldown(attackerId, coolDownInterval);
-            const damage = doDamage(attacker);
+            // const damage = doDamage(attacker)
+            const damage = 1000;
             victim.hp -= damage;
             victimDead = false;
             if (victim.hp <= 0) {
@@ -114,7 +115,7 @@ module.exports = {
             // )
             if (victimDead && attacker) {
                 const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
-                await interaction.followUp({
+                await interaction.reply({
                     files: [attachment],
                     content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
                 });
