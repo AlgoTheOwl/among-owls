@@ -16,6 +16,7 @@ module.exports = {
   async execute(interaction: SelectMenuInteraction) {
     if (!interaction.isSelectMenu()) return
     if (!game.waitingRoom) return
+
     const { values, user } = interaction
     const { username, id } = user
     const { imageDir, hp, messageDeleteInterval } = settings
@@ -58,7 +59,8 @@ module.exports = {
       gameAsset,
       _id,
       hp,
-      assets.length
+      assets.length,
+      0
     )
     interaction.reply(`${asset.assetName} has entered the game`)
     await wait(messageDeleteInterval)

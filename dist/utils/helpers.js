@@ -3,13 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
+exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
 const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../embeds"));
 const __1 = require("..");
+const settings_1 = __importDefault(require("../settings"));
+const { imageDir } = settings_1.default;
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -22,7 +24,6 @@ const asyncForEach = async (array, callback) => {
     }
 };
 exports.asyncForEach = asyncForEach;
-// const getCollectionAssetIds = (unitName: string,)
 const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/';
 const downloadFile = async (asset, directory, username) => {
     try {
@@ -139,13 +140,8 @@ const handleWin = async (player, winByTimeout, game) => {
         color: 'DARK_AQUA',
         image: player.asset.assetUrl,
     };
-    // if (game.active && player.discordId === winningUser.discordId) {
-    //   interaction.followUp({ content: 'Woo-Hoot! You won!', ephemeral: true })
-    // }
-    // collections.yaoPlayers.deleteMany({})
-    // asyncForEach(playerArr, (player: Player) => {
-    //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
-    // })
+    game.players = {};
+    (0, exports.emptyDir)(imageDir);
     return game.embed.edit((0, embeds_1.default)(embedData));
 };
 exports.handleWin = handleWin;
@@ -154,7 +150,7 @@ exports.randomNumber = randomNumber;
 const getWinningPlayer = (playerArr) => {
     const activePlayers = playerArr.filter((player) => !player.timedOut && !player.dead);
     let winByTimeout = false;
-    // const timedOutPlayers = playerArr.filter((player) => player.timedOut)
+    const timedOutPlayers = playerArr.filter((player) => player.timedOut);
     // if (timedOutPlayers.length === playerArr.length - activePlayers.length) {
     //   winByTimeout = true
     // }
@@ -163,3 +159,14 @@ const getWinningPlayer = (playerArr) => {
         : { winningPlayer: undefined, winByTimeout: false };
 };
 exports.getWinningPlayer = getWinningPlayer;
+const randomSort = (arr) => {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * i);
+        const k = arr[i];
+        arr[i] = arr[j];
+        arr[j] = k;
+    }
+    console.log(arr);
+    return arr;
+};
+exports.randomSort = randomSort;

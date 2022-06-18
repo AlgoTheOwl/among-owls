@@ -1,21 +1,19 @@
-import AlgodClient from 'algosdk/dist/types/src/client/v2/algod/algod'
 import fs from 'fs'
 import path from 'path'
 import axios from 'axios'
-import { Indexer } from 'algosdk'
-import { AlgoAsset, AlgoAssetData } from '../types/user'
 import User from '../models/user'
 import { Interaction } from 'discord.js'
 import Player from '../models/player'
 import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
-import { EmbedData, Field } from '../types/game'
+import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import { intervals } from '..'
 import Game from '../models/game'
-import IndexerClient from 'algosdk/dist/types/src/client/v2/indexer/indexer'
 import Asset from '../models/asset'
-import { AssetParams } from 'algosdk/dist/types/src/client/v2/algod/models/types'
+import settings from '../settings'
+
+const { imageDir } = settings
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -28,8 +26,6 @@ export const asyncForEach = async (array: Array<any>, callback: Function) => {
     await callback(array[index], index, array)
   }
 }
-
-// const getCollectionAssetIds = (unitName: string,)
 
 const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/'
 
@@ -178,15 +174,9 @@ export const handleWin = async (
     image: player.asset.assetUrl,
   }
 
-  // if (game.active && player.discordId === winningUser.discordId) {
-  //   interaction.followUp({ content: 'Woo-Hoot! You won!', ephemeral: true })
-  // }
+  game.players = {}
 
-  // collections.yaoPlayers.deleteMany({})
-
-  // asyncForEach(playerArr, (player: Player) => {
-  //   removeRole(interaction, process.env.REGISTERED_ID, player.discordId)
-  // })
+  emptyDir(imageDir)
 
   return game.embed.edit(doEmbed(embedData))
 }
@@ -203,7 +193,7 @@ export const getWinningPlayer = (
 
   let winByTimeout = false
 
-  // const timedOutPlayers = playerArr.filter((player) => player.timedOut)
+  const timedOutPlayers = playerArr.filter((player) => player.timedOut)
 
   // if (timedOutPlayers.length === playerArr.length - activePlayers.length) {
   //   winByTimeout = true
@@ -212,4 +202,15 @@ export const getWinningPlayer = (
   return activePlayers.length === 1
     ? { winningPlayer: activePlayers[0], winByTimeout }
     : { winningPlayer: undefined, winByTimeout: false }
+}
+
+export const randomSort = (arr: any[]) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * i)
+    const k = arr[i]
+    arr[i] = arr[j]
+    arr[j] = k
+  }
+  console.log(arr)
+  return arr
 }

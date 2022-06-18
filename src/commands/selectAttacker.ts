@@ -38,12 +38,6 @@ module.exports = {
         }
       })
 
-      console.log(options)
-
-      // const uniqueOptions = options.filter((option, index) => {})
-
-      // console.log(uniqueOptions)
-
       const row = new MessageActionRow().addComponents(
         new MessageSelectMenu()
           .setCustomId('register-player')

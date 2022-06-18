@@ -10,7 +10,7 @@ export default class Player {
     public userId: ObjectId,
     public hp: number,
     public assetMultiplier: number,
-    public coolDownTimeLeft?: number,
+    public coolDownTimeLeft: number,
     public rolledRecently?: boolean,
     public timedOut?: boolean,
     public dead?: boolean,

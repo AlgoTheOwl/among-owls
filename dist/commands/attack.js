@@ -89,17 +89,32 @@ module.exports = {
         if (victim && attacker) {
             handlePlayerCooldown(attackerId, coolDownInterval);
             const damage = doDamage(attacker);
-            // const damage = 1000
             victim.hp -= damage;
             victimDead = false;
             if (victim.hp <= 0) {
-                // if victim is dead, delete from game
-                __1.game.players[victimId].dead = true;
+                victim.dead = true;
                 victimDead = true;
             }
+            // interaction.reply({
+            //   content: `You did ${damage} damage to ${victim.username}. Please wait ${attacker.coolDownTimeLeft} seconds to attack again`,
+            //   ephemeral: true,
+            // })
+            // while (attacker.coolDownTimeLeft > 0) {
+            //   await wait(1000)
+            //   interaction.editReply(
+            //     `You did ${damage} damage to ${victim.username}. Please wait ${
+            //       attacker.coolDownTimeLeft / 1000
+            //     } seconds to attack again`
+            //   )
+            // }
+            // interaction.editReply(
+            //   `You did ${damage} damage to ${victim.username}. Please wait ${
+            //     attacker.coolDownTimeLeft / 1000
+            //   }. Ready for another attack!`
+            // )
             if (victimDead && attacker) {
                 const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
-                await interaction.reply({
+                await interaction.followUp({
                     files: [attachment],
                     content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
                 });
@@ -158,20 +173,17 @@ const doPlayerTimeout = async (id) => {
     await (0, helpers_1.wait)(waitBeforeTimeoutInterval);
     __3.intervals.timeoutInterval = setInterval(async () => {
         if (__1.game.active) {
-            console.log('running timeout');
             let isTimeout = false;
             (0, helpers_1.getPlayerArray)(__1.game.players).forEach((player) => {
                 if (!player.rolledRecently && !player.timedOut) {
                     __1.game.players[player.discordId].timedOut = true;
                     isTimeout = true;
-                    console.log('user is timed out');
                 }
             });
             const playerArr = (0, helpers_1.getPlayerArray)(__1.game.players);
             const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
             // If win
             if (winningPlayer && __1.game.active) {
-                console.log('is win');
                 __3.intervals.timeoutInterval && clearInterval(__3.intervals.timeoutInterval);
                 return (0, helpers_1.handleWin)(winningPlayer, winByTimeout, __1.game);
             }
@@ -189,7 +201,6 @@ const doPlayerTimeout = async (id) => {
                 return;
             }
             if (playerArr.length && isTimeout) {
-                console.log('updating leaderboard isTimeout');
                 const embedData = {
                     fields: (0, helpers_1.mapPlayersForEmbed)((0, helpers_1.getPlayerArray)(__1.game.players)),
                     image: undefined,
