@@ -35,10 +35,10 @@ export const determineOwnership = async function (
       if (asset['asset-id'] === Number(optInAssetId)) {
         walletOwned = true
       }
+      // ensure no duplicate assets
       const result = uniqueAssets.findIndex(
         (item) => asset['asset-id'] === item['asset-id']
       )
-      // ensure no duplicate assets
       if (result <= -1 && asset.amount > 0) {
         uniqueAssets.push(asset)
       }
