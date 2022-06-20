@@ -67,6 +67,7 @@ module.exports = {
                 console.log('ERROR', error);
             }
         }
+        __1.game.waitingRoom = false;
         // Do countdown
         let countDown = 5;
         while (countDown >= 1) {
