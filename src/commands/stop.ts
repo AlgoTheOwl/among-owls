@@ -25,14 +25,16 @@ module.exports = {
       })
     }
 
-    if (!game?.active)
+    if (!game?.active && !game.waitingRoom)
       return interaction.reply({
         content: 'Game is not currently running',
         ephemeral: true,
       })
 
     game.active = false
+    game.waitingRoom = false
+    game.players = {}
     intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
-    return interaction.reply({ content: 'Game stopped', ephemeral: true })
+    return interaction.reply({ content: 'Game stopped', ephemeral: false })
   },
 }

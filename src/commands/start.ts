@@ -54,10 +54,15 @@ module.exports = {
     game.waitingRoom = true
     let playerCount = 0
 
+    const playerWord = playerCount === 1 ? 'player' : 'players'
+    const hasWord = playerCount === 1 ? 'has' : 'have'
+    const waitingRoomDesc = () =>
+      `${playerCount} ${playerWord} ${hasWord} joined the game. \n${capacity} players are required to start this game`
+
     const waitingRoomEmbedData: EmbedData = {
       image: undefined,
       title: 'Waiting Room',
-      description: '0 players have joined the game',
+      description: waitingRoomDesc(),
       isWaitingRoom: true,
     }
 
@@ -71,9 +76,7 @@ module.exports = {
         await game.embed.edit(
           doEmbed({
             ...waitingRoomEmbedData,
-            description: `${playerCount} ${
-              playerCount === 1 ? 'player' : 'players'
-            } have joined the game`,
+            description: waitingRoomDesc(),
           })
         )
       } catch (error) {

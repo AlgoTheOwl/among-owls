@@ -46,10 +46,13 @@ module.exports = {
         // Do waiting room
         __1.game.waitingRoom = true;
         let playerCount = 0;
+        const playerWord = playerCount === 1 ? 'player' : 'players';
+        const hasWord = playerCount === 1 ? 'has' : 'have';
+        const waitingRoomDesc = () => `${playerCount} ${playerWord} ${hasWord} joined the game. \n${capacity} players are required to start this game`;
         const waitingRoomEmbedData = {
             image: undefined,
             title: 'Waiting Room',
-            description: '0 players have joined the game',
+            description: waitingRoomDesc(),
             isWaitingRoom: true,
         };
         __1.game.embed = await interaction.followUp((0, embeds_1.default)(waitingRoomEmbedData));
@@ -57,7 +60,7 @@ module.exports = {
             try {
                 await (0, helpers_1.wait)(2000);
                 playerCount = Object.values(__1.game.players).length;
-                await __1.game.embed.edit((0, embeds_1.default)(Object.assign(Object.assign({}, waitingRoomEmbedData), { description: `${playerCount} ${playerCount === 1 ? 'player' : 'players'} have joined the game` })));
+                await __1.game.embed.edit((0, embeds_1.default)(Object.assign(Object.assign({}, waitingRoomEmbedData), { description: waitingRoomDesc() })));
             }
             catch (error) {
                 // @ts-ignore
