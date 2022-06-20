@@ -114,8 +114,8 @@ module.exports = {
 
     if (victim && attacker) {
       handlePlayerCooldown(attackerId, coolDownInterval)
-      // const damage = doDamage(attacker)
-      const damage = 1000
+      const damage = doDamage(attacker)
+      // const damage = 1000
       victim.hp -= damage
       victimDead = false
 
