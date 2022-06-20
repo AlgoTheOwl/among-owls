@@ -64,7 +64,7 @@ module.exports = {
     }
 
     const { user } = interaction
-    const victimId = game.players[user.id].victimId || null
+    const victimId = game?.players[user.id]?.victimId || null
 
     if (!victimId) {
       return interaction.reply({

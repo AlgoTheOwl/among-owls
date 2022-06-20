@@ -211,6 +211,5 @@ export const randomSort = (arr: any[]) => {
     arr[i] = arr[j]
     arr[j] = k
   }
-  console.log(arr)
   return arr
 }

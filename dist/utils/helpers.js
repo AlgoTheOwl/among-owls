@@ -166,7 +166,6 @@ const randomSort = (arr) => {
         arr[i] = arr[j];
         arr[j] = k;
     }
-    console.log(arr);
     return arr;
 };
 exports.randomSort = randomSort;

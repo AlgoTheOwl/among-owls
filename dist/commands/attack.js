@@ -36,6 +36,7 @@ module.exports = {
         .setName('attack')
         .setDescription('Attack another user!'),
     async execute(interaction) {
+        var _a;
         if (!interaction.isButton())
             return;
         if (!__1.game.active) {
@@ -45,7 +46,7 @@ module.exports = {
             });
         }
         const { user } = interaction;
-        const victimId = __1.game.players[user.id].victimId || null;
+        const victimId = ((_a = __1.game === null || __1.game === void 0 ? void 0 : __1.game.players[user.id]) === null || _a === void 0 ? void 0 : _a.victimId) || null;
         if (!victimId) {
             return interaction.reply({
                 content: errorMessages.noVictim,
