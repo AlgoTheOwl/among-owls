@@ -20,13 +20,15 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        if (!(__1.game === null || __1.game === void 0 ? void 0 : __1.game.active))
+        if (!(__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) && !__1.game.waitingRoom)
             return interaction.reply({
                 content: 'Game is not currently running',
                 ephemeral: true,
             });
         __1.game.active = false;
+        __1.game.waitingRoom = false;
+        __1.game.players = {};
         __2.intervals.timeoutInterval && clearInterval(__2.intervals.timeoutInterval);
-        return interaction.reply({ content: 'Game stopped', ephemeral: true });
+        return interaction.reply({ content: 'Game stopped', ephemeral: false });
     },
 };
