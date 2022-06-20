@@ -19,13 +19,13 @@ module.exports = {
         .setDescription('start When AOWLS Attack')
         .addNumberOption((option) => option
         .setName('capacity')
-        .setDescription('max amount of players allowed in a single game')),
+        .setDescription('max amount of players allowed in a single game')
+        .setRequired(true)),
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
         const { user, options } = interaction;
         const capacity = options.getNumber('capacity') || minimumPlayers;
-        console.log(capacity);
         const hasRole = await (0, helpers_3.confirmRole)(roleId, interaction, user.id);
         if (!hasRole) {
             return await interaction.reply({

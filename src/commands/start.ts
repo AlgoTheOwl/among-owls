@@ -19,13 +19,13 @@ module.exports = {
       option
         .setName('capacity')
         .setDescription('max amount of players allowed in a single game')
+        .setRequired(true)
     ),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 
     const { user, options } = interaction
     const capacity = options.getNumber('capacity') || minimumPlayers
-    console.log(capacity)
 
     const hasRole = await confirmRole(roleId, interaction, user.id)
 
