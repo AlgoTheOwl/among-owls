@@ -85,6 +85,8 @@ module.exports = {
       }
     }
 
+    game.waitingRoom = false
+
     // Do countdown
     let countDown = 5
     while (countDown >= 1) {
