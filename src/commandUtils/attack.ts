@@ -1,6 +1,6 @@
 import { ButtonInteraction, MessageAttachment } from 'discord.js'
-import { EmbedData } from '../../types/game'
-import doEmbed from '../../embeds'
+import { EmbedData } from '../types/game'
+import doEmbed from '../embeds'
 import {
   wait,
   mapPlayersForEmbed,
@@ -8,12 +8,12 @@ import {
   randomNumber,
   getWinningPlayer,
   getPlayerArray,
-} from '../../utils/helpers'
-import { game } from '../..'
-import settings from '../../settings'
-import { playerTimeouts } from '../..'
-import { intervals } from '../..'
-import Player from '../../models/player'
+} from '../utils/helpers'
+import { game } from '..'
+import settings from '../settings'
+import { playerTimeouts } from '..'
+import { intervals } from '..'
+import Player from '../models/player'
 
 const {
   timeoutInterval,
@@ -125,26 +125,6 @@ export const attack = async (
 
     attacker.victimId = undefined
 
-    // interaction.reply({
-    //   content: `You did ${damage} damage to ${victim.username}. Please wait ${attacker.coolDownTimeLeft} seconds to attack again`,
-    //   ephemeral: true,
-    // })
-
-    // while (attacker.coolDownTimeLeft > 0) {
-    //   await wait(1000)
-    //   interaction.editReply(
-    //     `You did ${damage} damage to ${victim.username}. Please wait ${
-    //       attacker.coolDownTimeLeft / 1000
-    //     } seconds to attack again`
-    //   )
-    // }
-
-    // interaction.editReply(
-    //   `You did ${damage} damage to ${victim.username}. Please wait ${
-    //     attacker.coolDownTimeLeft / 1000
-    //   }. Ready for another attack!`
-    // )
-
     if (victimDead && attacker) {
       const attachment = new MessageAttachment(
         'src/images/death.gif',
@@ -192,7 +172,7 @@ const getAttackString = (
   assetName: string,
   victimName: string,
   damage: number
-) => {
+): string => {
   return attackStrings[randomNumber(0, attackStrings.length)]
     .replace('{assetName}', assetName)
     .replace('{victimName}', victimName)
@@ -216,7 +196,7 @@ const handlePlayerTimeout = (playerId: string, timeoutInterval: number) => {
 const handlePlayerCooldown = async (
   playerId: string,
   coolDownInterval: number
-) => {
+): Promise<void> => {
   const gamePlayer = game.players[playerId]
 
   gamePlayer.coolDownTimeLeft = coolDownInterval
@@ -227,7 +207,7 @@ const handlePlayerCooldown = async (
   }
 }
 
-const doPlayerTimeout = async (id: string) => {
+const doPlayerTimeout = async (id: string): Promise<void> => {
   await wait(waitBeforeTimeoutInterval)
 
   intervals.timeoutInterval = setInterval(async () => {
@@ -272,7 +252,7 @@ const doPlayerTimeout = async (id: string) => {
           fields: mapPlayersForEmbed(getPlayerArray(game.players)),
           image: undefined,
         }
-        return game.embed.edit(doEmbed(embedData))
+        game.embed.edit(doEmbed(embedData))
       }
     }
   }, kickPlayerTimeout)
