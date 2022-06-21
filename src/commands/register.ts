@@ -9,6 +9,7 @@ import { game } from '..'
 import { addRole } from '../utils/helpers'
 
 const optInAssetId: number = Number(process.env.OPT_IN_ASSET_ID)
+const unitName: string = process.env.UNIT_NAME
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -76,6 +77,12 @@ export const processRegistration = async (
     // Check to see if wallet has opt-in asset
     // Retreive assetIds from specific collections
     const { walletOwned, nftsOwned } = await determineOwnership(address)
+
+    if (!nftsOwned?.length) {
+      return {
+        status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
+      }
+    }
 
     // If user doesn't exist, add to db and grab instance
     if (!user) {

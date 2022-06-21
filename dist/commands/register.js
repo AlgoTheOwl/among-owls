@@ -11,6 +11,7 @@ const builders_1 = require("@discordjs/builders");
 const __1 = require("..");
 const helpers_1 = require("../utils/helpers");
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
+const unitName = process.env.UNIT_NAME;
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('register')
@@ -60,6 +61,11 @@ const processRegistration = async (username, discordId, address) => {
         // Check to see if wallet has opt-in asset
         // Retreive assetIds from specific collections
         const { walletOwned, nftsOwned } = await (0, algorand_1.determineOwnership)(address);
+        if (!(nftsOwned === null || nftsOwned === void 0 ? void 0 : nftsOwned.length)) {
+            return {
+                status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
+            };
+        }
         // If user doesn't exist, add to db and grab instance
         if (!user) {
             const userEntry = new user_1.default(username, discordId, address, nftsOwned);
