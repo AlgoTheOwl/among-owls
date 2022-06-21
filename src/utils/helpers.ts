@@ -175,6 +175,8 @@ export const handleWin = async (
   }
 
   game.players = {}
+  game.active = false
+  game.waitingRoom = false
 
   emptyDir(imageDir)
 
