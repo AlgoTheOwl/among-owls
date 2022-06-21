@@ -9,18 +9,25 @@ module.exports = {
         .setName('select-attacker')
         .setDescription(`Pick which AOWL you'd like to compete`),
     async execute(interaction) {
+        var _a;
         const { user: { id }, } = interaction;
-        const { assets } = (await database_service_1.collections.users.findOne({
+        const data = (await database_service_1.collections.users.findOne({
             discordId: id,
         }));
+        if (!(data === null || data === void 0 ? void 0 : data.assets)) {
+            return interaction.reply({
+                content: 'You have no AOWLs to select!',
+                ephemeral: true,
+            });
+        }
         if (!__1.game.waitingRoom) {
             return interaction.reply({
                 content: 'Game is not currently active',
                 ephemeral: true,
             });
         }
-        if (assets === null || assets === void 0 ? void 0 : assets.length) {
-            const options = assets.map((asset) => {
+        if ((_a = data.assets) === null || _a === void 0 ? void 0 : _a.length) {
+            const options = data.assets.map((asset) => {
                 return {
                     label: asset.assetName,
                     description: 'Select to play',
