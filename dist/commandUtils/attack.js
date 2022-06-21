@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.attack = void 0;
 const discord_js_1 = require("discord.js");
 const embeds_1 = __importDefault(require("../embeds"));
-const helpers_1 = require("./helpers");
+const helpers_1 = require("../utils/helpers");
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
 const __2 = require("..");
@@ -96,23 +96,6 @@ const attack = async (interaction, random) => {
             victimDead = true;
         }
         attacker.victimId = undefined;
-        // interaction.reply({
-        //   content: `You did ${damage} damage to ${victim.username}. Please wait ${attacker.coolDownTimeLeft} seconds to attack again`,
-        //   ephemeral: true,
-        // })
-        // while (attacker.coolDownTimeLeft > 0) {
-        //   await wait(1000)
-        //   interaction.editReply(
-        //     `You did ${damage} damage to ${victim.username}. Please wait ${
-        //       attacker.coolDownTimeLeft / 1000
-        //     } seconds to attack again`
-        //   )
-        // }
-        // interaction.editReply(
-        //   `You did ${damage} damage to ${victim.username}. Please wait ${
-        //     attacker.coolDownTimeLeft / 1000
-        //   }. Ready for another attack!`
-        // )
         if (victimDead && attacker) {
             const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
             await interaction.reply({
@@ -206,7 +189,7 @@ const doPlayerTimeout = async (id) => {
                     fields: (0, helpers_1.mapPlayersForEmbed)((0, helpers_1.getPlayerArray)(__1.game.players)),
                     image: undefined,
                 };
-                return __1.game.embed.edit((0, embeds_1.default)(embedData));
+                __1.game.embed.edit((0, embeds_1.default)(embedData));
             }
         }
     }, kickPlayerTimeout);
