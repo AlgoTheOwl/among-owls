@@ -141,6 +141,8 @@ const handleWin = async (player, winByTimeout, game) => {
         image: player.asset.assetUrl,
     };
     game.players = {};
+    game.active = false;
+    game.waitingRoom = false;
     (0, exports.emptyDir)(imageDir);
     return game.embed.edit((0, embeds_1.default)(embedData));
 };
