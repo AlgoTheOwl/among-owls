@@ -11,18 +11,18 @@ module.exports = {
     async execute(interaction) {
         var _a;
         const { user: { id }, } = interaction;
+        await interaction.deferReply();
         const data = (await database_service_1.collections.users.findOne({
             discordId: id,
         }));
-        console.log(data.assets);
         if (!(data === null || data === void 0 ? void 0 : data.assets)) {
-            return interaction.reply({
+            return interaction.followUp({
                 content: 'You have no AOWLs to select!',
                 ephemeral: true,
             });
         }
         if (!__1.game.waitingRoom) {
-            return interaction.reply({
+            return interaction.followUp({
                 content: 'Game is not currently active',
                 ephemeral: true,
             });
@@ -39,7 +39,7 @@ module.exports = {
                 .setCustomId('register-player')
                 .setPlaceholder('Select an AOWL to attack')
                 .addOptions(options));
-            await interaction.reply({
+            await interaction.followUp({
                 content: 'Choose your AOWL',
                 components: [row],
                 ephemeral: true,

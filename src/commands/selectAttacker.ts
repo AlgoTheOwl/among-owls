@@ -9,6 +9,7 @@ import User from '../models/user'
 import { WithId } from 'mongodb'
 import Asset from '../models/asset'
 import { game } from '..'
+import { wait } from '../utils/helpers'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -18,21 +19,22 @@ module.exports = {
     const {
       user: { id },
     } = interaction
+
+    await interaction.deferReply()
+
     const data = (await collections.users.findOne({
       discordId: id,
     })) as WithId<User>
 
-    console.log(data.assets)
-
     if (!data?.assets) {
-      return interaction.reply({
+      return interaction.followUp({
         content: 'You have no AOWLs to select!',
         ephemeral: true,
       })
     }
 
     if (!game.waitingRoom) {
-      return interaction.reply({
+      return interaction.followUp({
         content: 'Game is not currently active',
         ephemeral: true,
       })
@@ -54,7 +56,7 @@ module.exports = {
           .addOptions(options)
       )
 
-      await interaction.reply({
+      await interaction.followUp({
         content: 'Choose your AOWL',
         components: [row],
         ephemeral: true,
