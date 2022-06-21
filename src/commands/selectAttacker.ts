@@ -21,21 +21,21 @@ module.exports = {
         user: { id },
       } = interaction
 
+      await interaction.deferReply({ ephemeral: true })
+
       const data = (await collections.users.findOne({
         discordId: id,
       })) as WithId<User>
 
       if (!data?.assets) {
-        return interaction.reply({
+        return interaction.editReply({
           content: 'You have no AOWLs to select!',
-          ephemeral: true,
         })
       }
 
       if (!game.waitingRoom) {
         return interaction.reply({
           content: 'Game is not currently active',
-          ephemeral: true,
         })
       }
 
@@ -55,14 +55,14 @@ module.exports = {
             .addOptions(options)
         )
 
-        await interaction.reply({
+        await interaction.editReply({
           content: 'Choose your AOWL',
           components: [row],
-          ephemeral: true,
         })
       }
     } catch (error) {
       console.log('ERROR SELECTING')
+      console.log(error)
     }
   },
 }

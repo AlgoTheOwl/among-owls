@@ -12,19 +12,18 @@ module.exports = {
         var _a;
         try {
             const { user: { id }, } = interaction;
+            await interaction.deferReply({ ephemeral: true });
             const data = (await database_service_1.collections.users.findOne({
                 discordId: id,
             }));
             if (!(data === null || data === void 0 ? void 0 : data.assets)) {
-                return interaction.reply({
+                return interaction.editReply({
                     content: 'You have no AOWLs to select!',
-                    ephemeral: true,
                 });
             }
             if (!__1.game.waitingRoom) {
                 return interaction.reply({
                     content: 'Game is not currently active',
-                    ephemeral: true,
                 });
             }
             if ((_a = data === null || data === void 0 ? void 0 : data.assets) === null || _a === void 0 ? void 0 : _a.length) {
@@ -39,15 +38,15 @@ module.exports = {
                     .setCustomId('register-player')
                     .setPlaceholder('Select an AOWL to attack')
                     .addOptions(options));
-                await interaction.reply({
+                await interaction.editReply({
                     content: 'Choose your AOWL',
                     components: [row],
-                    ephemeral: true,
                 });
             }
         }
         catch (error) {
             console.log('ERROR SELECTING');
+            console.log(error);
         }
     },
 };
