@@ -184,13 +184,15 @@ const handlePlayerTimeout = (playerId: string, timeoutInterval: number) => {
 
   clearTimeout(playerTimeouts[playerId])
 
-  gamePlayer.rolledRecently = true
+  if (gamePlayer) {
+    gamePlayer.rolledRecently = true
 
-  const rolledRecentlyTimeout = setTimeout(async () => {
-    gamePlayer.rolledRecently = false
-  }, timeoutInterval)
+    const rolledRecentlyTimeout = setTimeout(async () => {
+      gamePlayer.rolledRecently = false
+    }, timeoutInterval)
 
-  playerTimeouts[playerId] = rolledRecentlyTimeout
+    playerTimeouts[playerId] = rolledRecentlyTimeout
+  }
 }
 
 const handlePlayerCooldown = async (
