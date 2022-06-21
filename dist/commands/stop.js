@@ -25,9 +25,7 @@ module.exports = {
                 content: 'Game is not currently running',
                 ephemeral: true,
             });
-        __1.game.active = false;
-        __1.game.waitingRoom = false;
-        __1.game.players = {};
+        (0, helpers_1.resetGame)();
         __2.intervals.timeoutInterval && clearInterval(__2.intervals.timeoutInterval);
         return interaction.reply({ content: 'Game stopped', ephemeral: false });
     },
