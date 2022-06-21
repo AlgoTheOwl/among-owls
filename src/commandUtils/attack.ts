@@ -267,7 +267,8 @@ const doDamage = (player: Player): number => {
 
 const getRandomVictimId = (attackerId: string): string => {
   const filteredPlayerArray = Object.values(game.players).filter(
-    (player) => player.discordId !== attackerId
+    (player) =>
+      player.discordId !== attackerId && !player.timedOut && !player.dead
   )
   const randomIndex = Math.floor(Math.random() * filteredPlayerArray.length)
   return filteredPlayerArray[randomIndex].discordId as string

@@ -200,7 +200,7 @@ const doDamage = (player) => {
     return Math.floor(Math.random() * (hp / 10)) + multiplierDamage;
 };
 const getRandomVictimId = (attackerId) => {
-    const filteredPlayerArray = Object.values(__1.game.players).filter((player) => player.discordId !== attackerId);
+    const filteredPlayerArray = Object.values(__1.game.players).filter((player) => player.discordId !== attackerId && !player.timedOut && !player.dead);
     const randomIndex = Math.floor(Math.random() * filteredPlayerArray.length);
     return filteredPlayerArray[randomIndex].discordId;
 };
