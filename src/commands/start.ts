@@ -1,5 +1,5 @@
 import { Interaction, MessageAttachment } from 'discord.js'
-import { wait } from '../utils/helpers'
+import { resetGame, wait } from '../utils/helpers'
 import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import { mapPlayersForEmbed } from '../utils/helpers'
@@ -24,6 +24,7 @@ module.exports = {
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 
+    resetGame()
     const { user, options } = interaction
     const capacity = options.getNumber('capacity') || minimumPlayers
 

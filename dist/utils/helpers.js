@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
+exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -11,7 +11,8 @@ const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../embeds"));
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
-const { imageDir } = settings_1.default;
+const __2 = require("..");
+const { imageDir, coolDownInterval } = settings_1.default;
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -140,9 +141,7 @@ const handleWin = async (player, winByTimeout, game) => {
         color: 'DARK_AQUA',
         image: player.asset.assetUrl,
     };
-    game.players = {};
-    game.active = false;
-    game.waitingRoom = false;
+    (0, exports.resetGame)();
     (0, exports.emptyDir)(imageDir);
     return game.embed.edit((0, embeds_1.default)(embedData));
 };
@@ -171,3 +170,11 @@ const randomSort = (arr) => {
     return arr;
 };
 exports.randomSort = randomSort;
+const resetGame = () => {
+    __2.game.players = {};
+    __2.game.active = false;
+    __2.game.win = false;
+    __2.game.waitingRoom = false;
+    __2.game.attackEngaged = false;
+};
+exports.resetGame = resetGame;

@@ -12,8 +12,9 @@ import { intervals } from '..'
 import Game from '../models/game'
 import Asset from '../models/asset'
 import settings from '../settings'
+import { game } from '..'
 
-const { imageDir } = settings
+const { imageDir, coolDownInterval } = settings
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -174,9 +175,7 @@ export const handleWin = async (
     image: player.asset.assetUrl,
   }
 
-  game.players = {}
-  game.active = false
-  game.waitingRoom = false
+  resetGame()
 
   emptyDir(imageDir)
 
@@ -214,4 +213,12 @@ export const randomSort = (arr: any[]) => {
     arr[j] = k
   }
   return arr
+}
+
+export const resetGame = (): void => {
+  game.players = {}
+  game.active = false
+  game.win = false
+  game.waitingRoom = false
+  game.attackEngaged = false
 }

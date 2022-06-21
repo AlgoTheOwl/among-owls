@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
-import { confirmRole } from '../utils/helpers'
+import { confirmRole, resetGame } from '../utils/helpers'
 import { game } from '..'
 import { intervals } from '..'
 
@@ -31,9 +31,7 @@ module.exports = {
         ephemeral: true,
       })
 
-    game.active = false
-    game.waitingRoom = false
-    game.players = {}
+    resetGame()
     intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
     return interaction.reply({ content: 'Game stopped', ephemeral: false })
   },
