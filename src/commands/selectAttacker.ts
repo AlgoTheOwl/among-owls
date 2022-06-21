@@ -18,9 +18,16 @@ module.exports = {
     const {
       user: { id },
     } = interaction
-    const { assets } = (await collections.users.findOne({
+    const data = (await collections.users.findOne({
       discordId: id,
     })) as WithId<User>
+
+    if (!data?.assets) {
+      return interaction.reply({
+        content: 'You have no AOWLs to select!',
+        ephemeral: true,
+      })
+    }
 
     if (!game.waitingRoom) {
       return interaction.reply({
@@ -29,8 +36,8 @@ module.exports = {
       })
     }
 
-    if (assets?.length) {
-      const options = assets.map((asset: Asset) => {
+    if (data.assets?.length) {
+      const options = data.assets.map((asset: Asset) => {
         return {
           label: asset.assetName,
           description: 'Select to play',
