@@ -22,6 +22,8 @@ module.exports = {
       discordId: id,
     })) as WithId<User>
 
+    console.log(data.assets)
+
     if (!data?.assets) {
       return interaction.reply({
         content: 'You have no AOWLs to select!',
@@ -36,12 +38,12 @@ module.exports = {
       })
     }
 
-    if (data.assets?.length) {
+    if (data?.assets?.length) {
       const options = data.assets.map((asset: Asset) => {
         return {
           label: asset.assetName,
           description: 'Select to play',
-          value: asset.assetId.toString(),
+          value: asset?.assetId.toString(),
         }
       })
 

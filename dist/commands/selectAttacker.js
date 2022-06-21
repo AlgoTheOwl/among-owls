@@ -14,6 +14,7 @@ module.exports = {
         const data = (await database_service_1.collections.users.findOne({
             discordId: id,
         }));
+        console.log(data.assets);
         if (!(data === null || data === void 0 ? void 0 : data.assets)) {
             return interaction.reply({
                 content: 'You have no AOWLs to select!',
@@ -26,12 +27,12 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        if ((_a = data.assets) === null || _a === void 0 ? void 0 : _a.length) {
+        if ((_a = data === null || data === void 0 ? void 0 : data.assets) === null || _a === void 0 ? void 0 : _a.length) {
             const options = data.assets.map((asset) => {
                 return {
                     label: asset.assetName,
                     description: 'Select to play',
-                    value: asset.assetId.toString(),
+                    value: asset === null || asset === void 0 ? void 0 : asset.assetId.toString(),
                 };
             });
             const row = new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
