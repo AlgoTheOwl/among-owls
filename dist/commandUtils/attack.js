@@ -139,11 +139,13 @@ const getAttackString = (assetName, victimName, damage) => {
 const handlePlayerTimeout = (playerId, timeoutInterval) => {
     const gamePlayer = __1.game.players[playerId];
     clearTimeout(__2.playerTimeouts[playerId]);
-    gamePlayer.rolledRecently = true;
-    const rolledRecentlyTimeout = setTimeout(async () => {
-        gamePlayer.rolledRecently = false;
-    }, timeoutInterval);
-    __2.playerTimeouts[playerId] = rolledRecentlyTimeout;
+    if (gamePlayer) {
+        gamePlayer.rolledRecently = true;
+        const rolledRecentlyTimeout = setTimeout(async () => {
+            gamePlayer.rolledRecently = false;
+        }, timeoutInterval);
+        __2.playerTimeouts[playerId] = rolledRecentlyTimeout;
+    }
 };
 const handlePlayerCooldown = async (playerId, coolDownInterval) => {
     const gamePlayer = __1.game.players[playerId];
