@@ -35,6 +35,13 @@ module.exports = {
     // TODO: add ability to register for different games here
     const address = options.getString('address')
 
+    if (address && !/^[a-zA-Z0-9]{58}$/.test(address)) {
+      return interaction.reply({
+        content: 'Please enter a valid Algorand wallet address',
+        ephemeral: true,
+      })
+    }
+
     const { username, id } = user
 
     await interaction.deferReply({ ephemeral: true })
@@ -76,11 +83,19 @@ export const processRegistration = async (
 
     // Check to see if wallet has opt-in asset
     // Retreive assetIds from specific collections
-    const { walletOwned, nftsOwned } = await determineOwnership(address)
+    const { walletOwned = false, nftsOwned = [] } = await determineOwnership(
+      address
+    )
 
     if (!nftsOwned?.length) {
       return {
         status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
+      }
+    }
+
+    if (!walletOwned) {
+      return {
+        status: `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`,
       }
     }
 
@@ -104,12 +119,6 @@ export const processRegistration = async (
         { _id: user._id },
         { $set: { assets: nftsOwned, address } }
       )
-    }
-
-    if (!walletOwned) {
-      return {
-        status: `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`,
-      }
     }
 
     return {

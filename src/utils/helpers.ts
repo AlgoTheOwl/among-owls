@@ -14,7 +14,7 @@ import Asset from '../models/asset'
 import settings from '../settings'
 import { game } from '..'
 
-const { imageDir, coolDownInterval } = settings
+const { imageDir } = settings
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {

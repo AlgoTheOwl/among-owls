@@ -12,7 +12,7 @@ const embeds_1 = __importDefault(require("../embeds"));
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
 const __2 = require("..");
-const { imageDir, coolDownInterval } = settings_1.default;
+const { imageDir } = settings_1.default;
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
