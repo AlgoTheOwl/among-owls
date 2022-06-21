@@ -1,6 +1,6 @@
 import { ButtonInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { attack } from '../utils/attack'
+import { attack } from './attack'
 
 module.exports = {
   data: new SlashCommandBuilder()

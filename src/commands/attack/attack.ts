@@ -1,6 +1,6 @@
 import { ButtonInteraction, MessageAttachment } from 'discord.js'
-import { EmbedData } from '../types/game'
-import doEmbed from '../embeds'
+import { EmbedData } from '../../types/game'
+import doEmbed from '../../embeds'
 import {
   wait,
   mapPlayersForEmbed,
@@ -8,12 +8,12 @@ import {
   randomNumber,
   getWinningPlayer,
   getPlayerArray,
-} from './helpers'
-import { game } from '..'
-import settings from '../settings'
-import { playerTimeouts } from '..'
-import { intervals } from '..'
-import Player from '../models/player'
+} from '../../utils/helpers'
+import { game } from '../..'
+import settings from '../../settings'
+import { playerTimeouts } from '../..'
+import { intervals } from '../..'
+import Player from '../../models/player'
 
 const {
   timeoutInterval,
