@@ -97,6 +97,7 @@ module.exports = {
                 victim.dead = true;
                 victimDead = true;
             }
+            attacker.victimId = undefined;
             // interaction.reply({
             //   content: `You did ${damage} damage to ${victim.username}. Please wait ${attacker.coolDownTimeLeft} seconds to attack again`,
             //   ephemeral: true,
