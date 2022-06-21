@@ -23,7 +23,7 @@ function doEmbed(data) {
         components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
             .setCustomId('select-attacker')
             .setLabel('Choose your AOWL')
-            .setStyle('DANGER')));
+            .setStyle('PRIMARY')));
     }
     // If it's the main embed, add all the good stuff
     if (!isWaitingRoom && isMain && _1.game.active) {
@@ -39,6 +39,9 @@ function doEmbed(data) {
         components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
             .setCustomId('attack')
             .setLabel('Attack!')
+            .setStyle('DANGER'), new discord_js_1.MessageButton()
+            .setCustomId('random-attack')
+            .setLabel('Blindly attack!')
             .setStyle('DANGER')), new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
             .setCustomId('select-victim')
             .setPlaceholder('Select a victim to attack')
