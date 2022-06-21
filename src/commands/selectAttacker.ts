@@ -16,51 +16,53 @@ module.exports = {
     .setName('select-attacker')
     .setDescription(`Pick which AOWL you'd like to compete`),
   async execute(interaction: ButtonInteraction) {
-    const {
-      user: { id },
-    } = interaction
+    try {
+      const {
+        user: { id },
+      } = interaction
 
-    await interaction.deferReply()
+      const data = (await collections.users.findOne({
+        discordId: id,
+      })) as WithId<User>
 
-    const data = (await collections.users.findOne({
-      discordId: id,
-    })) as WithId<User>
+      if (!data?.assets) {
+        return interaction.reply({
+          content: 'You have no AOWLs to select!',
+          ephemeral: true,
+        })
+      }
 
-    if (!data?.assets) {
-      return interaction.followUp({
-        content: 'You have no AOWLs to select!',
-        ephemeral: true,
-      })
-    }
+      if (!game.waitingRoom) {
+        return interaction.reply({
+          content: 'Game is not currently active',
+          ephemeral: true,
+        })
+      }
 
-    if (!game.waitingRoom) {
-      return interaction.followUp({
-        content: 'Game is not currently active',
-        ephemeral: true,
-      })
-    }
+      if (data?.assets?.length) {
+        const options = data.assets.map((asset: Asset) => {
+          return {
+            label: asset.assetName,
+            description: 'Select to play',
+            value: asset?.assetId.toString(),
+          }
+        })
 
-    if (data?.assets?.length) {
-      const options = data.assets.map((asset: Asset) => {
-        return {
-          label: asset.assetName,
-          description: 'Select to play',
-          value: asset?.assetId.toString(),
-        }
-      })
+        const row = new MessageActionRow().addComponents(
+          new MessageSelectMenu()
+            .setCustomId('register-player')
+            .setPlaceholder('Select an AOWL to attack')
+            .addOptions(options)
+        )
 
-      const row = new MessageActionRow().addComponents(
-        new MessageSelectMenu()
-          .setCustomId('register-player')
-          .setPlaceholder('Select an AOWL to attack')
-          .addOptions(options)
-      )
-
-      await interaction.followUp({
-        content: 'Choose your AOWL',
-        components: [row],
-        ephemeral: true,
-      })
+        await interaction.reply({
+          content: 'Choose your AOWL',
+          components: [row],
+          ephemeral: true,
+        })
+      }
+    } catch (error) {
+      console.log('ERROR SELECTING')
     }
   },
 }

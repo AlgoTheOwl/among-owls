@@ -48,7 +48,7 @@ export default function doEmbed(data: EmbedData): EmbedReply {
         new MessageButton()
           .setCustomId('select-attacker')
           .setLabel('Choose your AOWL')
-          .setStyle('DANGER')
+          .setStyle('PRIMARY')
       )
     )
   }
@@ -72,6 +72,10 @@ export default function doEmbed(data: EmbedData): EmbedReply {
         new MessageButton()
           .setCustomId('attack')
           .setLabel('Attack!')
+          .setStyle('DANGER'),
+        new MessageButton()
+          .setCustomId('random-attack')
+          .setLabel('Blindly attack!')
           .setStyle('DANGER')
       ),
       new MessageActionRow().addComponents(
