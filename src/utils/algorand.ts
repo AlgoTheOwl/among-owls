@@ -21,7 +21,7 @@ const algoIndexer = new algosdk.Indexer(token, indexerServer, port)
 
 export const determineOwnership = async function (
   address: string
-): Promise<any> {
+): Promise<{ walletOwned: boolean; nftsOwned: Asset[] | [] }> {
   try {
     let { assets } = await algodClient.accountInformation(address).do()
 
@@ -64,7 +64,7 @@ export const determineOwnership = async function (
   } catch (error) {
     return {
       walletOwned: false,
-      nftOwned: [],
+      nftsOwned: [],
     }
   }
 }

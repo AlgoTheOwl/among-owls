@@ -82,8 +82,4 @@ client.on(
   }
 )
 
-client.on('message', (message) => {
-  console.log(message)
-})
-
 client.login(token)

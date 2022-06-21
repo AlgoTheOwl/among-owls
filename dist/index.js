@@ -66,7 +66,4 @@ client.on('interactionCreate', async (interaction) => {
         console.error(error);
     }
 });
-client.on('message', (message) => {
-    console.log(message);
-});
 client.login(token);
