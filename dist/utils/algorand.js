@@ -56,7 +56,10 @@ const determineOwnership = async function (address) {
         };
     }
     catch (error) {
-        console.log(error);
+        return {
+            walletOwned: false,
+            nftOwned: [],
+        };
     }
 };
 exports.determineOwnership = determineOwnership;

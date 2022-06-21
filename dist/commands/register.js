@@ -32,6 +32,12 @@ module.exports = {
         }
         // TODO: add ability to register for different games here
         const address = options.getString('address');
+        if (address && !/^[a-zA-Z0-9]{58}$/.test(address)) {
+            return interaction.reply({
+                content: 'Please enter a valid Algorand wallet address',
+                ephemeral: true,
+            });
+        }
         const { username, id } = user;
         await interaction.deferReply({ ephemeral: true });
         await interaction.followUp({
@@ -60,10 +66,15 @@ const processRegistration = async (username, discordId, address) => {
         })));
         // Check to see if wallet has opt-in asset
         // Retreive assetIds from specific collections
-        const { walletOwned, nftsOwned } = await (0, algorand_1.determineOwnership)(address);
+        const { walletOwned = false, nftsOwned = [] } = await (0, algorand_1.determineOwnership)(address);
         if (!(nftsOwned === null || nftsOwned === void 0 ? void 0 : nftsOwned.length)) {
             return {
                 status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
+            };
+        }
+        if (!walletOwned) {
+            return {
+                status: `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`,
             };
         }
         // If user doesn't exist, add to db and grab instance
@@ -83,11 +94,6 @@ const processRegistration = async (username, discordId, address) => {
         }
         else {
             database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: nftsOwned, address } });
-        }
-        if (!walletOwned) {
-            return {
-                status: `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`,
-            };
         }
         return {
             status: `Registration complete! Enjoy the game.`,

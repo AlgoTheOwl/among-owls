@@ -26,6 +26,7 @@ const client = new discord_js_1.Client({
         discord_js_1.Intents.FLAGS.GUILDS,
         discord_js_1.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
         discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
+        discord_js_1.Intents.FLAGS.GUILD_MESSAGES,
     ],
 });
 client.once('ready', async () => {
@@ -65,9 +66,7 @@ client.on('interactionCreate', async (interaction) => {
         console.error(error);
     }
 });
-/*
- *****************
- **** HELPERS ****
- *****************
- */
+client.on('message', (message) => {
+    console.log(message);
+});
 client.login(token);
