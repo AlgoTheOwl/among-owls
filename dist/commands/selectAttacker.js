@@ -14,7 +14,6 @@ module.exports = {
         const data = (await database_service_1.collections.users.findOne({
             discordId: id,
         }));
-        console.log('data:', data.assets);
         if (!(data === null || data === void 0 ? void 0 : data.assets)) {
             return interaction.reply({
                 content: 'You have no AOWLs to select!',

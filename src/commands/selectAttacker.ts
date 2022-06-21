@@ -22,8 +22,6 @@ module.exports = {
       discordId: id,
     })) as WithId<User>
 
-    console.log('data:', data.assets)
-
     if (!data?.assets) {
       return interaction.reply({
         content: 'You have no AOWLs to select!',
