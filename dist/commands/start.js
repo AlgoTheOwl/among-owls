@@ -26,7 +26,7 @@ module.exports = {
             return;
         (0, helpers_1.resetGame)();
         const { user, options } = interaction;
-        const capacity = options.getNumber('capacity') || minimumPlayers;
+        const capacity = options.getNumber('capacity');
         const hasRole = await (0, helpers_3.confirmRole)(roleId, interaction, user.id);
         if (!hasRole) {
             return await interaction.reply({

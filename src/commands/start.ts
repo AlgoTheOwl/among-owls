@@ -26,8 +26,7 @@ module.exports = {
 
     resetGame()
     const { user, options } = interaction
-    const capacity = options.getNumber('capacity') || minimumPlayers
-
+    const capacity = options.getNumber('capacity') as number
     const hasRole = await confirmRole(roleId, interaction, user.id)
 
     if (!hasRole) {
