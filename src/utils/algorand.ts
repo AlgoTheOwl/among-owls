@@ -57,11 +57,14 @@ export const determineOwnership = async function (
       }
     })
 
+    console.log(nftsOwned)
+
     return {
       walletOwned,
       nftsOwned,
     }
   } catch (error) {
+    console.log(error)
     return {
       walletOwned: false,
       nftsOwned: [],

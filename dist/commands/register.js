@@ -66,7 +66,7 @@ const processRegistration = async (username, discordId, address) => {
         })));
         // Check to see if wallet has opt-in asset
         // Retreive assetIds from specific collections
-        const { walletOwned = false, nftsOwned = [] } = await (0, algorand_1.determineOwnership)(address);
+        const { walletOwned, nftsOwned } = await (0, algorand_1.determineOwnership)(address);
         if (!(nftsOwned === null || nftsOwned === void 0 ? void 0 : nftsOwned.length)) {
             return {
                 status: `You have no ${unitName}s in this wallet. Please try again with a different address`,

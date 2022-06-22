@@ -22,7 +22,7 @@ module.exports = {
                 });
             }
             if (!__1.game.waitingRoom) {
-                return interaction.reply({
+                return interaction.editReply({
                     content: 'Game is not currently active',
                 });
             }
