@@ -9,7 +9,6 @@ import User from '../models/user'
 import { WithId } from 'mongodb'
 import Asset from '../models/asset'
 import { game } from '..'
-import { wait } from '../utils/helpers'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,7 +33,7 @@ module.exports = {
       }
 
       if (!game.waitingRoom) {
-        return interaction.reply({
+        return interaction.editReply({
           content: 'Game is not currently active',
         })
       }

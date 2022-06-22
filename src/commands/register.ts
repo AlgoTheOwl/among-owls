@@ -83,9 +83,7 @@ export const processRegistration = async (
 
     // Check to see if wallet has opt-in asset
     // Retreive assetIds from specific collections
-    const { walletOwned = false, nftsOwned = [] } = await determineOwnership(
-      address
-    )
+    const { walletOwned, nftsOwned } = await determineOwnership(address)
 
     if (!nftsOwned?.length) {
       return {
