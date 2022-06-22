@@ -28,10 +28,11 @@ module.exports = {
             }
             if ((_a = data === null || data === void 0 ? void 0 : data.assets) === null || _a === void 0 ? void 0 : _a.length) {
                 const options = data.assets.map((asset) => {
+                    var _a;
                     return {
                         label: asset.assetName,
                         description: 'Select to play',
-                        value: asset === null || asset === void 0 ? void 0 : asset.assetId.toString(),
+                        value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
                     };
                 });
                 const row = new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
