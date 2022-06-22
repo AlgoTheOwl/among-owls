@@ -43,7 +43,7 @@ module.exports = {
           return {
             label: asset.assetName,
             description: 'Select to play',
-            value: asset?.assetId.toString(),
+            value: asset?.assetId?.toString(),
           }
         })
 
