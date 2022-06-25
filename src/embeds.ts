@@ -65,8 +65,6 @@ export default function doEmbed(data: EmbedData): EmbedReply {
         value: player.discordId,
       }))
 
-    const attackSelectMenuOptions = randomSort(victims)
-
     components.push(
       new MessageActionRow().addComponents(
         new MessageButton()
@@ -82,7 +80,7 @@ export default function doEmbed(data: EmbedData): EmbedReply {
         new MessageSelectMenu()
           .setCustomId('select-victim')
           .setPlaceholder('Select a victim to attack')
-          .addOptions(attackSelectMenuOptions)
+          .addOptions(victims)
       )
     )
   }
