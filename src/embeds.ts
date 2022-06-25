@@ -7,7 +7,6 @@ import {
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
 import Player from './models/player'
-import { randomSort } from './utils/helpers'
 
 const ipfsGateway = process.env.IPFS_GATEWAY
 
