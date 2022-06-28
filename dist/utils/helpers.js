@@ -12,6 +12,7 @@ const embeds_1 = __importDefault(require("../embeds"));
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
 const __2 = require("..");
+const embeds_2 = __importDefault(require("../constants/embeds"));
 const { imageDir } = settings_1.default;
 const wait = async (duration) => {
     await new Promise((res) => {
@@ -58,11 +59,11 @@ const normalizeLink = (imageUrl) => {
     return imageUrl;
 };
 exports.normalizeLink = normalizeLink;
-const mapPlayersForEmbed = (playerArr) => playerArr
+const mapPlayersForEmbed = (playerArr, type) => playerArr
     .filter((player) => !player.timedOut && !player.dead)
     .map((player) => ({
     name: player.username,
-    value: `HP: ${player.hp}`,
+    value: type === 'game' ? `HP: ${player.hp}` : `${player.asset.assetName}`,
 }));
 exports.mapPlayersForEmbed = mapPlayersForEmbed;
 const emptyDir = (dirPath) => {
@@ -133,17 +134,9 @@ const handleWin = async (player, winByTimeout, game) => {
     }));
     const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1;
     await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { yaoWins: updatedScore } });
-    const embedData = {
-        title: 'WINNER!!!',
-        description: `${player.username}'s ${player.asset.unitName} ${winByTimeout
-            ? 'won by default - all other players timed out!'
-            : `destroyed the competition`}`,
-        color: 'DARK_AQUA',
-        image: player.asset.assetUrl,
-    };
     (0, exports.resetGame)();
     (0, exports.emptyDir)(imageDir);
-    return game.embed.edit((0, embeds_1.default)(embedData));
+    return game.embed.edit((0, embeds_1.default)(embeds_2.default.win, { winByTimeout, player }));
 };
 exports.handleWin = handleWin;
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);

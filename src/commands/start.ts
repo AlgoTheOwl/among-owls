@@ -1,14 +1,12 @@
 import { Interaction, MessageAttachment } from 'discord.js'
 import { resetGame, wait } from '../utils/helpers'
-import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
-import { mapPlayersForEmbed } from '../utils/helpers'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { confirmRole } from '../utils/helpers'
 import { game } from '..'
-import settings from '../settings'
+import embedTypes from '../constants/embeds'
+import embeds from '../constants/embeds'
 
-const { minimumPlayers } = settings
 const roleId: string = process.env.ADMIN_ID
 
 module.exports = {
@@ -54,31 +52,14 @@ module.exports = {
     game.waitingRoom = true
     let playerCount = 0
 
-    const playerWord = playerCount === 1 ? 'player' : 'players'
-    const hasWord = playerCount === 1 ? 'has' : 'have'
-    const waitingRoomDesc = () =>
-      `${playerCount} ${playerWord} ${hasWord} joined the game. \n${capacity} players are required to start this game`
-
-    const waitingRoomEmbedData: EmbedData = {
-      image: undefined,
-      title: 'Waiting Room',
-      description: waitingRoomDesc(),
-      isWaitingRoom: true,
-    }
-
-    game.embed = await interaction.followUp(doEmbed(waitingRoomEmbedData))
+    game.embed = await interaction.followUp(doEmbed(embedTypes.waitingRoom))
 
     while (playerCount < capacity) {
       try {
         await wait(2000)
         playerCount = Object.values(game.players).length
 
-        await game.embed.edit(
-          doEmbed({
-            ...waitingRoomEmbedData,
-            description: waitingRoomDesc(),
-          })
-        )
+        await game.embed.edit(doEmbed(embedTypes.waitingRoom))
       } catch (error) {
         // @ts-ignore
         console.log('ERROR', error)
@@ -92,25 +73,11 @@ module.exports = {
     while (countDown >= 1) {
       countDown--
       await wait(1000)
-
-      const embedData: EmbedData = {
-        title: 'Ready your AOWLS!',
-        description: `Game starting in ${countDown}...`,
-      }
-      await game.embed.edit(doEmbed(embedData))
+      await game.embed.edit(doEmbed(embeds.countDown, { countDown }))
     }
 
-    const playerArr = Object.values(game.players)
-
-    // send back game embed
-    const embedData: EmbedData = {
-      image: undefined,
-      fields: mapPlayersForEmbed(playerArr),
-      description: 'Leaderboard',
-      isMain: true,
-    }
     // start game
     game.active = true
-    game.embed.edit(doEmbed(embedData))
+    game.embed.edit(doEmbed(embedTypes.activeGame))
   },
 }

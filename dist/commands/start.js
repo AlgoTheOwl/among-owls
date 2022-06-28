@@ -6,12 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
-const helpers_2 = require("../utils/helpers");
 const builders_1 = require("@discordjs/builders");
-const helpers_3 = require("../utils/helpers");
+const helpers_2 = require("../utils/helpers");
 const __1 = require("..");
-const settings_1 = __importDefault(require("../settings"));
-const { minimumPlayers } = settings_1.default;
+const embeds_2 = __importDefault(require("../constants/embeds"));
+const embeds_3 = __importDefault(require("../constants/embeds"));
 const roleId = process.env.ADMIN_ID;
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
@@ -27,7 +26,7 @@ module.exports = {
         (0, helpers_1.resetGame)();
         const { user, options } = interaction;
         const capacity = options.getNumber('capacity');
-        const hasRole = await (0, helpers_3.confirmRole)(roleId, interaction, user.id);
+        const hasRole = await (0, helpers_2.confirmRole)(roleId, interaction, user.id);
         if (!hasRole) {
             return await interaction.reply({
                 content: 'Only administrators can use this command',
@@ -47,21 +46,12 @@ module.exports = {
         // Do waiting room
         __1.game.waitingRoom = true;
         let playerCount = 0;
-        const playerWord = playerCount === 1 ? 'player' : 'players';
-        const hasWord = playerCount === 1 ? 'has' : 'have';
-        const waitingRoomDesc = () => `${playerCount} ${playerWord} ${hasWord} joined the game. \n${capacity} players are required to start this game`;
-        const waitingRoomEmbedData = {
-            image: undefined,
-            title: 'Waiting Room',
-            description: waitingRoomDesc(),
-            isWaitingRoom: true,
-        };
-        __1.game.embed = await interaction.followUp((0, embeds_1.default)(waitingRoomEmbedData));
+        __1.game.embed = await interaction.followUp((0, embeds_1.default)(embeds_2.default.waitingRoom));
         while (playerCount < capacity) {
             try {
                 await (0, helpers_1.wait)(2000);
                 playerCount = Object.values(__1.game.players).length;
-                await __1.game.embed.edit((0, embeds_1.default)(Object.assign(Object.assign({}, waitingRoomEmbedData), { description: waitingRoomDesc() })));
+                await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
             }
             catch (error) {
                 // @ts-ignore
@@ -74,22 +64,10 @@ module.exports = {
         while (countDown >= 1) {
             countDown--;
             await (0, helpers_1.wait)(1000);
-            const embedData = {
-                title: 'Ready your AOWLS!',
-                description: `Game starting in ${countDown}...`,
-            };
-            await __1.game.embed.edit((0, embeds_1.default)(embedData));
+            await __1.game.embed.edit((0, embeds_1.default)(embeds_3.default.countDown, { countDown }));
         }
-        const playerArr = Object.values(__1.game.players);
-        // send back game embed
-        const embedData = {
-            image: undefined,
-            fields: (0, helpers_2.mapPlayersForEmbed)(playerArr),
-            description: 'Leaderboard',
-            isMain: true,
-        };
         // start game
         __1.game.active = true;
-        __1.game.embed.edit((0, embeds_1.default)(embedData));
+        __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
     },
 };

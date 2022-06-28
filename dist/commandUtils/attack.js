@@ -11,6 +11,7 @@ const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
 const __2 = require("..");
 const __3 = require("..");
+const embeds_2 = __importDefault(require("../constants/embeds"));
 const { timeoutInterval, coolDownInterval, hp, damagePerAowl, waitBeforeTimeoutInterval, kickPlayerTimeout, deathDeleteInterval, } = settings_1.default;
 const attackStrings = [
     'HOOT, HOOT! {assetName} slashes at {victimName} for {damage} damage',
@@ -120,14 +121,8 @@ const attack = async (interaction, random) => {
             value: getAttackString(attacker.asset.assetName, victim.username, damage),
         });
     }
-    const fields = [...(0, helpers_1.mapPlayersForEmbed)(playerArr), ...attackRow];
-    const embedData = {
-        color: 'RED',
-        fields,
-        image: undefined,
-        isMain: true,
-    };
-    await __1.game.embed.edit((0, embeds_1.default)(embedData));
+    const fields = [...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'), ...attackRow];
+    await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
 };
 exports.attack = attack;
 const getAttackString = (assetName, victimName, damage) => {
@@ -176,22 +171,14 @@ const doPlayerTimeout = async (id) => {
             const usersTimedOut = playerArr.filter((player) => player.timedOut);
             // If everyone timed out
             if (playerArr.length === usersTimedOut.length) {
-                const embedData = {
-                    image: undefined,
-                    title: 'BOOOO!!!',
-                    description: 'Game has ended due to all players being removed for inactivity',
-                };
-                __1.game.embed.edit((0, embeds_1.default)(embedData));
+                __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.timedOut));
                 __1.game.active = false;
                 __3.intervals.timeoutInterval && clearInterval(__3.intervals.timeoutInterval);
                 return;
             }
+            // Update embed if players dropped off
             if (playerArr.length && isTimeout) {
-                const embedData = {
-                    fields: (0, helpers_1.mapPlayersForEmbed)((0, helpers_1.getPlayerArray)(__1.game.players)),
-                    image: undefined,
-                };
-                __1.game.embed.edit((0, embeds_1.default)(embedData));
+                __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
             }
         }
     }, kickPlayerTimeout);

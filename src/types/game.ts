@@ -21,7 +21,7 @@ export type Field = {
 
 type Footer = {
   text: string
-  iconUrl: string
+  iconUrl?: string
 }
 
 export interface EmbedReply {
