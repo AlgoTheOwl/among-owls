@@ -3,26 +3,29 @@ import {
   MessageActionRow,
   MessageSelectMenu,
   MessageButton,
+  ColorResolvable,
 } from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
 import Player from './models/player'
 import embeds from './constants/embeds'
 import { mapPlayersForEmbed } from './utils/helpers'
-import { collections } from './database/database.service'
-import { WithId } from 'mongodb'
-import User from './models/user'
 
 const ipfsGateway = process.env.IPFS_GATEWAY
 
-const defaultOptions = {
+const defaultEmbedValues: EmbedData = {
+  title: '🔥 Ye Among AOWLs 🔥',
+  description: '💀 Who will survive? 💀',
+  color: 'DARK_AQUA',
+  image: 'attachment://main.gif',
   thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+  footer: {
+    text: 'A HootGang Production',
+    iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+  },
 }
 
-export default async function doEmbed(
-  type: string,
-  options?: any
-): Promise<EmbedReply> {
+export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
   let data: EmbedData = {}
   let components = []
   const playerArr = Object.values(game.players)
@@ -54,15 +57,16 @@ export default async function doEmbed(
   }
 
   if (type === embeds.activeGame) {
+    const fields = options?.hasOwnProperty('fields')
+      ? options.fields
+      : mapPlayersForEmbed(playerArr, 'game')
     data = {
       title: '🔥 Ye Among AOWLs 🔥',
       description: '💀 Who will survive? 💀',
-      color: 'DARK_AQUA',
+      color: 'RANDOM',
       thumbNail:
         'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-      fields: options.fields
-        ? options.fields
-        : mapPlayersForEmbed(playerArr, 'game'),
+      fields,
       footer: {
         text: 'A HootGang Production',
       },
@@ -98,60 +102,47 @@ export default async function doEmbed(
 
   if (type === embeds.countDown) {
     data = {
-      ...defaultOptions,
       title: 'Ready your AOWLS!',
-      description: `Game starting in ${options.countDown}...`,
+      description: `Game starting in ${options?.countDown}...`,
     }
   }
 
   if (type === embeds.timedOut) {
     data = {
-      ...defaultOptions,
       title: 'BOOOO!!!',
       description:
         'Game has ended due to all players being removed for inactivity',
     }
   }
 
-  if (type === embeds.win) {
+  if (options && type === embeds.win) {
     const { player, winByTimeout } = options
     data = {
       title: 'WINNER!!!',
-      description: `${player.username}'s ${player.asset.unitName} ${
+      description: `${player?.username}'s ${player?.asset.unitName} ${
         winByTimeout
           ? 'won by default - all other players timed out!'
           : `destroyed the competition`
       }`,
       color: 'DARK_AQUA',
-      image: player.asset.assetUrl,
+      image: player?.asset.assetUrl,
     }
   }
 
-  if (type === embeds.leaderBoard) {
-    const winningUsers = (await collections.users
-      .find({ yaoWins: { $gt: 0 } })
-      .limit(10)
-      .sort({ yaoWins: 'desc' })
-      .toArray()) as WithId<User>[]
+  if (options && type === embeds.leaderBoard) {
+    const { fields } = options
 
-    if (winningUsers.length) {
-      data = {
-        title: 'Leaderboard',
-        description: 'Which AOWLs rule them all?',
-        image: undefined,
-        fields: winningUsers.map((user, i) => {
-          const place = i + 1
-          const win = user.yaoWins === 1 ? 'win' : 'wins'
-          return {
-            name: `#${place}: ${user.username}`,
-            value: `${user.yaoWins} ${win}`,
-          }
-        }),
-      }
+    data = {
+      title: 'Leaderboard',
+      description: 'Which AOWLs rule them all?',
+      fields,
     }
   }
 
-  let { title, description, color, image, thumbNail, fields, footer } = data
+  let { title, description, color, image, thumbNail, fields, footer } = {
+    ...defaultEmbedValues,
+    ...data,
+  }
 
   const embed = new MessageEmbed()
 
@@ -162,7 +153,7 @@ export default async function doEmbed(
 
   title && embed.setTitle(title)
   description && embed.setDescription(description)
-  color && embed.setColor(color)
+  color && embed.setColor(color as ColorResolvable)
   image && embed.setImage(image)
   thumbNail && embed.setThumbnail(thumbNail)
   fields?.length && embed.addFields(fields)

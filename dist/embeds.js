@@ -7,12 +7,19 @@ const discord_js_1 = require("discord.js");
 const _1 = require(".");
 const embeds_1 = __importDefault(require("./constants/embeds"));
 const helpers_1 = require("./utils/helpers");
-const database_service_1 = require("./database/database.service");
 const ipfsGateway = process.env.IPFS_GATEWAY;
-const defaultOptions = {
+const defaultEmbedValues = {
+    title: '🔥 Ye Among AOWLs 🔥',
+    description: '💀 Who will survive? 💀',
+    color: 'DARK_AQUA',
+    image: 'attachment://main.gif',
     thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+    footer: {
+        text: 'A HootGang Production',
+        iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+    },
 };
-async function doEmbed(type, options) {
+function doEmbed(type, options) {
     let data = {};
     let components = [];
     const playerArr = Object.values(_1.game.players);
@@ -36,14 +43,15 @@ async function doEmbed(type, options) {
             .setStyle('PRIMARY')));
     }
     if (type === embeds_1.default.activeGame) {
+        const fields = (options === null || options === void 0 ? void 0 : options.hasOwnProperty('fields'))
+            ? options.fields
+            : (0, helpers_1.mapPlayersForEmbed)(playerArr, 'game');
         data = {
             title: '🔥 Ye Among AOWLs 🔥',
             description: '💀 Who will survive? 💀',
-            color: 'DARK_AQUA',
+            color: 'RANDOM',
             thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
-            fields: options.fields
-                ? options.fields
-                : (0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
+            fields,
             footer: {
                 text: 'A HootGang Production',
             },
@@ -67,45 +75,37 @@ async function doEmbed(type, options) {
             .addOptions(victims)));
     }
     if (type === embeds_1.default.countDown) {
-        data = Object.assign(Object.assign({}, defaultOptions), { title: 'Ready your AOWLS!', description: `Game starting in ${options.countDown}...` });
+        data = {
+            title: 'Ready your AOWLS!',
+            description: `Game starting in ${options === null || options === void 0 ? void 0 : options.countDown}...`,
+        };
     }
     if (type === embeds_1.default.timedOut) {
-        data = Object.assign(Object.assign({}, defaultOptions), { title: 'BOOOO!!!', description: 'Game has ended due to all players being removed for inactivity' });
+        data = {
+            title: 'BOOOO!!!',
+            description: 'Game has ended due to all players being removed for inactivity',
+        };
     }
-    if (type === embeds_1.default.win) {
+    if (options && type === embeds_1.default.win) {
         const { player, winByTimeout } = options;
         data = {
             title: 'WINNER!!!',
-            description: `${player.username}'s ${player.asset.unitName} ${winByTimeout
+            description: `${player === null || player === void 0 ? void 0 : player.username}'s ${player === null || player === void 0 ? void 0 : player.asset.unitName} ${winByTimeout
                 ? 'won by default - all other players timed out!'
                 : `destroyed the competition`}`,
             color: 'DARK_AQUA',
-            image: player.asset.assetUrl,
+            image: player === null || player === void 0 ? void 0 : player.asset.assetUrl,
         };
     }
-    if (type === embeds_1.default.leaderBoard) {
-        const winningUsers = (await database_service_1.collections.users
-            .find({ yaoWins: { $gt: 0 } })
-            .limit(10)
-            .sort({ yaoWins: 'desc' })
-            .toArray());
-        if (winningUsers.length) {
-            data = {
-                title: 'Leaderboard',
-                description: 'Which AOWLs rule them all?',
-                image: undefined,
-                fields: winningUsers.map((user, i) => {
-                    const place = i + 1;
-                    const win = user.yaoWins === 1 ? 'win' : 'wins';
-                    return {
-                        name: `#${place}: ${user.username}`,
-                        value: `${user.yaoWins} ${win}`,
-                    };
-                }),
-            };
-        }
+    if (options && type === embeds_1.default.leaderBoard) {
+        const { fields } = options;
+        data = {
+            title: 'Leaderboard',
+            description: 'Which AOWLs rule them all?',
+            fields,
+        };
     }
-    let { title, description, color, image, thumbNail, fields, footer } = data;
+    let { title, description, color, image, thumbNail, fields, footer } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();
     if ((image === null || image === void 0 ? void 0 : image.slice(0, 4)) === 'ipfs') {
         const ifpsHash = image.slice(7);
