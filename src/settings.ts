@@ -8,5 +8,5 @@ export default {
   deathDeleteInterval: 8000,
   timeoutInterval: 30000,
   waitBeforeTimeoutInterval: 5000,
-  minimumPlayers: 4,
+  maxCapacity: 20,
 }

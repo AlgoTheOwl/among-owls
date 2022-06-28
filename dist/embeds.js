@@ -40,7 +40,10 @@ function doEmbed(type, options) {
         components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
             .setCustomId('select-attacker')
             .setLabel('Choose your AOWL')
-            .setStyle('PRIMARY')));
+            .setStyle('PRIMARY'), new discord_js_1.MessageButton()
+            .setCustomId('begin-game')
+            .setLabel('Start game')
+            .setStyle('SECONDARY')));
     }
     if (type === embeds_1.default.activeGame) {
         const fields = (options === null || options === void 0 ? void 0 : options.hasOwnProperty('fields'))

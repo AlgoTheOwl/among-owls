@@ -51,7 +51,11 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
         new MessageButton()
           .setCustomId('select-attacker')
           .setLabel('Choose your AOWL')
-          .setStyle('PRIMARY')
+          .setStyle('PRIMARY'),
+        new MessageButton()
+          .setCustomId('begin-game')
+          .setLabel('Start game')
+          .setStyle('SECONDARY')
       )
     )
   }
