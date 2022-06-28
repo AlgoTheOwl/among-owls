@@ -6,25 +6,20 @@ import { confirmRole } from '../utils/helpers'
 import { game } from '..'
 import embedTypes from '../constants/embeds'
 import embeds from '../constants/embeds'
+import settings from '../settings'
 
 const roleId: string = process.env.ADMIN_ID
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('start')
-    .setDescription('start When AOWLS Attack')
-    .addNumberOption((option) =>
-      option
-        .setName('capacity')
-        .setDescription('max amount of players allowed in a single game')
-        .setRequired(true)
-    ),
+    .setDescription('start When AOWLS Attack'),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
+    const { maxCapacity } = settings
 
     resetGame()
-    const { user, options } = interaction
-    const capacity = options.getNumber('capacity') as number
+    const { user } = interaction
     const hasRole = await confirmRole(roleId, interaction, user.id)
 
     if (!hasRole) {
@@ -54,7 +49,7 @@ module.exports = {
 
     game.embed = await interaction.followUp(doEmbed(embedTypes.waitingRoom))
 
-    while (playerCount < capacity) {
+    while (playerCount < maxCapacity && game.waitingRoom) {
       try {
         await wait(2000)
         playerCount = Object.values(game.players).length

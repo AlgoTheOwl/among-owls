@@ -11,21 +11,18 @@ const helpers_2 = require("../utils/helpers");
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const embeds_3 = __importDefault(require("../constants/embeds"));
+const settings_1 = __importDefault(require("../settings"));
 const roleId = process.env.ADMIN_ID;
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('start')
-        .setDescription('start When AOWLS Attack')
-        .addNumberOption((option) => option
-        .setName('capacity')
-        .setDescription('max amount of players allowed in a single game')
-        .setRequired(true)),
+        .setDescription('start When AOWLS Attack'),
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
+        const { maxCapacity } = settings_1.default;
         (0, helpers_1.resetGame)();
-        const { user, options } = interaction;
-        const capacity = options.getNumber('capacity');
+        const { user } = interaction;
         const hasRole = await (0, helpers_2.confirmRole)(roleId, interaction, user.id);
         if (!hasRole) {
             return await interaction.reply({
@@ -47,7 +44,7 @@ module.exports = {
         __1.game.waitingRoom = true;
         let playerCount = 0;
         __1.game.embed = await interaction.followUp((0, embeds_1.default)(embeds_2.default.waitingRoom));
-        while (playerCount < capacity) {
+        while (playerCount < maxCapacity && __1.game.waitingRoom) {
             try {
                 await (0, helpers_1.wait)(2000);
                 playerCount = Object.values(__1.game.players).length;
