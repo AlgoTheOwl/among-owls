@@ -26,6 +26,14 @@ module.exports = {
         discordId: id,
       })) as WithId<User>
 
+      if (data.coolDownDone && data.coolDownDone > Date.now()) {
+        return interaction.editReply({
+          content: `Please wait ${Math.floor(
+            (data.coolDownDone - Date.now()) / 60000
+          )} minutes before playing again`,
+        })
+      }
+
       if (!data?.assets) {
         return interaction.editReply({
           content: 'You have no AOWLs to select!',

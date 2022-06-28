@@ -16,6 +16,11 @@ module.exports = {
             const data = (await database_service_1.collections.users.findOne({
                 discordId: id,
             }));
+            if (data.coolDownDone && data.coolDownDone > Date.now()) {
+                return interaction.editReply({
+                    content: `Please wait ${Math.floor((data.coolDownDone - Date.now()) / 60000)} minutes before playing again`,
+                });
+            }
             if (!(data === null || data === void 0 ? void 0 : data.assets)) {
                 return interaction.editReply({
                     content: 'You have no AOWLs to select!',

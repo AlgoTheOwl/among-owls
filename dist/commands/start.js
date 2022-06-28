@@ -12,6 +12,7 @@ const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const embeds_3 = __importDefault(require("../constants/embeds"));
 const settings_1 = __importDefault(require("../settings"));
+const database_service_1 = require("../database/database.service");
 const roleId = process.env.ADMIN_ID;
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
@@ -20,7 +21,7 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
-        const { maxCapacity } = settings_1.default;
+        const { maxCapacity, userCooldown } = settings_1.default;
         (0, helpers_1.resetGame)();
         const { user } = interaction;
         const hasRole = await (0, helpers_2.confirmRole)(roleId, interaction, user.id);
@@ -66,5 +67,16 @@ module.exports = {
         // start game
         __1.game.active = true;
         __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
+        // Add user cooldown
+        const playerArr = Object.values(__1.game.players);
+        try {
+            (0, helpers_1.asyncForEach)(playerArr, async (player) => {
+                const coolDownDoneDate = Date.now() + userCooldown * 60000;
+                await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { coolDownDone: coolDownDoneDate } });
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
     },
 };

@@ -9,9 +9,11 @@ module.exports = {
     async execute(interaction) {
         const playerArr = Object.values(__1.game.players);
         if (playerArr.length) {
-            console.log('Starting game');
             __1.game.waitingRoom = false;
-            interaction.deferUpdate();
+            interaction.reply({
+                content: `Game starting...`,
+                ephemeral: true,
+            });
         }
         else {
             interaction.reply({

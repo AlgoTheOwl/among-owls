@@ -1,5 +1,5 @@
 import { Interaction, MessageAttachment } from 'discord.js'
-import { resetGame, wait } from '../utils/helpers'
+import { asyncForEach, resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { confirmRole } from '../utils/helpers'
@@ -7,6 +7,8 @@ import { game } from '..'
 import embedTypes from '../constants/embeds'
 import embeds from '../constants/embeds'
 import settings from '../settings'
+import { collections } from '../database/database.service'
+import Player from '../models/player'
 
 const roleId: string = process.env.ADMIN_ID
 
@@ -16,7 +18,7 @@ module.exports = {
     .setDescription('start When AOWLS Attack'),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
-    const { maxCapacity } = settings
+    const { maxCapacity, userCooldown } = settings
 
     resetGame()
     const { user } = interaction
@@ -74,5 +76,19 @@ module.exports = {
     // start game
     game.active = true
     game.embed.edit(doEmbed(embedTypes.activeGame))
+
+    // Add user cooldown
+    const playerArr = Object.values(game.players)
+    try {
+      asyncForEach(playerArr, async (player: Player) => {
+        const coolDownDoneDate = Date.now() + userCooldown * 60000
+        await collections.users.findOneAndUpdate(
+          { _id: player.userId },
+          { $set: { coolDownDone: coolDownDoneDate } }
+        )
+      })
+    } catch (error) {
+      console.log(error)
+    }
   },
 }
