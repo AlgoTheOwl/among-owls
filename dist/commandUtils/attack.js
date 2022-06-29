@@ -103,8 +103,8 @@ const attack = async (interaction, random) => {
                 files: [attachment],
                 content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
             });
-            setTimeout(() => {
-                interaction.deleteReply();
+            setTimeout(async () => {
+                await interaction.deleteReply();
             }, deathDeleteInterval);
         }
         else {
@@ -178,7 +178,7 @@ const doPlayerTimeout = async (id) => {
             }
             // Update embed if players dropped off
             if (playerArr.length && isTimeout) {
-                __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
+                await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
             }
         }
     }, kickPlayerTimeout);

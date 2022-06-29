@@ -136,8 +136,8 @@ export const attack = async (
         content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
       })
 
-      setTimeout(() => {
-        interaction.deleteReply()
+      setTimeout(async () => {
+        await interaction.deleteReply()
       }, deathDeleteInterval)
     } else {
       interaction.deferUpdate()
@@ -238,7 +238,7 @@ const doPlayerTimeout = async (id: string): Promise<void> => {
 
       // Update embed if players dropped off
       if (playerArr.length && isTimeout) {
-        game.embed.edit(doEmbed(embeds.activeGame))
+        await game.embed.edit(doEmbed(embeds.activeGame))
       }
     }
   }, kickPlayerTimeout)
