@@ -17,7 +17,7 @@ module.exports = {
       })
       setTimeout(() => {
         interaction.deleteReply()
-      }, 2000)
+      }, 5000)
     } else {
       interaction.reply({
         content: `You can't start with less than two players`,
