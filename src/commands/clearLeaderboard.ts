@@ -11,11 +11,13 @@ module.exports = {
     .setDescription('clear the leaderboard standings'),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
+
     const {
       user: { id },
     } = interaction
 
     const hasRole = await confirmRole(roleId, interaction, id)
+
     if (!hasRole) {
       return interaction.reply({
         content: 'You do not have the required role to use this command',
