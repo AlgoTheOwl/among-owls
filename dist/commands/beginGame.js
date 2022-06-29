@@ -7,13 +7,16 @@ module.exports = {
         .setName('begin-game')
         .setDescription('begin the game'),
     async execute(interaction) {
+        const { user } = interaction;
         const playerArr = Object.values(__1.game.players);
         if (playerArr.length) {
             __1.game.waitingRoom = false;
             interaction.reply({
-                content: `Game starting...`,
-                ephemeral: true,
+                content: `${user.username} has started the game`,
             });
+            setTimeout(() => {
+                interaction.deleteReply();
+            }, 2000);
         }
         else {
             interaction.reply({

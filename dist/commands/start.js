@@ -12,7 +12,6 @@ const embeds_2 = __importDefault(require("../constants/embeds"));
 const embeds_3 = __importDefault(require("../constants/embeds"));
 const settings_1 = __importDefault(require("../settings"));
 const database_service_1 = require("../database/database.service");
-const roleId = process.env.ADMIN_ID;
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('start')
@@ -22,16 +21,7 @@ module.exports = {
             return;
         const { maxCapacity, userCooldown } = settings_1.default;
         (0, helpers_1.resetGame)();
-        const { user, options } = interaction;
-        const capacity = options.getNumber('capacity');
-        // const hasRole = await confirmRole(roleId, interaction, user.id)
-        // if (!hasRole) {
-        //   return await interaction.reply({
-        //     content: 'Only administrators can use this command',
-        //     ephemeral: true,
-        //   })
-        // }
-        if (__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) {
+        if ((__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) || (__1.game === null || __1.game === void 0 ? void 0 : __1.game.waitingRoom)) {
             return await interaction.reply({
                 content: 'A game is already running',
                 ephemeral: true,
