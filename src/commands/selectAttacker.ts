@@ -26,7 +26,7 @@ module.exports = {
         discordId: id,
       })) as WithId<User>
 
-      if (data.coolDownDone && data.coolDownDone > Date.now()) {
+      if (data?.coolDownDone && data?.coolDownDone > Date.now()) {
         const minutesLeft = Math.floor((data.coolDownDone - Date.now()) / 60000)
         const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes'
         return interaction.editReply({
