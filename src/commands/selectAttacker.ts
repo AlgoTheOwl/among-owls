@@ -20,11 +20,19 @@ module.exports = {
         user: { id },
       } = interaction
 
+      if (!game.waitingRoom) {
+        return interaction.editReply({
+          content: 'Game is not currently active',
+        })
+      }
+
       await interaction.deferReply({ ephemeral: true })
 
       const data = (await collections.users.findOne({
         discordId: id,
       })) as WithId<User>
+
+      console.log(data)
 
       if (data?.coolDownDone && data?.coolDownDone > Date.now()) {
         const minutesLeft = Math.floor((data.coolDownDone - Date.now()) / 60000)
@@ -37,12 +45,6 @@ module.exports = {
       if (!data?.assets) {
         return interaction.editReply({
           content: 'You have no AOWLs to select!',
-        })
-      }
-
-      if (!game.waitingRoom) {
-        return interaction.editReply({
-          content: 'Game is not currently active',
         })
       }
 

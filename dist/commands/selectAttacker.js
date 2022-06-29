@@ -12,10 +12,16 @@ module.exports = {
         var _a;
         try {
             const { user: { id }, } = interaction;
+            if (!__1.game.waitingRoom) {
+                return interaction.editReply({
+                    content: 'Game is not currently active',
+                });
+            }
             await interaction.deferReply({ ephemeral: true });
             const data = (await database_service_1.collections.users.findOne({
                 discordId: id,
             }));
+            console.log(data);
             if ((data === null || data === void 0 ? void 0 : data.coolDownDone) && (data === null || data === void 0 ? void 0 : data.coolDownDone) > Date.now()) {
                 const minutesLeft = Math.floor((data.coolDownDone - Date.now()) / 60000);
                 const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes';
@@ -26,11 +32,6 @@ module.exports = {
             if (!(data === null || data === void 0 ? void 0 : data.assets)) {
                 return interaction.editReply({
                     content: 'You have no AOWLs to select!',
-                });
-            }
-            if (!__1.game.waitingRoom) {
-                return interaction.editReply({
-                    content: 'Game is not currently active',
                 });
             }
             if ((_a = data === null || data === void 0 ? void 0 : data.assets) === null || _a === void 0 ? void 0 : _a.length) {
