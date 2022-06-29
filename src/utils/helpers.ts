@@ -13,6 +13,7 @@ import Game from '../models/game'
 import Asset from '../models/asset'
 import settings from '../settings'
 import { game } from '..'
+import embeds from '../constants/embeds'
 
 const { imageDir } = settings
 
@@ -67,13 +68,14 @@ export const normalizeLink = (imageUrl: string) => {
 }
 
 export const mapPlayersForEmbed = (
-  playerArr: Player[]
+  playerArr: Player[],
+  type: string
 ): { name: string; value: string }[] =>
   playerArr
     .filter((player) => !player.timedOut && !player.dead)
     .map((player) => ({
       name: player.username,
-      value: `HP: ${player.hp}`,
+      value: type === 'game' ? `HP: ${player.hp}` : `${player.asset.assetName}`,
     }))
 
 export const emptyDir = (dirPath: string) => {
@@ -164,22 +166,9 @@ export const handleWin = async (
     { $set: { yaoWins: updatedScore } }
   )
 
-  const embedData: EmbedData = {
-    title: 'WINNER!!!',
-    description: `${player.username}'s ${player.asset.unitName} ${
-      winByTimeout
-        ? 'won by default - all other players timed out!'
-        : `destroyed the competition`
-    }`,
-    color: 'DARK_AQUA',
-    image: player.asset.assetUrl,
-  }
-
   resetGame()
-
   emptyDir(imageDir)
-
-  return game.embed.edit(doEmbed(embedData))
+  return game.embed.edit(doEmbed(embeds.win, { winByTimeout, player }))
 }
 
 export const randomNumber = (min: number, max: number) =>
