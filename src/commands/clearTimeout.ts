@@ -7,8 +7,8 @@ import { collections } from '../database/database.service'
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('start')
-    .setDescription('start When AOWLS Attack'),
+    .setName('clear-timeout')
+    .setDescription('clear all timeouts'),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
     const playerArr = Object.values(game.players)
