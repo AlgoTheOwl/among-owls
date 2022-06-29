@@ -25,6 +25,7 @@ function doEmbed(type, options) {
     const playerArr = Object.values(_1.game.players);
     const playerCount = playerArr.length;
     if (type === embeds_1.default.waitingRoom) {
+        console.log('updating waiting room');
         const playerWord = playerCount === 1 ? 'player' : 'players';
         const hasWord = playerCount === 1 ? 'has' : 'have';
         data = {
