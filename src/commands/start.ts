@@ -27,14 +27,14 @@ module.exports = {
     resetGame()
     const { user, options } = interaction
     const capacity = options.getNumber('capacity') as number
-    const hasRole = await confirmRole(roleId, interaction, user.id)
+    // const hasRole = await confirmRole(roleId, interaction, user.id)
 
-    if (!hasRole) {
-      return await interaction.reply({
-        content: 'Only administrators can use this command',
-        ephemeral: true,
-      })
-    }
+    // if (!hasRole) {
+    //   return await interaction.reply({
+    //     content: 'Only administrators can use this command',
+    //     ephemeral: true,
+    //   })
+    // }
 
     if (game?.active) {
       return await interaction.reply({
