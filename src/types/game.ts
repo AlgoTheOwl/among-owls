@@ -1,6 +1,5 @@
 import { ColorResolvable, MessageActionRow, MessageEmbed } from 'discord.js'
 import Player from '../models/player'
-import User from '../models/user'
 
 export interface EmbedData {
   title?: string
@@ -10,8 +9,9 @@ export interface EmbedData {
   thumbNail?: string
   fields?: Field[] | []
   footer?: Footer
-  isMain?: boolean
-  isWaitingRoom?: boolean
+  countDown?: number
+  player?: Player
+  winByTimeout?: boolean
 }
 
 export type Field = {
@@ -21,7 +21,7 @@ export type Field = {
 
 type Footer = {
   text: string
-  iconUrl: string
+  iconUrl?: string
 }
 
 export interface EmbedReply {

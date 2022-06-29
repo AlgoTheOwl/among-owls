@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
 const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../embeds"));
+const embeds_2 = __importDefault(require("../constants/embeds"));
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('leaderboard')
@@ -18,21 +19,16 @@ module.exports = {
             .limit(10)
             .sort({ yaoWins: 'desc' })
             .toArray());
-        if (winningUsers.length) {
-            const embedData = {
-                title: 'Leaderboard',
-                description: 'Which AOWLs rule them all?',
-                image: undefined,
-                fields: winningUsers.map((user, i) => {
-                    const place = i + 1;
-                    const win = user.yaoWins === 1 ? 'win' : 'wins';
-                    return {
-                        name: `#${place}: ${user.username}`,
-                        value: `${user.yaoWins} ${win}`,
-                    };
-                }),
+        const fields = winningUsers.map((user, i) => {
+            const place = i + 1;
+            const win = user.yaoWins === 1 ? 'win' : 'wins';
+            return {
+                name: `#${place}: ${user.username}`,
+                value: `${user.yaoWins} ${win}`,
             };
-            await interaction.reply((0, embeds_1.default)(embedData));
+        });
+        if (fields === null || fields === void 0 ? void 0 : fields.length) {
+            await interaction.reply((0, embeds_1.default)(embeds_2.default.leaderBoard, { fields }));
         }
         else {
             await interaction.reply({ content: 'no winners yet!', ephemeral: true });
