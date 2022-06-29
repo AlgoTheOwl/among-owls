@@ -13,7 +13,7 @@ module.exports = {
         try {
             const { user: { id }, } = interaction;
             if (!__1.game.waitingRoom) {
-                return interaction.editReply({
+                return interaction.reply({
                     content: 'Game is not currently active',
                 });
             }
@@ -21,8 +21,7 @@ module.exports = {
             const data = (await database_service_1.collections.users.findOne({
                 discordId: id,
             }));
-            console.log(data);
-            if ((data === null || data === void 0 ? void 0 : data.coolDownDone) && (data === null || data === void 0 ? void 0 : data.coolDownDone) > Date.now()) {
+            if ((data === null || data === void 0 ? void 0 : data.coolDownDone) && data.coolDownDone > Date.now()) {
                 const minutesLeft = Math.floor((data.coolDownDone - Date.now()) / 60000);
                 const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes';
                 return interaction.editReply({

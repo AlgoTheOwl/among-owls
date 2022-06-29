@@ -21,7 +21,7 @@ module.exports = {
       } = interaction
 
       if (!game.waitingRoom) {
-        return interaction.editReply({
+        return interaction.reply({
           content: 'Game is not currently active',
         })
       }
@@ -32,9 +32,7 @@ module.exports = {
         discordId: id,
       })) as WithId<User>
 
-      console.log(data)
-
-      if (data?.coolDownDone && data?.coolDownDone > Date.now()) {
+      if (data?.coolDownDone && data.coolDownDone > Date.now()) {
         const minutesLeft = Math.floor((data.coolDownDone - Date.now()) / 60000)
         const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes'
         return interaction.editReply({
