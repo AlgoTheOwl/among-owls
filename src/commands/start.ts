@@ -2,15 +2,12 @@ import { Interaction, MessageAttachment } from 'discord.js'
 import { asyncForEach, resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { confirmRole } from '../utils/helpers'
 import { game } from '..'
 import embedTypes from '../constants/embeds'
 import embeds from '../constants/embeds'
 import settings from '../settings'
 import { collections } from '../database/database.service'
 import Player from '../models/player'
-
-const roleId: string = process.env.ADMIN_ID
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -21,18 +18,8 @@ module.exports = {
     const { maxCapacity, userCooldown } = settings
 
     resetGame()
-    const { user, options } = interaction
-    const capacity = options.getNumber('capacity') as number
-    // const hasRole = await confirmRole(roleId, interaction, user.id)
 
-    // if (!hasRole) {
-    //   return await interaction.reply({
-    //     content: 'Only administrators can use this command',
-    //     ephemeral: true,
-    //   })
-    // }
-
-    if (game?.active) {
+    if (game?.active || game?.waitingRoom) {
       return await interaction.reply({
         content: 'A game is already running',
         ephemeral: true,
