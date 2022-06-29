@@ -1,32 +1,27 @@
 import { Interaction, MessageAttachment } from 'discord.js'
-import { resetGame, wait } from '../utils/helpers'
-import { EmbedData } from '../types/game'
+import { asyncForEach, resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
-import { mapPlayersForEmbed } from '../utils/helpers'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { confirmRole } from '../utils/helpers'
 import { game } from '..'
+import embedTypes from '../constants/embeds'
+import embeds from '../constants/embeds'
 import settings from '../settings'
+import { collections } from '../database/database.service'
+import Player from '../models/player'
 
-const { minimumPlayers } = settings
 const roleId: string = process.env.ADMIN_ID
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('start')
-    .setDescription('start When AOWLS Attack')
-    .addNumberOption((option) =>
-      option
-        .setName('capacity')
-        .setDescription('max amount of players allowed in a single game')
-        .setRequired(true)
-    ),
+    .setDescription('start When AOWLS Attack'),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
+    const { maxCapacity, userCooldown } = settings
 
     resetGame()
-    const { user, options } = interaction
-    const capacity = options.getNumber('capacity') as number
+    const { user } = interaction
     const hasRole = await confirmRole(roleId, interaction, user.id)
 
     if (!hasRole) {
@@ -54,31 +49,14 @@ module.exports = {
     game.waitingRoom = true
     let playerCount = 0
 
-    const playerWord = playerCount === 1 ? 'player' : 'players'
-    const hasWord = playerCount === 1 ? 'has' : 'have'
-    const waitingRoomDesc = () =>
-      `${playerCount} ${playerWord} ${hasWord} joined the game. \n${capacity} players are required to start this game`
+    game.embed = await interaction.followUp(doEmbed(embedTypes.waitingRoom))
 
-    const waitingRoomEmbedData: EmbedData = {
-      image: undefined,
-      title: 'Waiting Room',
-      description: waitingRoomDesc(),
-      isWaitingRoom: true,
-    }
-
-    game.embed = await interaction.followUp(doEmbed(waitingRoomEmbedData))
-
-    while (playerCount < capacity) {
+    while (playerCount < maxCapacity && game.waitingRoom) {
       try {
         await wait(2000)
         playerCount = Object.values(game.players).length
 
-        await game.embed.edit(
-          doEmbed({
-            ...waitingRoomEmbedData,
-            description: waitingRoomDesc(),
-          })
-        )
+        await game.embed.edit(doEmbed(embedTypes.waitingRoom))
       } catch (error) {
         // @ts-ignore
         console.log('ERROR', error)
@@ -92,25 +70,25 @@ module.exports = {
     while (countDown >= 1) {
       countDown--
       await wait(1000)
-
-      const embedData: EmbedData = {
-        title: 'Ready your AOWLS!',
-        description: `Game starting in ${countDown}...`,
-      }
-      await game.embed.edit(doEmbed(embedData))
+      await game.embed.edit(doEmbed(embeds.countDown, { countDown }))
     }
 
-    const playerArr = Object.values(game.players)
-
-    // send back game embed
-    const embedData: EmbedData = {
-      image: undefined,
-      fields: mapPlayersForEmbed(playerArr),
-      description: 'Leaderboard',
-      isMain: true,
-    }
     // start game
     game.active = true
-    game.embed.edit(doEmbed(embedData))
+    game.embed.edit(doEmbed(embedTypes.activeGame))
+
+    // Add user cooldown
+    const playerArr = Object.values(game.players)
+    try {
+      asyncForEach(playerArr, async (player: Player) => {
+        const coolDownDoneDate = Date.now() + userCooldown * 60000
+        await collections.users.findOneAndUpdate(
+          { _id: player.userId },
+          { $set: { coolDownDone: coolDownDoneDate } }
+        )
+      })
+    } catch (error) {
+      console.log(error)
+    }
   },
 }
