@@ -32,8 +32,6 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
   const playerCount = playerArr.length
 
   if (type === embeds.waitingRoom) {
-    console.log('updating waiting room')
-    console.log('player array', playerArr)
     const playerWord = playerCount === 1 ? 'player' : 'players'
     const hasWord = playerCount === 1 ? 'has' : 'have'
 
