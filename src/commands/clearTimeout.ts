@@ -13,7 +13,7 @@ module.exports = {
     if (!interaction.isCommand()) return
     const playerArr = Object.values(game.players)
 
-    interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ ephemeral: true })
 
     asyncForEach(playerArr, async (player: Player) => {
       await collections.users.findOneAndUpdate(
