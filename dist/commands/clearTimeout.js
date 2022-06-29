@@ -12,7 +12,7 @@ module.exports = {
         if (!interaction.isCommand())
             return;
         const playerArr = Object.values(__1.game.players);
-        interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         (0, helpers_1.asyncForEach)(playerArr, async (player) => {
             await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { coolDownDone: null } });
         });
