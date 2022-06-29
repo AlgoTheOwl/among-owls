@@ -8,7 +8,6 @@ const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
 const helpers_2 = require("../utils/helpers");
 const builders_1 = require("@discordjs/builders");
-const helpers_3 = require("../utils/helpers");
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
 const { minimumPlayers } = settings_1.default;
@@ -27,13 +26,13 @@ module.exports = {
         (0, helpers_1.resetGame)();
         const { user, options } = interaction;
         const capacity = options.getNumber('capacity');
-        const hasRole = await (0, helpers_3.confirmRole)(roleId, interaction, user.id);
-        if (!hasRole) {
-            return await interaction.reply({
-                content: 'Only administrators can use this command',
-                ephemeral: true,
-            });
-        }
+        // const hasRole = await confirmRole(roleId, interaction, user.id)
+        // if (!hasRole) {
+        //   return await interaction.reply({
+        //     content: 'Only administrators can use this command',
+        //     ephemeral: true,
+        //   })
+        // }
         if (__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) {
             return await interaction.reply({
                 content: 'A game is already running',
