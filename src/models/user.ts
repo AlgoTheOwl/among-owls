@@ -8,7 +8,8 @@ export default class User {
     public address: string,
     public assets: Asset[], // assetId
     public _id?: ObjectId,
-    public yaoWins?: number
+    public yaoWins?: number,
+    public coolDownDone?: number
   ) {
     this.yaoWins = 0
   }

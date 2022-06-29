@@ -14,6 +14,7 @@ import settings from '../settings'
 import { playerTimeouts } from '..'
 import { intervals } from '..'
 import Player from '../models/player'
+import embeds from '../constants/embeds'
 
 const {
   timeoutInterval,
@@ -156,16 +157,9 @@ export const attack = async (
     })
   }
 
-  const fields = [...mapPlayersForEmbed(playerArr), ...attackRow]
+  const fields = [...mapPlayersForEmbed(playerArr, 'game'), ...attackRow]
 
-  const embedData: EmbedData = {
-    color: 'RED',
-    fields,
-    image: undefined,
-    isMain: true,
-  }
-
-  await game.embed.edit(doEmbed(embedData))
+  await game.embed.edit(doEmbed(embeds.activeGame, { fields }))
 }
 
 const getAttackString = (
@@ -236,25 +230,15 @@ const doPlayerTimeout = async (id: string): Promise<void> => {
 
       // If everyone timed out
       if (playerArr.length === usersTimedOut.length) {
-        const embedData: EmbedData = {
-          image: undefined,
-          title: 'BOOOO!!!',
-          description:
-            'Game has ended due to all players being removed for inactivity',
-        }
-
-        game.embed.edit(doEmbed(embedData))
+        game.embed.edit(doEmbed(embeds.timedOut))
         game.active = false
         intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
         return
       }
 
+      // Update embed if players dropped off
       if (playerArr.length && isTimeout) {
-        const embedData: EmbedData = {
-          fields: mapPlayersForEmbed(getPlayerArray(game.players)),
-          image: undefined,
-        }
-        game.embed.edit(doEmbed(embedData))
+        game.embed.edit(doEmbed(embeds.activeGame))
       }
     }
   }, kickPlayerTimeout)
