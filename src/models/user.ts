@@ -9,7 +9,7 @@ export default class User {
     public assets: Asset[], // assetId
     public _id?: ObjectId,
     public yaoWins?: number,
-    public coolDownDone?: number
+    public coolDownDone?: number // timestamp
   ) {
     this.yaoWins = 0
   }
