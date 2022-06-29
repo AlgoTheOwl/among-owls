@@ -6,8 +6,8 @@ const helpers_1 = require("../utils/helpers");
 const database_service_1 = require("../database/database.service");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
-        .setName('start')
-        .setDescription('start When AOWLS Attack'),
+        .setName('clear-timeout')
+        .setDescription('clear all timeouts'),
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
