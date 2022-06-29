@@ -7,14 +7,17 @@ module.exports = {
     .setName('begin-game')
     .setDescription('begin the game'),
   async execute(interaction: ButtonInteraction) {
+    const { user } = interaction
     const playerArr = Object.values(game.players)
 
     if (playerArr.length) {
       game.waitingRoom = false
       interaction.reply({
-        content: `Game starting...`,
-        ephemeral: true,
+        content: `${user.username} has started the game`,
       })
+      setTimeout(() => {
+        interaction.deleteReply()
+      }, 2000)
     } else {
       interaction.reply({
         content: `You can't start with less than two players`,
