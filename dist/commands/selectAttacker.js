@@ -1,9 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const builders_1 = require("@discordjs/builders");
 const database_service_1 = require("../database/database.service");
 const __1 = require("..");
+const settings_1 = __importDefault(require("../settings"));
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('select-attacker')
@@ -12,6 +16,7 @@ module.exports = {
         var _a;
         try {
             const { user: { id }, } = interaction;
+            const { maxAssets } = settings_1.default;
             if (!__1.game.waitingRoom) {
                 return interaction.reply({
                     content: 'Game is not currently active',
@@ -36,7 +41,7 @@ module.exports = {
             if ((_a = data === null || data === void 0 ? void 0 : data.assets) === null || _a === void 0 ? void 0 : _a.length) {
                 const options = data.assets.map((asset, i) => {
                     var _a;
-                    if (i < 10) {
+                    if (i < maxAssets) {
                         return {
                             label: asset.assetName,
                             description: 'Select to play',
