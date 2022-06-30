@@ -18,6 +18,8 @@ exports.default = {
     timeoutInterval: 30000,
     // Wait this long before kicking timeed out players after the game starts
     waitBeforeTimeoutInterval: 5000,
+    // Minimum players needed to start a game
+    minCapacity: 2,
     // Max amount of players allowed to join
     maxCapacity: 20,
     // Number of minutes a user will have to wait to join a game after participating once
