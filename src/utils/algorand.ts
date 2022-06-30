@@ -2,6 +2,7 @@ import Asset from '../models/asset'
 import { AlgoAsset, AlgoAssetData } from '../types/user'
 import { asyncForEach } from './helpers'
 import algosdk from 'algosdk'
+import settings from '../settings'
 
 const algoNode: string = process.env.ALGO_NODE
 const pureStakeApi: string = process.env.PURESTAKE_API
@@ -24,6 +25,7 @@ export const determineOwnership = async function (
 ): Promise<{ walletOwned: boolean; nftsOwned: Asset[] | [] }> {
   try {
     let { assets } = await algodClient.accountInformation(address).do()
+    const { maxAssets } = settings
 
     let walletOwned = false
     const nftsOwned: Asset[] = []
@@ -31,16 +33,18 @@ export const determineOwnership = async function (
     // Create array of unique assetIds
     const uniqueAssets: AlgoAsset[] = []
     assets.forEach((asset: AlgoAsset, i: number) => {
-      // Check if opt-in asset
-      if (asset['asset-id'] === Number(optInAssetId)) {
-        walletOwned = true
-      }
-      // ensure no duplicate assets
-      const result = uniqueAssets.findIndex(
-        (item) => asset['asset-id'] === item['asset-id']
-      )
-      if (result <= -1 && asset.amount > 0) {
-        uniqueAssets.push(asset)
+      if (uniqueAssets.length < maxAssets) {
+        // Check if opt-in asset
+        if (asset['asset-id'] === Number(optInAssetId)) {
+          walletOwned = true
+        }
+        // ensure no duplicate assets
+        const result = uniqueAssets.findIndex(
+          (item) => asset['asset-id'] === item['asset-id']
+        )
+        if (result <= -1 && asset.amount > 0) {
+          uniqueAssets.push(asset)
+        }
       }
     })
 

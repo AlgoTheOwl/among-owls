@@ -20,4 +20,6 @@ export default {
   maxCapacity: 20,
   // Number of minutes a user will have to wait to join a game after participating once
   userCooldown: 30,
+  // Max assets the game will capture
+  maxAssets: 20,
 }

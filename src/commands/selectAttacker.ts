@@ -9,6 +9,7 @@ import User from '../models/user'
 import { WithId } from 'mongodb'
 import Asset from '../models/asset'
 import { game } from '..'
+import settings from '../settings'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,6 +20,8 @@ module.exports = {
       const {
         user: { id },
       } = interaction
+
+      const { maxAssets } = settings
 
       if (!game.waitingRoom) {
         return interaction.reply({
@@ -48,7 +51,7 @@ module.exports = {
 
       if (data?.assets?.length) {
         const options = data.assets.map((asset: Asset, i: number) => {
-          if (i < 10) {
+          if (i < maxAssets) {
             return {
               label: asset.assetName,
               description: 'Select to play',

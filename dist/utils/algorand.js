@@ -7,6 +7,7 @@ exports.findAsset = exports.determineOwnership = void 0;
 const asset_1 = __importDefault(require("../models/asset"));
 const helpers_1 = require("./helpers");
 const algosdk_1 = __importDefault(require("algosdk"));
+const settings_1 = __importDefault(require("../settings"));
 const algoNode = process.env.ALGO_NODE;
 const pureStakeApi = process.env.PURESTAKE_API;
 const algoIndexerNode = process.env.ALGO_INDEXER_NODE;
@@ -23,19 +24,22 @@ const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
 const determineOwnership = async function (address) {
     try {
         let { assets } = await algodClient.accountInformation(address).do();
+        const { maxAssets } = settings_1.default;
         let walletOwned = false;
         const nftsOwned = [];
         // Create array of unique assetIds
         const uniqueAssets = [];
         assets.forEach((asset, i) => {
-            // Check if opt-in asset
-            if (asset['asset-id'] === Number(optInAssetId)) {
-                walletOwned = true;
-            }
-            // ensure no duplicate assets
-            const result = uniqueAssets.findIndex((item) => asset['asset-id'] === item['asset-id']);
-            if (result <= -1 && asset.amount > 0) {
-                uniqueAssets.push(asset);
+            if (uniqueAssets.length < maxAssets) {
+                // Check if opt-in asset
+                if (asset['asset-id'] === Number(optInAssetId)) {
+                    walletOwned = true;
+                }
+                // ensure no duplicate assets
+                const result = uniqueAssets.findIndex((item) => asset['asset-id'] === item['asset-id']);
+                if (result <= -1 && asset.amount > 0) {
+                    uniqueAssets.push(asset);
+                }
             }
         });
         await (0, helpers_1.asyncForEach)(uniqueAssets, async (asset) => {
