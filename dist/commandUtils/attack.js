@@ -189,7 +189,8 @@ const doDamage = (player) => {
     return Math.floor(Math.random() * (hp / 10)) + multiplierDamage;
 };
 const getRandomVictimId = (attackerId) => {
-    const filteredPlayerArray = Object.values(__1.game.players).filter((player) => player.discordId !== attackerId && !player.timedOut && !player.dead);
+    var _a;
+    const filteredPlayerArray = Object.values(__1.game.players).filter((player) => (player === null || player === void 0 ? void 0 : player.discordId) !== attackerId && !player.timedOut && !player.dead);
     const randomIndex = Math.floor(Math.random() * filteredPlayerArray.length);
-    return filteredPlayerArray[randomIndex].discordId;
+    return (_a = filteredPlayerArray[randomIndex]) === null || _a === void 0 ? void 0 : _a.discordId;
 };
