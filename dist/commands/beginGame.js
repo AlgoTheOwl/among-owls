@@ -14,7 +14,7 @@ module.exports = {
         const { user } = interaction;
         const { minCapacity } = settings_1.default;
         const playerArr = Object.values(__1.game.players);
-        if (playerArr.length < minCapacity) {
+        if (playerArr.length >= minCapacity) {
             __1.game.waitingRoom = false;
             interaction.reply({
                 content: `${user.username} has started the game`,
@@ -25,7 +25,7 @@ module.exports = {
         }
         else {
             interaction.reply({
-                content: `You can't start with less than two players`,
+                content: `You can't start with less than ${minCapacity} players`,
                 ephemeral: true,
             });
         }
