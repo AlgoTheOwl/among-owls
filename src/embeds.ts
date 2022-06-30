@@ -123,7 +123,7 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
     const { player, winByTimeout } = options
     data = {
       title: 'WINNER!!!',
-      description: `${player?.username}'s ${player?.asset.unitName} ${
+      description: `${player?.username}'s ${player?.asset.assetName} ${
         winByTimeout
           ? 'won by default - all other players timed out!'
           : `destroyed the competition`

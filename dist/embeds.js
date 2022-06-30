@@ -93,7 +93,7 @@ function doEmbed(type, options) {
         const { player, winByTimeout } = options;
         data = {
             title: 'WINNER!!!',
-            description: `${player === null || player === void 0 ? void 0 : player.username}'s ${player === null || player === void 0 ? void 0 : player.asset.unitName} ${winByTimeout
+            description: `${player === null || player === void 0 ? void 0 : player.username}'s ${player === null || player === void 0 ? void 0 : player.asset.assetName} ${winByTimeout
                 ? 'won by default - all other players timed out!'
                 : `destroyed the competition`}`,
             color: 'DARK_AQUA',
