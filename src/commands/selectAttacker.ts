@@ -47,11 +47,13 @@ module.exports = {
       }
 
       if (data?.assets?.length) {
-        const options = data.assets.map((asset: Asset) => {
-          return {
-            label: asset.assetName,
-            description: 'Select to play',
-            value: asset?.assetId?.toString(),
+        const options = data.assets.map((asset: Asset, i: number) => {
+          if (i < 10) {
+            return {
+              label: asset.assetName,
+              description: 'Select to play',
+              value: asset?.assetId?.toString(),
+            }
           }
         })
 
@@ -59,6 +61,7 @@ module.exports = {
           new MessageSelectMenu()
             .setCustomId('register-player')
             .setPlaceholder('Select an AOWL to attack')
+            //@ts-ignore
             .addOptions(options)
         )
 
