@@ -34,17 +34,20 @@ module.exports = {
                 });
             }
             if ((_a = data === null || data === void 0 ? void 0 : data.assets) === null || _a === void 0 ? void 0 : _a.length) {
-                const options = data.assets.map((asset) => {
+                const options = data.assets.map((asset, i) => {
                     var _a;
-                    return {
-                        label: asset.assetName,
-                        description: 'Select to play',
-                        value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
-                    };
+                    if (i < 10) {
+                        return {
+                            label: asset.assetName,
+                            description: 'Select to play',
+                            value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
+                        };
+                    }
                 });
                 const row = new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
                     .setCustomId('register-player')
                     .setPlaceholder('Select an AOWL to attack')
+                    //@ts-ignore
                     .addOptions(options));
                 await interaction.editReply({
                     content: 'Choose your AOWL',
