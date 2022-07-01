@@ -19,7 +19,8 @@ module.exports = {
             const { maxAssets } = settings_1.default;
             if (!__1.game.waitingRoom) {
                 return interaction.reply({
-                    content: 'Game is not currently active',
+                    content: 'Game is not currently active. Use the /start command to start the game',
+                    ephemeral: true,
                 });
             }
             await interaction.deferReply({ ephemeral: true });
@@ -39,7 +40,8 @@ module.exports = {
                 });
             }
             if ((_a = data === null || data === void 0 ? void 0 : data.assets) === null || _a === void 0 ? void 0 : _a.length) {
-                const options = data.assets.map((asset, i) => {
+                const options = data.assets
+                    .map((asset, i) => {
                     var _a;
                     if (i < maxAssets) {
                         return {
@@ -48,7 +50,8 @@ module.exports = {
                             value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
                         };
                     }
-                });
+                })
+                    .filter(Boolean);
                 const row = new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
                     .setCustomId('register-player')
                     .setPlaceholder('Select an AOWL to attack')

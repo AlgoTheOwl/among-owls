@@ -25,7 +25,9 @@ module.exports = {
 
       if (!game.waitingRoom) {
         return interaction.reply({
-          content: 'Game is not currently active',
+          content:
+            'Game is not currently active. Use the /start command to start the game',
+          ephemeral: true,
         })
       }
 
@@ -50,15 +52,17 @@ module.exports = {
       }
 
       if (data?.assets?.length) {
-        const options = data.assets.map((asset: Asset, i: number) => {
-          if (i < maxAssets) {
-            return {
-              label: asset.assetName,
-              description: 'Select to play',
-              value: asset?.assetId?.toString(),
+        const options = data.assets
+          .map((asset: Asset, i: number) => {
+            if (i < maxAssets) {
+              return {
+                label: asset.assetName,
+                description: 'Select to play',
+                value: asset?.assetId?.toString(),
+              }
             }
-          }
-        })
+          })
+          .filter(Boolean)
 
         const row = new MessageActionRow().addComponents(
           new MessageSelectMenu()
