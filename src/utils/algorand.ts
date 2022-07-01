@@ -33,30 +33,30 @@ export const determineOwnership = async function (
     // Create array of unique assetIds
     const uniqueAssets: AlgoAsset[] = []
     assets.forEach((asset: AlgoAsset, i: number) => {
-      if (uniqueAssets.length < maxAssets) {
-        // Check if opt-in asset
-        if (asset['asset-id'] === Number(optInAssetId)) {
-          walletOwned = true
-        }
-        // ensure no duplicate assets
-        const result = uniqueAssets.findIndex(
-          (item) => asset['asset-id'] === item['asset-id']
-        )
-        if (result <= -1 && asset.amount > 0) {
-          uniqueAssets.push(asset)
-        }
+      // Check if opt-in asset
+      if (asset['asset-id'] === Number(optInAssetId)) {
+        walletOwned = true
+      }
+      // ensure no duplicate assets
+      const result = uniqueAssets.findIndex(
+        (item) => asset['asset-id'] === item['asset-id']
+      )
+      if (result <= -1 && asset.amount > 0) {
+        uniqueAssets.push(asset)
       }
     })
 
     await asyncForEach(uniqueAssets, async (asset: AlgoAsset) => {
-      const assetId = asset['asset-id']
-      const assetData = await findAsset(assetId)
-      if (assetData) {
-        const { params } = assetData
+      if (nftsOwned.length < maxAssets) {
+        const assetId = asset['asset-id']
+        const assetData = await findAsset(assetId)
+        if (assetData) {
+          const { params } = assetData
 
-        if (params[`unit-name`]?.includes(unitPrefix)) {
-          const { name, url } = params
-          nftsOwned.push(new Asset(assetId, name, url, params['unit-name']))
+          if (params[`unit-name`]?.includes(unitPrefix)) {
+            const { name, url } = params
+            nftsOwned.push(new Asset(assetId, name, url, params['unit-name']))
+          }
         }
       }
     })

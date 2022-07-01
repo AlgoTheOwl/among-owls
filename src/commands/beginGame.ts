@@ -12,6 +12,14 @@ module.exports = {
     const { minCapacity } = settings
     const playerArr = Object.values(game.players)
 
+    if (!game.waitingRoom) {
+      return interaction.reply({
+        content:
+          'Game is not currently active. use the /start command to start the game',
+        ephemeral: true,
+      })
+    }
+
     if (playerArr.length >= minCapacity) {
       game.waitingRoom = false
       interaction.reply({

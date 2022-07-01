@@ -30,27 +30,27 @@ const determineOwnership = async function (address) {
         // Create array of unique assetIds
         const uniqueAssets = [];
         assets.forEach((asset, i) => {
-            if (uniqueAssets.length < maxAssets) {
-                // Check if opt-in asset
-                if (asset['asset-id'] === Number(optInAssetId)) {
-                    walletOwned = true;
-                }
-                // ensure no duplicate assets
-                const result = uniqueAssets.findIndex((item) => asset['asset-id'] === item['asset-id']);
-                if (result <= -1 && asset.amount > 0) {
-                    uniqueAssets.push(asset);
-                }
+            // Check if opt-in asset
+            if (asset['asset-id'] === Number(optInAssetId)) {
+                walletOwned = true;
+            }
+            // ensure no duplicate assets
+            const result = uniqueAssets.findIndex((item) => asset['asset-id'] === item['asset-id']);
+            if (result <= -1 && asset.amount > 0) {
+                uniqueAssets.push(asset);
             }
         });
         await (0, helpers_1.asyncForEach)(uniqueAssets, async (asset) => {
             var _a;
-            const assetId = asset['asset-id'];
-            const assetData = await (0, exports.findAsset)(assetId);
-            if (assetData) {
-                const { params } = assetData;
-                if ((_a = params[`unit-name`]) === null || _a === void 0 ? void 0 : _a.includes(unitPrefix)) {
-                    const { name, url } = params;
-                    nftsOwned.push(new asset_1.default(assetId, name, url, params['unit-name']));
+            if (nftsOwned.length < maxAssets) {
+                const assetId = asset['asset-id'];
+                const assetData = await (0, exports.findAsset)(assetId);
+                if (assetData) {
+                    const { params } = assetData;
+                    if ((_a = params[`unit-name`]) === null || _a === void 0 ? void 0 : _a.includes(unitPrefix)) {
+                        const { name, url } = params;
+                        nftsOwned.push(new asset_1.default(assetId, name, url, params['unit-name']));
+                    }
                 }
             }
         });
