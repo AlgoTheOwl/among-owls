@@ -23,6 +23,7 @@ module.exports = {
             const { values, user } = interaction;
             const { username, id } = user;
             const { imageDir, hp, messageDeleteInterval } = settings_1.default;
+            interaction.deferReply();
             const { assets, address, _id } = (await database_service_1.collections.users.findOne({
                 discordId: user.id,
             }));
@@ -42,7 +43,7 @@ module.exports = {
             }
             const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath);
             index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, assets.length, 0);
-            interaction.reply(`${asset.assetName} has entered the game`);
+            interaction.editReply(`${asset.assetName} has entered the game`);
             await (0, helpers_1.wait)(messageDeleteInterval);
             interaction.deleteReply();
         }

@@ -37,6 +37,12 @@ module.exports = {
         discordId: id,
       })) as WithId<User>
 
+      if (!data?.assets.length) {
+        return interaction.editReply({
+          content: 'You have no AOWLs to select!',
+        })
+      }
+
       if (data?.coolDownDone && data.coolDownDone > Date.now()) {
         const minutesLeft = Math.floor((data.coolDownDone - Date.now()) / 60000)
         const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes'
@@ -45,43 +51,42 @@ module.exports = {
         })
       }
 
-      if (!data?.assets) {
-        return interaction.editReply({
-          content: 'You have no AOWLs to select!',
-        })
-      }
-
-      if (data?.assets?.length) {
-        const options = data.assets
-          .map((asset: Asset, i: number) => {
-            if (i < maxAssets) {
-              return {
-                label: asset.assetName,
-                description: 'Select to play',
-                value: asset?.assetId?.toString(),
-              }
+      const options = data.assets
+        .map((asset: Asset, i: number) => {
+          if (i < maxAssets) {
+            return {
+              label: asset.assetName,
+              description: 'Select to play',
+              value: asset?.assetId?.toString(),
             }
-          })
-          .filter(Boolean)
-
-        const row = new MessageActionRow().addComponents(
-          new MessageSelectMenu()
-            .setCustomId('register-player')
-            .setPlaceholder('Select an AOWL to attack')
-            //@ts-ignore
-            .addOptions(options)
-        )
-
-        await interaction.editReply({
-          content: 'Choose your AOWL',
-          components: [row],
+          }
         })
+        .filter(Boolean) as {
+        label: string
+        description: string
+        value: string
+      }[]
+
+      console.log(options)
+
+      const selectMenu = new MessageSelectMenu()
+        .setCustomId('register-player')
+        .setPlaceholder('Select an AOWL to attack')
+
+      if (options.length) {
+        selectMenu.addOptions(options)
       }
+
+      const row = new MessageActionRow().addComponents(selectMenu)
+
+      await interaction.editReply({
+        content: 'Choose your AOWL',
+        components: [row],
+      })
     } catch (error) {
       console.log('ERROR SELECTING')
-      console.log(error)
-      //@ts-ignore
-      console.log(error.requestData.json.components)
+      // console.log(error)
+      // console.log(error?.requestData?.json?.components)
     }
   },
 }

@@ -17,14 +17,14 @@ module.exports = {
     if (!interaction.isCommand()) return
     const { maxCapacity, userCooldown } = settings
 
-    resetGame()
-
     if (game?.active || game?.waitingRoom) {
       return await interaction.reply({
         content: 'A game is already running',
         ephemeral: true,
       })
     }
+
+    resetGame()
 
     await interaction.deferReply()
 

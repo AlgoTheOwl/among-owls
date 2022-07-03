@@ -22,6 +22,8 @@ module.exports = {
       const { username, id } = user
       const { imageDir, hp, messageDeleteInterval } = settings
 
+      interaction.deferReply()
+
       const { assets, address, _id } = (await collections.users.findOne({
         discordId: user.id,
       })) as WithId<User>
@@ -63,7 +65,7 @@ module.exports = {
         assets.length,
         0
       )
-      interaction.reply(`${asset.assetName} has entered the game`)
+      interaction.editReply(`${asset.assetName} has entered the game`)
       await wait(messageDeleteInterval)
       interaction.deleteReply()
     } catch (error) {

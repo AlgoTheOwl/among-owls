@@ -13,7 +13,6 @@ module.exports = {
         .setName('select-attacker')
         .setDescription(`Pick which AOWL you'd like to compete`),
     async execute(interaction) {
-        var _a;
         try {
             const { user: { id }, } = interaction;
             const { maxAssets } = settings_1.default;
@@ -27,6 +26,11 @@ module.exports = {
             const data = (await database_service_1.collections.users.findOne({
                 discordId: id,
             }));
+            if (!(data === null || data === void 0 ? void 0 : data.assets.length)) {
+                return interaction.editReply({
+                    content: 'You have no AOWLs to select!',
+                });
+            }
             if ((data === null || data === void 0 ? void 0 : data.coolDownDone) && data.coolDownDone > Date.now()) {
                 const minutesLeft = Math.floor((data.coolDownDone - Date.now()) / 60000);
                 const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes';
@@ -34,40 +38,35 @@ module.exports = {
                     content: `Please wait ${minutesLeft} ${minuteWord} before playing again`,
                 });
             }
-            if (!(data === null || data === void 0 ? void 0 : data.assets)) {
-                return interaction.editReply({
-                    content: 'You have no AOWLs to select!',
-                });
+            const options = data.assets
+                .map((asset, i) => {
+                var _a;
+                if (i < maxAssets) {
+                    return {
+                        label: asset.assetName,
+                        description: 'Select to play',
+                        value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
+                    };
+                }
+            })
+                .filter(Boolean);
+            console.log(options);
+            const selectMenu = new discord_js_1.MessageSelectMenu()
+                .setCustomId('register-player')
+                .setPlaceholder('Select an AOWL to attack');
+            if (options.length) {
+                selectMenu.addOptions(options);
             }
-            if ((_a = data === null || data === void 0 ? void 0 : data.assets) === null || _a === void 0 ? void 0 : _a.length) {
-                const options = data.assets
-                    .map((asset, i) => {
-                    var _a;
-                    if (i < maxAssets) {
-                        return {
-                            label: asset.assetName,
-                            description: 'Select to play',
-                            value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
-                        };
-                    }
-                })
-                    .filter(Boolean);
-                const row = new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
-                    .setCustomId('register-player')
-                    .setPlaceholder('Select an AOWL to attack')
-                    //@ts-ignore
-                    .addOptions(options));
-                await interaction.editReply({
-                    content: 'Choose your AOWL',
-                    components: [row],
-                });
-            }
+            const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
+            await interaction.editReply({
+                content: 'Choose your AOWL',
+                components: [row],
+            });
         }
         catch (error) {
             console.log('ERROR SELECTING');
-            console.log(error);
-            //@ts-ignore
-            console.log(error.requestData.json.components);
+            // console.log(error)
+            // console.log(error?.requestData?.json?.components)
         }
     },
 };
