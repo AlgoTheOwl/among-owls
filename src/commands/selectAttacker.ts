@@ -67,8 +67,6 @@ module.exports = {
         value: string
       }[]
 
-      console.log(options)
-
       const selectMenu = new MessageSelectMenu()
         .setCustomId('register-player')
         .setPlaceholder('Select an AOWL to attack')

@@ -50,7 +50,6 @@ module.exports = {
                 }
             })
                 .filter(Boolean);
-            console.log(options);
             const selectMenu = new discord_js_1.MessageSelectMenu()
                 .setCustomId('register-player')
                 .setPlaceholder('Select an AOWL to attack');

@@ -9,9 +9,7 @@ const embeds_1 = __importDefault(require("../embeds"));
 const builders_1 = require("@discordjs/builders");
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
-const embeds_3 = __importDefault(require("../constants/embeds"));
 const settings_1 = __importDefault(require("../settings"));
-const database_service_1 = require("../database/database.service");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('start')
@@ -49,24 +47,31 @@ module.exports = {
         __1.game.waitingRoom = false;
         // Do countdown
         let countDown = 5;
-        while (countDown >= 1) {
-            countDown--;
+        while (countDown) {
             await (0, helpers_1.wait)(1000);
-            await __1.game.embed.edit((0, embeds_1.default)(embeds_3.default.countDown, { countDown }));
+            const imagePath = `src/images/${countDown}.png`;
+            const countDownImage = new discord_js_1.MessageAttachment(imagePath);
+            await interaction.editReply({ files: [countDownImage] });
+            // await game.embed.edit(doEmbed(embeds.countDown, { countDown }))
+            countDown--;
         }
+        // send embed here
+        await interaction.editReply({ files: [file] });
         // start game
         __1.game.active = true;
         __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
         // Add user cooldown
-        const playerArr = Object.values(__1.game.players);
-        try {
-            (0, helpers_1.asyncForEach)(playerArr, async (player) => {
-                const coolDownDoneDate = Date.now() + userCooldown * 60000;
-                await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { coolDownDone: coolDownDoneDate } });
-            });
-        }
-        catch (error) {
-            console.log(error);
-        }
+        // const playerArr = Object.values(game.players)
+        // try {
+        //   asyncForEach(playerArr, async (player: Player) => {
+        //     const coolDownDoneDate = Date.now() + userCooldown * 60000
+        //     await collections.users.findOneAndUpdate(
+        //       { _id: player.userId },
+        //       { $set: { coolDownDone: coolDownDoneDate } }
+        //     )
+        //   })
+        // } catch (error) {
+        //   console.log(error)
+        // }
     },
 };
