@@ -53,6 +53,7 @@ function doEmbed(type, options) {
             title: '🔥 Ye Among AOWLs 🔥',
             description: '💀 Who will survive? 💀',
             color: 'RANDOM',
+            image: undefined,
             thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
             fields,
             footer: {
@@ -78,9 +79,13 @@ function doEmbed(type, options) {
             .addOptions(victims)));
     }
     if (type === embeds_1.default.countDown) {
+        const imagePath = `src/images/${options === null || options === void 0 ? void 0 : options.countDown}.png`;
+        const countDownImage = new discord_js_1.MessageAttachment(imagePath);
         data = {
             title: 'Ready your AOWLS!',
             description: `Game starting in ${options === null || options === void 0 ? void 0 : options.countDown}...`,
+            files: [countDownImage],
+            image: `attachment://${options === null || options === void 0 ? void 0 : options.countDown}.png`,
         };
     }
     if (type === embeds_1.default.timedOut) {
@@ -108,7 +113,7 @@ function doEmbed(type, options) {
             fields,
         };
     }
-    let { title, description, color, image, thumbNail, fields, footer } = Object.assign(Object.assign({}, defaultEmbedValues), data);
+    let { title, description, color, image, thumbNail, fields, footer, files } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();
     if ((image === null || image === void 0 ? void 0 : image.slice(0, 4)) === 'ipfs') {
         const ifpsHash = image.slice(7);
@@ -125,6 +130,7 @@ function doEmbed(type, options) {
         embeds: [embed],
         fetchReply: true,
         components,
+        files: (files === null || files === void 0 ? void 0 : files.length) ? files : undefined,
     };
 }
 exports.default = doEmbed;

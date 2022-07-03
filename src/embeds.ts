@@ -4,6 +4,7 @@ import {
   MessageSelectMenu,
   MessageButton,
   ColorResolvable,
+  MessageAttachment,
 } from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
@@ -68,6 +69,7 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
       title: '🔥 Ye Among AOWLs 🔥',
       description: '💀 Who will survive? 💀',
       color: 'RANDOM',
+      image: undefined,
       thumbNail:
         'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
       fields,
@@ -105,9 +107,13 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
   }
 
   if (type === embeds.countDown) {
+    const imagePath = `src/images/${options?.countDown}.png`
+    const countDownImage = new MessageAttachment(imagePath)
     data = {
       title: 'Ready your AOWLS!',
       description: `Game starting in ${options?.countDown}...`,
+      files: [countDownImage],
+      image: `attachment://${options?.countDown}.png`,
     }
   }
 
@@ -143,7 +149,7 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
     }
   }
 
-  let { title, description, color, image, thumbNail, fields, footer } = {
+  let { title, description, color, image, thumbNail, fields, footer, files } = {
     ...defaultEmbedValues,
     ...data,
   }
@@ -167,5 +173,6 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
     embeds: [embed],
     fetchReply: true,
     components,
+    files: files?.length ? files : undefined,
   }
 }

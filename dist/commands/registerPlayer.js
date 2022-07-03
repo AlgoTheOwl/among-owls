@@ -43,9 +43,9 @@ module.exports = {
             }
             const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath);
             index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, assets.length, 0);
-            interaction.editReply(`${asset.assetName} has entered the game`);
+            await interaction.editReply(`${asset.assetName} has entered the game`);
             await (0, helpers_1.wait)(messageDeleteInterval);
-            interaction.deleteReply();
+            await interaction.deleteReply();
         }
         catch (error) {
             console.log(error);

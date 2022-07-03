@@ -65,9 +65,9 @@ module.exports = {
         assets.length,
         0
       )
-      interaction.editReply(`${asset.assetName} has entered the game`)
+      await interaction.editReply(`${asset.assetName} has entered the game`)
       await wait(messageDeleteInterval)
-      interaction.deleteReply()
+      await interaction.deleteReply()
     } catch (error) {
       console.log(error)
     }

@@ -55,28 +55,34 @@ module.exports = {
 
     // Do countdown
     let countDown = 5
-    while (countDown >= 1) {
-      countDown--
+    while (countDown) {
       await wait(1000)
-      await game.embed.edit(doEmbed(embeds.countDown, { countDown }))
+      const imagePath = `src/images/${countDown}.png`
+      const countDownImage = new MessageAttachment(imagePath)
+      await interaction.editReply({ files: [countDownImage] })
+      // await game.embed.edit(doEmbed(embeds.countDown, { countDown }))
+      countDown--
     }
+
+    // send embed here
+    await interaction.editReply({ files: [file] })
 
     // start game
     game.active = true
     game.embed.edit(doEmbed(embedTypes.activeGame))
 
     // Add user cooldown
-    const playerArr = Object.values(game.players)
-    try {
-      asyncForEach(playerArr, async (player: Player) => {
-        const coolDownDoneDate = Date.now() + userCooldown * 60000
-        await collections.users.findOneAndUpdate(
-          { _id: player.userId },
-          { $set: { coolDownDone: coolDownDoneDate } }
-        )
-      })
-    } catch (error) {
-      console.log(error)
-    }
+    // const playerArr = Object.values(game.players)
+    // try {
+    //   asyncForEach(playerArr, async (player: Player) => {
+    //     const coolDownDoneDate = Date.now() + userCooldown * 60000
+    //     await collections.users.findOneAndUpdate(
+    //       { _id: player.userId },
+    //       { $set: { coolDownDone: coolDownDoneDate } }
+    //     )
+    //   })
+    // } catch (error) {
+    //   console.log(error)
+    // }
   },
 }

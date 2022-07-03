@@ -1,4 +1,9 @@
-import { ColorResolvable, MessageActionRow, MessageEmbed } from 'discord.js'
+import {
+  ColorResolvable,
+  MessageActionRow,
+  MessageEmbed,
+  MessageAttachment,
+} from 'discord.js'
 import Player from '../models/player'
 
 export interface EmbedData {
@@ -12,6 +17,7 @@ export interface EmbedData {
   countDown?: number
   player?: Player
   winByTimeout?: boolean
+  files?: MessageAttachment[]
 }
 
 export type Field = {
@@ -28,6 +34,7 @@ export interface EmbedReply {
   embeds: [MessageEmbed]
   fetchReply: boolean
   components?: MessageActionRow[]
+  files?: MessageAttachment[]
 }
 
 export interface Intervals {
