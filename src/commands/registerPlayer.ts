@@ -22,7 +22,7 @@ module.exports = {
       const { username, id } = user
       const { imageDir, hp, messageDeleteInterval } = settings
 
-      interaction.deferReply()
+      await interaction.deferReply()
 
       const { assets, address, _id } = (await collections.users.findOne({
         discordId: user.id,

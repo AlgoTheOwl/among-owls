@@ -23,7 +23,7 @@ module.exports = {
             const { values, user } = interaction;
             const { username, id } = user;
             const { imageDir, hp, messageDeleteInterval } = settings_1.default;
-            interaction.deferReply();
+            await interaction.deferReply();
             const { assets, address, _id } = (await database_service_1.collections.users.findOne({
                 discordId: user.id,
             }));
