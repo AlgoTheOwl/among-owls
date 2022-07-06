@@ -209,11 +209,14 @@ export const resetGame = (stopped: boolean = false): void => {
   game.win = false
   game.waitingRoom = false
   game.attackEngaged = false
-  game.stopped = true
 
-  setTimeout(() => {
-    game.stopped = false
-  }, 3000)
+  if (stopped) {
+    game.stopped = true
 
-  stopped && game?.embed?.edit(doEmbed(embeds.stopped))
+    setTimeout(() => {
+      game.stopped = false
+    }, 3000)
+
+    stopped && game?.embed?.edit(doEmbed(embeds.stopped))
+  }
 }
