@@ -170,10 +170,12 @@ const resetGame = (stopped = false) => {
     __2.game.win = false;
     __2.game.waitingRoom = false;
     __2.game.attackEngaged = false;
-    __2.game.stopped = true;
-    setTimeout(() => {
-        __2.game.stopped = false;
-    }, 3000);
-    stopped && ((_a = __2.game === null || __2.game === void 0 ? void 0 : __2.game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped)));
+    if (stopped) {
+        __2.game.stopped = true;
+        setTimeout(() => {
+            __2.game.stopped = false;
+        }, 3000);
+        stopped && ((_a = __2.game === null || __2.game === void 0 ? void 0 : __2.game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped)));
+    }
 };
 exports.resetGame = resetGame;
