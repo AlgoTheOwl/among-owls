@@ -6,4 +6,5 @@ export default {
   winByTimeout: 'winByTimeout',
   win: 'win',
   leaderBoard: 'leaderBoard',
+  stopped: 'stopped',
 }

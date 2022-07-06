@@ -83,8 +83,9 @@ module.exports = {
       })
     } catch (error) {
       console.log('ERROR SELECTING')
-      // console.log(error)
-      // console.log(error?.requestData?.json?.components)
+      console.log(error)
+      //@ts-ignore
+      console.log(error?.requestData?.json?.components)
     }
   },
 }

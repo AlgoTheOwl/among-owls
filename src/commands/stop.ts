@@ -31,8 +31,8 @@ module.exports = {
         ephemeral: true,
       })
 
-    resetGame()
+    resetGame(true)
     intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
-    return interaction.reply({ content: 'Game stopped', ephemeral: false })
+    return interaction.reply({ content: 'Game stopped', ephemeral: true })
   },
 }

@@ -149,6 +149,13 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
     }
   }
 
+  if (type === embeds.stopped) {
+    data = {
+      title: 'Game stopped',
+      description: 'Game has been stopped',
+    }
+  }
+
   let { title, description, color, image, thumbNail, fields, footer, files } = {
     ...defaultEmbedValues,
     ...data,

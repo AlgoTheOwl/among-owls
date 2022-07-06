@@ -163,11 +163,17 @@ const randomSort = (arr) => {
     return arr;
 };
 exports.randomSort = randomSort;
-const resetGame = () => {
+const resetGame = (stopped = false) => {
+    var _a;
     __2.game.players = {};
     __2.game.active = false;
     __2.game.win = false;
     __2.game.waitingRoom = false;
     __2.game.attackEngaged = false;
+    __2.game.stopped = true;
+    setTimeout(() => {
+        __2.game.stopped = false;
+    }, 3000);
+    stopped && ((_a = __2.game === null || __2.game === void 0 ? void 0 : __2.game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped)));
 };
 exports.resetGame = resetGame;

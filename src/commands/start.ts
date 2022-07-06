@@ -1,13 +1,10 @@
 import { Interaction, MessageAttachment } from 'discord.js'
-import { asyncForEach, resetGame, wait } from '../utils/helpers'
+import { resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { game } from '..'
 import embedTypes from '../constants/embeds'
-import embeds from '../constants/embeds'
 import settings from '../settings'
-import { collections } from '../database/database.service'
-import Player from '../models/player'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,7 +12,7 @@ module.exports = {
     .setDescription('start When AOWLS Attack'),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
-    const { maxCapacity, userCooldown } = settings
+    const { maxCapacity } = settings
 
     if (game?.active || game?.waitingRoom) {
       return await interaction.reply({
@@ -39,12 +36,13 @@ module.exports = {
 
     game.embed = await interaction.followUp(doEmbed(embedTypes.waitingRoom))
 
-    while (playerCount < maxCapacity && game.waitingRoom) {
+    while (playerCount < maxCapacity && game.waitingRoom && !game.stopped) {
       try {
         await wait(2000)
         playerCount = Object.values(game.players).length
 
-        await game.embed.edit(doEmbed(embedTypes.waitingRoom))
+        !game.stopped &&
+          (await game.embed.edit(doEmbed(embedTypes.waitingRoom)))
       } catch (error) {
         // @ts-ignore
         console.log('ERROR', error)
@@ -55,34 +53,34 @@ module.exports = {
 
     // Do countdown
     let countDown = 5
-    while (countDown) {
+    while (countDown > 0 && !game.stopped) {
       await wait(1000)
       const imagePath = `src/images/${countDown}.png`
       const countDownImage = new MessageAttachment(imagePath)
       await interaction.editReply({ files: [countDownImage] })
-      // await game.embed.edit(doEmbed(embeds.countDown, { countDown }))
       countDown--
     }
 
-    // send embed here
-    await interaction.editReply({ files: [file] })
+    if (!game.stopped) {
+      // send embed here
+      interaction.editReply({ files: [file] })
+      // start game
+      game.active = true
+      game.embed.edit(doEmbed(embedTypes.activeGame))
 
-    // start game
-    game.active = true
-    game.embed.edit(doEmbed(embedTypes.activeGame))
-
-    // Add user cooldown
-    // const playerArr = Object.values(game.players)
-    // try {
-    //   asyncForEach(playerArr, async (player: Player) => {
-    //     const coolDownDoneDate = Date.now() + userCooldown * 60000
-    //     await collections.users.findOneAndUpdate(
-    //       { _id: player.userId },
-    //       { $set: { coolDownDone: coolDownDoneDate } }
-    //     )
-    //   })
-    // } catch (error) {
-    //   console.log(error)
-    // }
+      // Add user cooldown
+      // const playerArr = Object.values(game.players)
+      // try {
+      //   asyncForEach(playerArr, async (player: Player) => {
+      //     const coolDownDoneDate = Date.now() + userCooldown * 60000
+      //     await collections.users.findOneAndUpdate(
+      //       { _id: player.userId },
+      //       { $set: { coolDownDone: coolDownDoneDate } }
+      //     )
+      //   })
+      // } catch (error) {
+      //   console.log(error)
+      // }
+    }
   },
 }

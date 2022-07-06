@@ -25,8 +25,8 @@ module.exports = {
                 content: 'Game is not currently running',
                 ephemeral: true,
             });
-        (0, helpers_1.resetGame)();
+        (0, helpers_1.resetGame)(true);
         __2.intervals.timeoutInterval && clearInterval(__2.intervals.timeoutInterval);
-        return interaction.reply({ content: 'Game stopped', ephemeral: false });
+        return interaction.reply({ content: 'Game stopped', ephemeral: true });
     },
 };
