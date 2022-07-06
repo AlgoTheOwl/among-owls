@@ -6,7 +6,6 @@ import { Interaction } from 'discord.js'
 import Player from '../models/player'
 import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
-import { EmbedData } from '../types/game'
 import doEmbed from '../embeds'
 import { intervals } from '..'
 import Game from '../models/game'
@@ -204,10 +203,17 @@ export const randomSort = (arr: any[]) => {
   return arr
 }
 
-export const resetGame = (): void => {
+export const resetGame = (stopped: boolean = false): void => {
   game.players = {}
   game.active = false
   game.win = false
   game.waitingRoom = false
   game.attackEngaged = false
+  game.stopped = true
+
+  setTimeout(() => {
+    game.stopped = false
+  }, 3000)
+
+  stopped && game?.embed?.edit(doEmbed(embeds.stopped))
 }

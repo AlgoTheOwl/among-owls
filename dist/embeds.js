@@ -113,6 +113,12 @@ function doEmbed(type, options) {
             fields,
         };
     }
+    if (type === embeds_1.default.stopped) {
+        data = {
+            title: 'Game stopped',
+            description: 'Game has been stopped',
+        };
+    }
     let { title, description, color, image, thumbNail, fields, footer, files } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();
     if ((image === null || image === void 0 ? void 0 : image.slice(0, 4)) === 'ipfs') {
