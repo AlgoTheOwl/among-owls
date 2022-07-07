@@ -18,6 +18,7 @@ const defaultEmbedValues = {
         text: 'A HootGang Production',
         iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
     },
+    rawEmbed: false,
 };
 function doEmbed(type, options) {
     let data = {};
@@ -67,13 +68,18 @@ function doEmbed(type, options) {
             description: '',
             value: player.discordId,
         }));
-        components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
-            .setCustomId('attack')
-            .setLabel('Attack!')
-            .setStyle('DANGER'), new discord_js_1.MessageButton()
-            .setCustomId('random-attack')
-            .setLabel('Blindly attack!')
-            .setStyle('DANGER')), new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
+        components.push(
+        // new MessageActionRow().addComponents(
+        //   new MessageButton()
+        //     .setCustomId('attack')
+        //     .setLabel('Attack!')
+        //     .setStyle('DANGER'),
+        //   new MessageButton()
+        //     .setCustomId('random-attack')
+        //     .setLabel('Blindly attack!')
+        //     .setStyle('DANGER')
+        // ),
+        new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
             .setCustomId('select-victim')
             .setPlaceholder('Select a victim to attack')
             .addOptions(victims)));
@@ -119,7 +125,12 @@ function doEmbed(type, options) {
             description: 'Game has been stopped',
         };
     }
-    let { title, description, color, image, thumbNail, fields, footer, files } = Object.assign(Object.assign({}, defaultEmbedValues), data);
+    if (type === embeds_1.default.profile) {
+        data = {
+            rawEmbed: true,
+        };
+    }
+    let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();
     if ((image === null || image === void 0 ? void 0 : image.slice(0, 4)) === 'ipfs') {
         const ifpsHash = image.slice(7);
@@ -132,6 +143,9 @@ function doEmbed(type, options) {
     thumbNail && embed.setThumbnail(thumbNail);
     (fields === null || fields === void 0 ? void 0 : fields.length) && embed.addFields(fields);
     footer && embed.setFooter(footer);
+    if (rawEmbed) {
+        return embed;
+    }
     return {
         embeds: [embed],
         fetchReply: true,

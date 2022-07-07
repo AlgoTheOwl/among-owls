@@ -26,6 +26,7 @@ export const playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> } =
 
 export const intervals: Intervals = {
   timeoutInterval: null,
+  autoGameInterval: null,
   playerTimeouts: {},
 }
 

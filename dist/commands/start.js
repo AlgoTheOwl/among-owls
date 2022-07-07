@@ -61,6 +61,7 @@ module.exports = {
             // start game
             __1.game.active = true;
             __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
+            // Do Game
             // Add user cooldown
             // const playerArr = Object.values(game.players)
             // try {

@@ -14,7 +14,7 @@ import settings from '../settings'
 import { game } from '..'
 import embeds from '../constants/embeds'
 
-const { imageDir } = settings
+const { damagePerAowl, hp } = settings
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -144,32 +144,6 @@ export const getNumberSuffix = (num: number): string => {
 export const getPlayerArray = (players: { [key: string]: Player }): Player[] =>
   Object.values(players)
 
-export const handleWin = async (
-  player: Player,
-  winByTimeout: boolean,
-  game: Game
-) => {
-  // handle win
-  game.active = false
-  intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
-
-  // Increment score of winning player
-  const winningUser = (await collections.users.findOne({
-    _id: player.userId,
-  })) as WithId<User>
-
-  const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
-
-  await collections.users.findOneAndUpdate(
-    { _id: player.userId },
-    { $set: { yaoWins: updatedScore } }
-  )
-
-  resetGame()
-  emptyDir(imageDir)
-  return game.embed.edit(doEmbed(embeds.win, { winByTimeout, player }))
-}
-
 export const randomNumber = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min) + min)
 
@@ -218,5 +192,19 @@ export const resetGame = (stopped: boolean = false): void => {
     }, 3000)
 
     stopped && game?.embed?.edit(doEmbed(embeds.stopped))
+  }
+}
+
+export const doDamage = (
+  player: Player,
+  withMultiplier: boolean = false
+): number => {
+  if (withMultiplier) {
+    const { assetMultiplier } = player
+    const multiplierDamage =
+      (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl
+    return Math.floor(Math.random() * (hp / 10)) + multiplierDamage
+  } else {
+    return Math.floor(Math.random() * (hp / 10))
   }
 }

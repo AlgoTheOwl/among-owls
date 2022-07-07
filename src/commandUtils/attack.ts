@@ -4,11 +4,12 @@ import doEmbed from '../embeds'
 import {
   wait,
   mapPlayersForEmbed,
-  handleWin,
   randomNumber,
   getWinningPlayer,
   getPlayerArray,
+  doDamage,
 } from '../utils/helpers'
+import { handleWin } from './win'
 import { game } from '..'
 import settings from '../settings'
 import { playerTimeouts } from '..'
@@ -244,14 +245,7 @@ const doPlayerTimeout = async (id: string): Promise<void> => {
   }, kickPlayerTimeout)
 }
 
-const doDamage = (player: Player): number => {
-  const { assetMultiplier } = player
-  const multiplierDamage =
-    (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl
-  return Math.floor(Math.random() * (hp / 10)) + multiplierDamage
-}
-
-const getRandomVictimId = (attackerId: string): string => {
+export const getRandomVictimId = (attackerId: string): string => {
   const filteredPlayerArray = Object.values(game.players).filter(
     (player) =>
       player?.discordId !== attackerId && !player.timedOut && !player.dead
