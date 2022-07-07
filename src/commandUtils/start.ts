@@ -1,4 +1,10 @@
-import { ButtonInteraction, Interaction, MessageAttachment } from 'discord.js'
+import {
+  ButtonInteraction,
+  Interaction,
+  InteractionReplyOptions,
+  InteractionResponseType,
+  MessageAttachment,
+} from 'discord.js'
 import { resetGame, confirmRole, wait } from '../utils/helpers'
 import { game } from '..'
 import doEmbed from '../embeds'
@@ -48,7 +54,9 @@ export default async function start(
   game.waitingRoom = true
   let playerCount = 0
 
-  game.embed = await interaction.followUp(doEmbed(embeds.waitingRoom))
+  game.embed = await interaction.followUp(
+    doEmbed(embeds.waitingRoom) as InteractionReplyOptions
+  )
 
   while (playerCount < capacity) {
     try {

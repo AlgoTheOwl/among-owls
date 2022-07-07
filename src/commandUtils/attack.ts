@@ -14,7 +14,6 @@ import { game } from '..'
 import settings from '../settings'
 import { playerTimeouts } from '..'
 import { intervals } from '..'
-import Player from '../models/player'
 import embeds from '../constants/embeds'
 
 const {
@@ -163,7 +162,7 @@ export const attack = async (
   await game.embed.edit(doEmbed(embeds.activeGame, { fields }))
 }
 
-const getAttackString = (
+export const getAttackString = (
   assetName: string,
   victimName: string,
   damage: number
