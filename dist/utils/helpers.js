@@ -3,17 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.handleWin = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
+exports.doDamage = exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
-const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../embeds"));
-const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
-const __2 = require("..");
+const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
-const { imageDir } = settings_1.default;
+const { damagePerAowl, hp } = settings_1.default;
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -124,21 +122,6 @@ const getNumberSuffix = (num) => {
 exports.getNumberSuffix = getNumberSuffix;
 const getPlayerArray = (players) => Object.values(players);
 exports.getPlayerArray = getPlayerArray;
-const handleWin = async (player, winByTimeout, game) => {
-    // handle win
-    game.active = false;
-    __1.intervals.timeoutInterval && clearInterval(__1.intervals.timeoutInterval);
-    // Increment score of winning player
-    const winningUser = (await database_service_1.collections.users.findOne({
-        _id: player.userId,
-    }));
-    const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1;
-    await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { yaoWins: updatedScore } });
-    (0, exports.resetGame)();
-    (0, exports.emptyDir)(imageDir);
-    return game.embed.edit((0, embeds_1.default)(embeds_2.default.win, { winByTimeout, player }));
-};
-exports.handleWin = handleWin;
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 exports.randomNumber = randomNumber;
 const getWinningPlayer = (playerArr) => {
@@ -165,17 +148,28 @@ const randomSort = (arr) => {
 exports.randomSort = randomSort;
 const resetGame = (stopped = false) => {
     var _a;
-    __2.game.players = {};
-    __2.game.active = false;
-    __2.game.win = false;
-    __2.game.waitingRoom = false;
-    __2.game.attackEngaged = false;
+    __1.game.players = {};
+    __1.game.active = false;
+    __1.game.win = false;
+    __1.game.waitingRoom = false;
+    __1.game.attackEngaged = false;
     if (stopped) {
-        __2.game.stopped = true;
+        __1.game.stopped = true;
         setTimeout(() => {
-            __2.game.stopped = false;
+            __1.game.stopped = false;
         }, 3000);
-        stopped && ((_a = __2.game === null || __2.game === void 0 ? void 0 : __2.game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped)));
+        stopped && ((_a = __1.game === null || __1.game === void 0 ? void 0 : __1.game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped)));
     }
 };
 exports.resetGame = resetGame;
+const doDamage = (player, withMultiplier = false) => {
+    if (withMultiplier) {
+        const { assetMultiplier } = player;
+        const multiplierDamage = (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl;
+        return Math.floor(Math.random() * (hp / 10)) + multiplierDamage;
+    }
+    else {
+        return Math.floor(Math.random() * (hp / 10));
+    }
+};
+exports.doDamage = doDamage;

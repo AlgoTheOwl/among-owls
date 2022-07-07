@@ -1,4 +1,8 @@
-import { Interaction, MessageAttachment } from 'discord.js'
+import {
+  Interaction,
+  InteractionReplyOptions,
+  MessageAttachment,
+} from 'discord.js'
 import { resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import { SlashCommandBuilder } from '@discordjs/builders'
@@ -34,7 +38,9 @@ module.exports = {
     game.waitingRoom = true
     let playerCount = 0
 
-    game.embed = await interaction.followUp(doEmbed(embedTypes.waitingRoom))
+    game.embed = await interaction.followUp(
+      doEmbed(embedTypes.waitingRoom) as InteractionReplyOptions
+    )
 
     while (playerCount < maxCapacity && game.waitingRoom && !game.stopped) {
       try {
@@ -67,6 +73,8 @@ module.exports = {
       // start game
       game.active = true
       game.embed.edit(doEmbed(embedTypes.activeGame))
+
+      // Do Game
 
       // Add user cooldown
       // const playerArr = Object.values(game.players)

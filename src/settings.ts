@@ -1,3 +1,25 @@
+type Settings = {
+  hp: number
+  damagePerAowl: number
+  imageDir: string
+  kickPlayerTimeout: number
+  coolDownInterval: number
+  messageDeleteInterval: number
+  deathDeleteInterval: number
+  timeoutInterval: number
+  waitBeforeTimeoutInterval: number
+  minCapacity: number
+  maxCapacity: number
+  userCooldown: number
+  maxAssets: number
+  hootSettings: {
+    hootOnWin: number
+  }
+  autoGameSettings: {
+    roundIntervalLength: number
+  }
+}
+
 export default {
   hp: 1000,
   // Score modifier
@@ -19,9 +41,16 @@ export default {
   // Minimum players needed to start a game
   minCapacity: 2,
   // Max amount of players allowed to join
-  maxCapacity: 20,
+  maxCapacity: 4,
   // Number of minutes a user will have to wait to join a game after participating once
   userCooldown: 30,
   // Max assets the game will capture
   maxAssets: 20,
-}
+  // Settings for native asa
+  hootSettings: {
+    hootOnWin: 20,
+  },
+  autoGameSettings: {
+    roundIntervalLength: 2500,
+  },
+} as Settings

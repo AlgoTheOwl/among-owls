@@ -5,6 +5,8 @@ import {
   MessageButton,
   ColorResolvable,
   MessageAttachment,
+  MessagePayload,
+  InteractionReplyOptions,
 } from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
@@ -24,9 +26,13 @@ const defaultEmbedValues: EmbedData = {
     text: 'A HootGang Production',
     iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   },
+  rawEmbed: false,
 }
 
-export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
+export default function doEmbed(
+  type: string,
+  options?: EmbedData
+): string | MessagePayload | InteractionReplyOptions | MessageEmbed {
   let data: EmbedData = {}
   let components = []
   const playerArr = Object.values(game.players)
@@ -87,16 +93,16 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
       }))
 
     components.push(
-      new MessageActionRow().addComponents(
-        new MessageButton()
-          .setCustomId('attack')
-          .setLabel('Attack!')
-          .setStyle('DANGER'),
-        new MessageButton()
-          .setCustomId('random-attack')
-          .setLabel('Blindly attack!')
-          .setStyle('DANGER')
-      ),
+      // new MessageActionRow().addComponents(
+      //   new MessageButton()
+      //     .setCustomId('attack')
+      //     .setLabel('Attack!')
+      //     .setStyle('DANGER'),
+      //   new MessageButton()
+      //     .setCustomId('random-attack')
+      //     .setLabel('Blindly attack!')
+      //     .setStyle('DANGER')
+      // ),
       new MessageActionRow().addComponents(
         new MessageSelectMenu()
           .setCustomId('select-victim')
@@ -156,7 +162,23 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
     }
   }
 
-  let { title, description, color, image, thumbNail, fields, footer, files } = {
+  if (type === embeds.profile) {
+    data = {
+      rawEmbed: true,
+    }
+  }
+
+  let {
+    title,
+    description,
+    color,
+    image,
+    thumbNail,
+    fields,
+    footer,
+    files,
+    rawEmbed,
+  } = {
     ...defaultEmbedValues,
     ...data,
   }
@@ -175,6 +197,10 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
   thumbNail && embed.setThumbnail(thumbNail)
   fields?.length && embed.addFields(fields)
   footer && embed.setFooter(footer)
+
+  if (rawEmbed) {
+    return embed
+  }
 
   return {
     embeds: [embed],

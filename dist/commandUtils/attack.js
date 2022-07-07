@@ -3,10 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.attack = void 0;
+exports.getRandomVictimId = exports.attack = void 0;
 const discord_js_1 = require("discord.js");
 const embeds_1 = __importDefault(require("../embeds"));
 const helpers_1 = require("../utils/helpers");
+const win_1 = require("./win");
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
 const __2 = require("..");
@@ -43,7 +44,7 @@ const attack = async (interaction, random) => {
     const { user } = interaction;
     const { id: attackerId } = user;
     const victimId = random
-        ? getRandomVictimId(attackerId)
+        ? (0, exports.getRandomVictimId)(attackerId)
         : ((_a = __1.game === null || __1.game === void 0 ? void 0 : __1.game.players[user.id]) === null || _a === void 0 ? void 0 : _a.victimId) || null;
     if (!victimId && !random) {
         return interaction.reply({
@@ -88,7 +89,7 @@ const attack = async (interaction, random) => {
         return interaction.reply({ content, ephemeral: true });
     if (victim && attacker) {
         handlePlayerCooldown(attackerId, coolDownInterval);
-        const damage = doDamage(attacker);
+        const damage = (0, helpers_1.doDamage)(attacker);
         // const damage = 1000
         victim.hp -= damage;
         victimDead = false;
@@ -113,7 +114,7 @@ const attack = async (interaction, random) => {
         const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
         isWin = !!winningPlayer;
         if (isWin && winningPlayer && __1.game.active) {
-            return (0, helpers_1.handleWin)(winningPlayer, winByTimeout, __1.game);
+            return (0, win_1.handleWin)(winningPlayer, winByTimeout, __1.game);
         }
         // push attack value into embed
         attackRow.push({
@@ -166,7 +167,7 @@ const doPlayerTimeout = async (id) => {
             // If win
             if (winningPlayer && __1.game.active) {
                 __3.intervals.timeoutInterval && clearInterval(__3.intervals.timeoutInterval);
-                return (0, helpers_1.handleWin)(winningPlayer, winByTimeout, __1.game);
+                return (0, win_1.handleWin)(winningPlayer, winByTimeout, __1.game);
             }
             const usersTimedOut = playerArr.filter((player) => player.timedOut);
             // If everyone timed out
@@ -183,14 +184,10 @@ const doPlayerTimeout = async (id) => {
         }
     }, kickPlayerTimeout);
 };
-const doDamage = (player) => {
-    const { assetMultiplier } = player;
-    const multiplierDamage = (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl;
-    return Math.floor(Math.random() * (hp / 10)) + multiplierDamage;
-};
 const getRandomVictimId = (attackerId) => {
     var _a;
     const filteredPlayerArray = Object.values(__1.game.players).filter((player) => (player === null || player === void 0 ? void 0 : player.discordId) !== attackerId && !player.timedOut && !player.dead);
     const randomIndex = Math.floor(Math.random() * filteredPlayerArray.length);
     return (_a = filteredPlayerArray[randomIndex]) === null || _a === void 0 ? void 0 : _a.discordId;
 };
+exports.getRandomVictimId = getRandomVictimId;
