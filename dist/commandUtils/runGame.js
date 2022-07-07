@@ -5,22 +5,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
 const helpers_1 = require("../utils/helpers");
+const win_1 = require("./win");
 const attack_1 = require("./attack");
 const settings_1 = __importDefault(require("../settings"));
-async function runGame() {
-    if (__1.game.active || __1.game.waitingRoom) {
+const embeds_1 = __importDefault(require("../embeds"));
+const embeds_2 = __importDefault(require("../constants/embeds"));
+const discord_js_1 = require("discord.js");
+async function runGame(interaction) {
+    if (!interaction.isCommand())
         return;
+    if (__1.game.active || __1.game.waitingRoom) {
+        return interaction.reply({
+            content: 'Game is already active',
+            ephemeral: true,
+        });
     }
+    await interaction.deferReply();
     const { players } = __1.game;
-    const { autoGameSettings } = settings_1.default;
+    const { autoGameSettings, deathDeleteInterval } = settings_1.default;
     const { roundIntervalLength } = autoGameSettings;
     const playerArr = Object.values(players);
+    let victimDead;
+    let isWin;
+    const attackRow = [];
     __1.intervals.autoGameInterval = setInterval(async () => {
         await (0, helpers_1.asyncForEach)(playerArr, async (player) => {
             const { discordId } = player;
             const attacker = __1.game.players[discordId];
             let victim;
-            if (!(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead)) {
+            // DO DAMAGE
+            if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead)) {
                 if (player.victimId) {
                     victim = __1.game.players[player.victimId];
                 }
@@ -29,7 +43,38 @@ async function runGame() {
                 }
                 const damage = (0, helpers_1.doDamage)(attacker, false);
                 victim.hp -= damage;
+                if (victim.hp <= 0) {
+                    victim.dead = true;
+                    victimDead = true;
+                }
+                // HANDLE DEATH
+                if (victimDead && attacker) {
+                    const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
+                    await interaction.editReply({
+                        files: [attachment],
+                        content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
+                    });
+                    setTimeout(async () => {
+                        await interaction.deleteReply();
+                    }, deathDeleteInterval);
+                }
+                const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
+                isWin = !!winningPlayer;
+                if (isWin && winningPlayer && __1.game.active) {
+                    return (0, win_1.handleWin)(winningPlayer, winByTimeout, __1.game);
+                }
+                // push attack value into embed
+                attackRow.push({
+                    name: 'ATTACK',
+                    value: (0, attack_1.getAttackString)(attacker.asset.assetName, victim.username, damage),
+                });
             }
+            // RESPOND WITH EMEBED
+            const fields = [
+                ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
+                ...attackRow,
+            ].filter(Boolean);
+            await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
         });
     }, roundIntervalLength);
 }

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRandomVictimId = exports.attack = void 0;
+exports.getRandomVictimId = exports.getAttackString = exports.attack = void 0;
 const discord_js_1 = require("discord.js");
 const embeds_1 = __importDefault(require("../embeds"));
 const helpers_1 = require("../utils/helpers");
@@ -119,7 +119,7 @@ const attack = async (interaction, random) => {
         // push attack value into embed
         attackRow.push({
             name: 'ATTACK',
-            value: getAttackString(attacker.asset.assetName, victim.username, damage),
+            value: (0, exports.getAttackString)(attacker.asset.assetName, victim.username, damage),
         });
     }
     const fields = [...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'), ...attackRow];
@@ -132,6 +132,7 @@ const getAttackString = (assetName, victimName, damage) => {
         .replace('{victimName}', victimName)
         .replace('{damage}', damage.toString());
 };
+exports.getAttackString = getAttackString;
 const handlePlayerTimeout = (playerId, timeoutInterval) => {
     const gamePlayer = __1.game.players[playerId];
     clearTimeout(__2.playerTimeouts[playerId]);
