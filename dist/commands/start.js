@@ -10,6 +10,7 @@ const builders_1 = require("@discordjs/builders");
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const settings_1 = __importDefault(require("../settings"));
+const runGame_1 = __importDefault(require("../commandUtils/runGame"));
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('start')
@@ -62,6 +63,29 @@ module.exports = {
             __1.game.active = true;
             __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
             // Do Game
+            (0, runGame_1.default)(interaction);
+            const playerArr = Object.values(__1.game.players);
+            const victims = playerArr
+                .filter((player) => !player.timedOut && !player.dead)
+                .map((player) => ({
+                label: `Attack ${player.username}`,
+                description: '',
+                value: player.discordId,
+            }));
+            const victimSelectMenu = new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
+                .setCustomId('select-victim')
+                .setPlaceholder('Attack a random victim')
+                .addOptions([
+                {
+                    label: `Attack a random victim`,
+                    description: '',
+                    value: 'random',
+                },
+                ...victims,
+            ]));
+            interaction.followUp({
+                components: [victimSelectMenu],
+            });
             // Add user cooldown
             // const playerArr = Object.values(game.players)
             // try {

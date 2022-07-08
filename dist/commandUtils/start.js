@@ -9,6 +9,7 @@ const __1 = require("..");
 const embeds_1 = __importDefault(require("../embeds"));
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const settings_1 = __importDefault(require("../settings"));
+const runGame_1 = __importDefault(require("./runGame"));
 const roleId = process.env.ADMIN_ID;
 async function start(interaction) {
     if (!interaction.isCommand() && !interaction.isButton())
@@ -42,20 +43,15 @@ async function start(interaction) {
     let playerCount = 0;
     __1.game.embed = await interaction.followUp((0, embeds_1.default)(embeds_2.default.waitingRoom));
     while (playerCount < capacity) {
-        try {
-            await (0, helpers_1.wait)(2000);
-            playerCount = Object.values(__1.game.players).length;
-            await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
-        }
-        catch (error) {
-            // @ts-ignore
-            console.log('ERROR', error);
-        }
+        await (0, helpers_1.wait)(2000);
+        playerCount = Object.values(__1.game.players).length;
+        await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
     }
     __1.game.waitingRoom = false;
     // Do countdown
     let countDown = 5;
     while (countDown >= 1) {
+        console.log('running while loop');
         countDown--;
         await (0, helpers_1.wait)(1000);
         await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.countDown, { countDown }));
@@ -63,5 +59,6 @@ async function start(interaction) {
     // start game
     __1.game.active = true;
     __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
+    (0, runGame_1.default)(interaction);
 }
 exports.default = start;

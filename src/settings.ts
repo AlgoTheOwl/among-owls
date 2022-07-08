@@ -21,7 +21,7 @@ type Settings = {
 }
 
 export default {
-  hp: 1000,
+  hp: 420,
   // Score modifier
   damagePerAowl: 5,
   // File where player assets are stored
@@ -51,6 +51,6 @@ export default {
     hootOnWin: 20,
   },
   autoGameSettings: {
-    roundIntervalLength: 2500,
+    roundIntervalLength: 3000,
   },
 } as Settings

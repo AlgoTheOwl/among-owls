@@ -5,6 +5,7 @@ import { WithId } from 'mongodb'
 import User from '../models/user'
 import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
+import { InteractionReplyOptions } from 'discord.js'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -29,7 +30,9 @@ module.exports = {
     })
 
     if (fields?.length) {
-      await interaction.reply(doEmbed(embeds.leaderBoard, { fields }))
+      await interaction.reply(
+        doEmbed(embeds.leaderBoard, { fields }) as InteractionReplyOptions
+      )
     } else {
       await interaction.reply({ content: 'no winners yet!', ephemeral: true })
     }

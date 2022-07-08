@@ -21,7 +21,7 @@ const defaultEmbedValues: EmbedData = {
   description: '💀 Who will survive? 💀',
   color: 'DARK_AQUA',
   image: 'attachment://main.gif',
-  thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+  // thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   footer: {
     text: 'A HootGang Production',
     iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
@@ -76,40 +76,40 @@ export default function doEmbed(
       description: '💀 Who will survive? 💀',
       color: 'RANDOM',
       image: undefined,
-      thumbNail:
-        'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+      // thumbNail:
+      //   'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
       fields,
       footer: {
         text: 'A HootGang Production',
       },
     }
 
-    const victims = playerArr
-      .filter((player: Player) => !player.timedOut && !player.dead)
-      .map((player: Player) => ({
-        label: `Attack ${player.username}`,
-        description: '',
-        value: player.discordId,
-      }))
+    // const victims = playerArr
+    //   .filter((player: Player) => !player.timedOut && !player.dead)
+    //   .map((player: Player) => ({
+    //     label: `Attack ${player.username}`,
+    //     description: '',
+    //     value: player.discordId,
+    //   }))
 
-    components.push(
-      // new MessageActionRow().addComponents(
-      //   new MessageButton()
-      //     .setCustomId('attack')
-      //     .setLabel('Attack!')
-      //     .setStyle('DANGER'),
-      //   new MessageButton()
-      //     .setCustomId('random-attack')
-      //     .setLabel('Blindly attack!')
-      //     .setStyle('DANGER')
-      // ),
-      new MessageActionRow().addComponents(
-        new MessageSelectMenu()
-          .setCustomId('select-victim')
-          .setPlaceholder('Select a victim to attack')
-          .addOptions(victims)
-      )
-    )
+    // components.push(
+    //   new MessageActionRow().addComponents(
+    //     new MessageButton()
+    //       .setCustomId('send-select')
+    //       .setLabel('Select a victim to attack')
+    //       .setStyle('DANGER')
+    //   new MessageButton()
+    //     .setCustomId('random-attack')
+    //     .setLabel('Blindly attack!')
+    //     .setStyle('DANGER')
+    // ),
+    // new MessageActionRow().addComponents(
+    //   new MessageSelectMenu()
+    //     .setCustomId('select-victim')
+    //     .setPlaceholder('Select a victim to attack')
+    //     .addOptions(victims)
+    // )
+    // )
   }
 
   if (type === embeds.countDown) {

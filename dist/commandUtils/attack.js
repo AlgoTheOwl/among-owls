@@ -15,11 +15,11 @@ const __3 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const { timeoutInterval, coolDownInterval, hp, damagePerAowl, waitBeforeTimeoutInterval, kickPlayerTimeout, deathDeleteInterval, } = settings_1.default;
 const attackStrings = [
-    'HOOT, HOOT! {assetName} slashes at {victimName} for {damage} damage',
-    'HI-YAH!. {assetName} karate chops at {victimName} for {damage} damage',
-    'SCREEEECH!. {assetName} chucks ninja stars at {victimName} for {damage} damage',
-    'HMPH!. {assetName} throws a spear at {victimName} for {damage} damage',
-    'SL-SL-SL-IIICE!. {assetName} slices and dices you {victimName} for {damage} damage',
+    'HOOT, HOOT! {assetName} slashes at\n {victimName} for {damage} damage',
+    'HI-YAH!. {assetName} karate chops at\n {victimName} for {damage} damage',
+    'SCREEEECH!. {assetName} chucks ninja\n stars at {victimName} for {damage} damage',
+    'HMPH!. {assetName} throws a spear at\n {victimName} for {damage} damage',
+    'SL-SL-SL-IIICE!. {assetName} slices and\n dices you {victimName} for {damage} damage',
 ];
 const errorMessages = {
     attackSelf: `Owls are supposed to be wise, but you’re clearly not. You can’t attack yourself!`,

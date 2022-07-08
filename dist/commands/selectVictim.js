@@ -10,16 +10,26 @@ module.exports = {
         if (!__1.game)
             return;
         const { values: idArr, user } = interaction;
-        const victimId = idArr[0] || null;
-        if (!victimId) {
+        const victimId = idArr[0];
+        const player = __1.game.players[user.id];
+        const victim = __1.game.players[victimId];
+        if (victimId === 'random') {
+            player.victimId = undefined;
             return interaction.reply({
-                content: 'Something went wrong selecting a player, please try again',
+                ephemeral: true,
+                content: `You have chosen to attack a random player`,
+            });
+        }
+        if (victimId === user.id) {
+            return interaction.reply({
+                content: "You can't attack yourself, try again",
                 ephemeral: true,
             });
         }
-        interaction.deferUpdate();
-        if (__1.game.players[user.id]) {
-            __1.game.players[user.id].victimId = victimId;
-        }
+        player.victimId = victimId;
+        interaction.reply({
+            ephemeral: true,
+            content: `You have chosen ${victim.username}'s AOWL to be your victim, good choice. 😈`,
+        });
     },
 };
