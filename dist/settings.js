@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
-    hp: 1000,
+    hp: 420,
     // Score modifier
     damagePerAowl: 5,
     // File where player assets are stored
@@ -31,6 +31,6 @@ exports.default = {
         hootOnWin: 20,
     },
     autoGameSettings: {
-        roundIntervalLength: 2500,
+        roundIntervalLength: 3000,
     },
 };

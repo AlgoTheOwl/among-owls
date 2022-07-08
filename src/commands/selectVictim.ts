@@ -10,19 +10,30 @@ module.exports = {
     if (!game) return
     const { values: idArr, user } = interaction
 
-    const victimId = idArr[0] || null
+    const victimId = idArr[0]
 
-    if (!victimId) {
+    const player = game.players[user.id]
+    const victim = game.players[victimId]
+
+    if (victimId === 'random') {
+      player.victimId = undefined
       return interaction.reply({
-        content: 'Something went wrong selecting a player, please try again',
+        ephemeral: true,
+        content: `You have chosen to attack a random player`,
+      })
+    }
+
+    if (victimId === user.id) {
+      return interaction.reply({
+        content: "You can't attack yourself, try again",
         ephemeral: true,
       })
     }
 
-    interaction.deferUpdate()
-
-    if (game.players[user.id]) {
-      game.players[user.id].victimId = victimId
-    }
+    player.victimId = victimId as string
+    interaction.reply({
+      ephemeral: true,
+      content: `You have chosen ${victim.username}'s AOWL to be your victim, good choice. 😈`,
+    })
   },
 }

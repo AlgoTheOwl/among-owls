@@ -4,6 +4,7 @@ import {
   doDamage,
   getWinningPlayer,
   mapPlayersForEmbed,
+  wait,
 } from '../utils/helpers'
 import { handleWin } from './win'
 import { getRandomVictimId, getAttackString } from './attack'
@@ -16,29 +17,26 @@ import { Field } from '../types/game'
 
 export default async function runGame(interaction: Interaction) {
   if (!interaction.isCommand()) return
-  if (game.active || game.waitingRoom) {
-    return interaction.reply({
-      content: 'Game is already active',
-      ephemeral: true,
-    })
-  }
-
-  await interaction.deferReply()
 
   const { players } = game
   const { autoGameSettings, deathDeleteInterval } = settings
   const { roundIntervalLength } = autoGameSettings
   const playerArr = Object.values(players)
 
-  let victimDead: boolean | null
-  let isWin: boolean | null
-  const attackRow: Field[] = []
+  let isWin = false
+  let attackField: Field | null
 
-  intervals.autoGameInterval = setInterval(async () => {
+  while (
+    !game.stopped &&
+    !game.waitingRoom &&
+    game.active &&
+    playerArr.length > 1
+  ) {
     await asyncForEach(playerArr, async (player: Player) => {
       const { discordId } = player
       const attacker = game.players[discordId] as Player
       let victim
+      let victimDead = false
 
       // DO DAMAGE
       if (attacker && !attacker?.timedOut && !attacker?.dead) {
@@ -66,8 +64,8 @@ export default async function runGame(interaction: Interaction) {
             content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
           })
 
-          setTimeout(async () => {
-            await interaction.deleteReply()
+          setTimeout(() => {
+            interaction.deleteReply()
           }, deathDeleteInterval)
         }
 
@@ -78,23 +76,23 @@ export default async function runGame(interaction: Interaction) {
           return handleWin(winningPlayer, winByTimeout, game)
         }
         // push attack value into embed
-        attackRow.push({
+        attackField = {
           name: 'ATTACK',
           value: getAttackString(
             attacker.asset.assetName,
             victim.username,
             damage
           ),
-        })
+        }
+        // RESPOND WITH EMEBED
+        const fields = [
+          ...mapPlayersForEmbed(playerArr, 'game'),
+          attackField,
+        ].filter(Boolean)
+
+        game.embed.edit(doEmbed(embeds.activeGame, { fields }))
+        await wait(2000)
       }
-
-      // RESPOND WITH EMEBED
-      const fields = [
-        ...mapPlayersForEmbed(playerArr, 'game'),
-        ...attackRow,
-      ].filter(Boolean)
-
-      await game.embed.edit(doEmbed(embeds.activeGame, { fields }))
     })
-  }, roundIntervalLength)
+  }
 }

@@ -14,25 +14,21 @@ const discord_js_1 = require("discord.js");
 async function runGame(interaction) {
     if (!interaction.isCommand())
         return;
-    if (__1.game.active || __1.game.waitingRoom) {
-        return interaction.reply({
-            content: 'Game is already active',
-            ephemeral: true,
-        });
-    }
-    await interaction.deferReply();
     const { players } = __1.game;
     const { autoGameSettings, deathDeleteInterval } = settings_1.default;
     const { roundIntervalLength } = autoGameSettings;
     const playerArr = Object.values(players);
-    let victimDead;
-    let isWin;
-    const attackRow = [];
-    __1.intervals.autoGameInterval = setInterval(async () => {
+    let isWin = false;
+    let attackField;
+    while (!__1.game.stopped &&
+        !__1.game.waitingRoom &&
+        __1.game.active &&
+        playerArr.length > 1) {
         await (0, helpers_1.asyncForEach)(playerArr, async (player) => {
             const { discordId } = player;
             const attacker = __1.game.players[discordId];
             let victim;
+            let victimDead = false;
             // DO DAMAGE
             if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead)) {
                 if (player.victimId) {
@@ -54,8 +50,8 @@ async function runGame(interaction) {
                         files: [attachment],
                         content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
                     });
-                    setTimeout(async () => {
-                        await interaction.deleteReply();
+                    setTimeout(() => {
+                        interaction.deleteReply();
                     }, deathDeleteInterval);
                 }
                 const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
@@ -64,18 +60,19 @@ async function runGame(interaction) {
                     return (0, win_1.handleWin)(winningPlayer, winByTimeout, __1.game);
                 }
                 // push attack value into embed
-                attackRow.push({
+                attackField = {
                     name: 'ATTACK',
                     value: (0, attack_1.getAttackString)(attacker.asset.assetName, victim.username, damage),
-                });
+                };
+                // RESPOND WITH EMEBED
+                const fields = [
+                    ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
+                    attackField,
+                ].filter(Boolean);
+                __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
+                await (0, helpers_1.wait)(2000);
             }
-            // RESPOND WITH EMEBED
-            const fields = [
-                ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
-                ...attackRow,
-            ].filter(Boolean);
-            await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
         });
-    }, roundIntervalLength);
+    }
 }
 exports.default = runGame;

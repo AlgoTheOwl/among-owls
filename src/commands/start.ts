@@ -2,6 +2,8 @@ import {
   Interaction,
   InteractionReplyOptions,
   MessageAttachment,
+  MessageActionRow,
+  MessageSelectMenu,
 } from 'discord.js'
 import { resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
@@ -9,6 +11,8 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { game } from '..'
 import embedTypes from '../constants/embeds'
 import settings from '../settings'
+import runGame from '../commandUtils/runGame'
+import Player from '../models/player'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -75,6 +79,35 @@ module.exports = {
       game.embed.edit(doEmbed(embedTypes.activeGame))
 
       // Do Game
+      runGame(interaction)
+
+      const playerArr = Object.values(game.players)
+
+      const victims = playerArr
+        .filter((player: Player) => !player.timedOut && !player.dead)
+        .map((player: Player) => ({
+          label: `Attack ${player.username}`,
+          description: '',
+          value: player.discordId,
+        }))
+
+      const victimSelectMenu = new MessageActionRow().addComponents(
+        new MessageSelectMenu()
+          .setCustomId('select-victim')
+          .setPlaceholder('Attack a random victim')
+          .addOptions([
+            {
+              label: `Attack a random victim`,
+              description: '',
+              value: 'random',
+            },
+            ...victims,
+          ])
+      )
+
+      interaction.followUp({
+        components: [victimSelectMenu],
+      })
 
       // Add user cooldown
       // const playerArr = Object.values(game.players)

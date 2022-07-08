@@ -13,7 +13,7 @@ const defaultEmbedValues = {
     description: '💀 Who will survive? 💀',
     color: 'DARK_AQUA',
     image: 'attachment://main.gif',
-    thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+    // thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
     footer: {
         text: 'A HootGang Production',
         iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
@@ -55,34 +55,38 @@ function doEmbed(type, options) {
             description: '💀 Who will survive? 💀',
             color: 'RANDOM',
             image: undefined,
-            thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+            // thumbNail:
+            //   'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
             fields,
             footer: {
                 text: 'A HootGang Production',
             },
         };
-        const victims = playerArr
-            .filter((player) => !player.timedOut && !player.dead)
-            .map((player) => ({
-            label: `Attack ${player.username}`,
-            description: '',
-            value: player.discordId,
-        }));
-        components.push(
-        // new MessageActionRow().addComponents(
-        //   new MessageButton()
-        //     .setCustomId('attack')
-        //     .setLabel('Attack!')
-        //     .setStyle('DANGER'),
+        // const victims = playerArr
+        //   .filter((player: Player) => !player.timedOut && !player.dead)
+        //   .map((player: Player) => ({
+        //     label: `Attack ${player.username}`,
+        //     description: '',
+        //     value: player.discordId,
+        //   }))
+        // components.push(
+        //   new MessageActionRow().addComponents(
+        //     new MessageButton()
+        //       .setCustomId('send-select')
+        //       .setLabel('Select a victim to attack')
+        //       .setStyle('DANGER')
         //   new MessageButton()
         //     .setCustomId('random-attack')
         //     .setLabel('Blindly attack!')
         //     .setStyle('DANGER')
         // ),
-        new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
-            .setCustomId('select-victim')
-            .setPlaceholder('Select a victim to attack')
-            .addOptions(victims)));
+        // new MessageActionRow().addComponents(
+        //   new MessageSelectMenu()
+        //     .setCustomId('select-victim')
+        //     .setPlaceholder('Select a victim to attack')
+        //     .addOptions(victims)
+        // )
+        // )
     }
     if (type === embeds_1.default.countDown) {
         const imagePath = `src/images/${options === null || options === void 0 ? void 0 : options.countDown}.png`;
