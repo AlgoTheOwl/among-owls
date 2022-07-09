@@ -26,13 +26,13 @@ module.exports = {
 
     await interaction.deferReply()
 
-    const { assets } = (await collections.users.findOne({
+    const { assets, ...userData } = (await collections.users.findOne({
       discordId: user.id,
     })) as WithId<User>
 
     const selectMenu = new MessageSelectMenu()
       .setCustomId('register-player')
-      .setPlaceholder('Select an AOWL to attack')
+      .setPlaceholder('See your AOWL stats')
 
     const options = assets
       .map((asset: Asset, i: number) => {
@@ -54,17 +54,26 @@ module.exports = {
       selectMenu.addOptions(options)
     }
 
-    // const fields =
-
+    const fields = []
+    let thumbNail
     // picture of first asset
-    // discord username
-    // field for hoot owned
-    // field for games won
-    // time sent
-    // possible collage of all nfts owned
+    const firstAsset = assets[0]?.assetUrl
+    if (firstAsset) {
+      thumbNail = firstAsset
+    }
 
+    const hoot = userData.hoot ? userData.hoot.toString() : '0'
+    const yaoWins = userData.yaoWins ? userData.yaoWins.toString() : '0'
+    // discord username
+    fields.push(
+      { name: 'Username', value: user.username },
+      { name: 'Hoot owned', value: hoot },
+      { name: 'Games won', value: yaoWins }
+    )
+
+    console.log('fields', fields)
     const row = new MessageActionRow().addComponents(selectMenu)
-    const embed = doEmbed(embeds.profile, {}) as MessageEmbed
+    const embed = doEmbed(embeds.profile, { thumbNail, fields }) as MessageEmbed
 
     await interaction.editReply({
       content: 'Choose your AOWL',

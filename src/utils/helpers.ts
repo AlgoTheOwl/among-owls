@@ -219,3 +219,10 @@ export const getUsersFromPlayers = async (players: Player[]) => {
   })
   return users
 }
+
+export const isIpfs = (url: string): boolean => url?.slice(0, 4) === 'ipfs'
+
+export const normalizeIpfsUrl = (url: string) => {
+  const ifpsHash = url.slice(7)
+  return `${ipfsGateway}${ifpsHash}`
+}

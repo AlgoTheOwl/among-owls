@@ -1,4 +1,15 @@
 "use strict";
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -14,17 +25,18 @@ module.exports = {
         .setName('profile')
         .setDescription('view your profile'),
     async execute(interaction) {
+        var _a;
         if (!interaction.isCommand())
             return;
         const { maxAssets } = settings_1.default;
         const { user } = interaction;
         await interaction.deferReply();
-        const { assets } = (await database_service_1.collections.users.findOne({
+        const _b = (await database_service_1.collections.users.findOne({
             discordId: user.id,
-        }));
+        })), { assets } = _b, userData = __rest(_b, ["assets"]);
         const selectMenu = new discord_js_1.MessageSelectMenu()
             .setCustomId('register-player')
-            .setPlaceholder('Select an AOWL to attack');
+            .setPlaceholder('See your AOWL stats');
         const options = assets
             .map((asset, i) => {
             var _a;
@@ -40,15 +52,20 @@ module.exports = {
         if (options.length) {
             selectMenu.addOptions(options);
         }
-        // const fields =
+        const fields = [];
+        let thumbNail;
         // picture of first asset
+        const firstAsset = (_a = assets[0]) === null || _a === void 0 ? void 0 : _a.assetUrl;
+        if (firstAsset) {
+            thumbNail = firstAsset;
+        }
+        const hoot = userData.hoot ? userData.hoot.toString() : '0';
+        const yaoWins = userData.yaoWins ? userData.yaoWins.toString() : '0';
         // discord username
-        // field for hoot owned
-        // field for games won
-        // time sent
-        // possible collage of all nfts owned
+        fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot }, { name: 'Games won', value: yaoWins });
+        console.log('fields', fields);
         const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
-        const embed = (0, embeds_2.default)(embeds_1.default.profile, {});
+        const embed = (0, embeds_2.default)(embeds_1.default.profile, { thumbNail, fields });
         await interaction.editReply({
             content: 'Choose your AOWL',
             components: [row],

@@ -13,6 +13,12 @@ module.exports = {
         const victimId = idArr[0];
         const player = __1.game.players[user.id];
         const victim = __1.game.players[victimId];
+        if (!__1.game.active || __1.game.waitingRoom) {
+            return interaction.reply({
+                content: 'There is no active game to select a victim',
+                ephemeral: true,
+            });
+        }
         if (player && victim) {
             if (victimId === 'random') {
                 player.victimId = undefined;

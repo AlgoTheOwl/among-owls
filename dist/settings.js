@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
-    hp: 420,
+    hp: 10,
     // Score modifier
     damagePerAowl: 5,
     // File where player assets are stored
