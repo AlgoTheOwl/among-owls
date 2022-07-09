@@ -23,8 +23,25 @@ const handleWin = async (player, winByTimeout, game) => {
     const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1;
     const updatedHoot = (winningUser.hoot += hootOnWin);
     await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { yaoWins: updatedScore, hoot: updatedHoot } });
+    const playerArr = Object.values(game.players);
     (0, helpers_1.resetGame)();
     (0, helpers_1.emptyDir)(imageDir);
+    setAssetTimeout(playerArr);
     return game.embed.edit((0, embeds_1.default)(embeds_2.default.win, { winByTimeout, player }));
 };
 exports.handleWin = handleWin;
+const setAssetTimeout = async (players) => {
+    // For each player set Asset timeout on user
+    await (0, helpers_1.asyncForEach)(players, async (player) => {
+        const { userId, asset } = player;
+        const { assetId } = asset;
+        const { assetCooldown } = settings_1.default;
+        const coolDownDoneDate = Date.now() + assetCooldown * 60000;
+        const user = await database_service_1.collections.users.findOne({ _id: userId });
+        await database_service_1.collections.users.findOneAndUpdate({ _id: userId }, {
+            $set: {
+                coolDowns: Object.assign(Object.assign({}, user === null || user === void 0 ? void 0 : user.coolDowns), { [assetId]: coolDownDoneDate }),
+            },
+        });
+    });
+};

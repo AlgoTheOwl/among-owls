@@ -5,7 +5,7 @@ import {
   MessageActionRow,
   MessageSelectMenu,
 } from 'discord.js'
-import { resetGame, wait } from '../utils/helpers'
+import { asyncForEach, resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { game } from '..'
@@ -13,6 +13,7 @@ import embedTypes from '../constants/embeds'
 import settings from '../settings'
 import runGame from '../commandUtils/runGame'
 import Player from '../models/player'
+import { collections } from '../database/database.service'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -72,15 +73,15 @@ module.exports = {
     }
 
     if (!game.stopped) {
-      // send embed here
+      // Send Hero and Leaderboard
       interaction.editReply({ files: [file] })
-      // start game
-      game.active = true
       game.embed.edit(doEmbed(embedTypes.activeGame))
+      game.active = true
 
       // Do Game
       runGame(interaction)
 
+      // Send Victim Select Menu
       const playerArr = Object.values(game.players)
 
       const victims = playerArr
@@ -108,20 +109,6 @@ module.exports = {
       interaction.followUp({
         components: [victimSelectMenu],
       })
-
-      // Add user cooldown
-      // const playerArr = Object.values(game.players)
-      // try {
-      //   asyncForEach(playerArr, async (player: Player) => {
-      //     const coolDownDoneDate = Date.now() + userCooldown * 60000
-      //     await collections.users.findOneAndUpdate(
-      //       { _id: player.userId },
-      //       { $set: { coolDownDone: coolDownDoneDate } }
-      //     )
-      //   })
-      // } catch (error) {
-      //   console.log(error)
-      // }
     }
   },
 }

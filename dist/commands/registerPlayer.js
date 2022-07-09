@@ -21,15 +21,24 @@ module.exports = {
             if (!index_1.game.waitingRoom)
                 return;
             const { values, user } = interaction;
+            const assetId = values[0];
             const { username, id } = user;
             const { imageDir, hp, messageDeleteInterval } = settings_1.default;
-            await interaction.deferReply();
-            const { assets, address, _id } = (await database_service_1.collections.users.findOne({
+            await interaction.deferReply({ ephemeral: true });
+            const { assets, address, _id, coolDowns } = (await database_service_1.collections.users.findOne({
                 discordId: user.id,
             }));
-            const asset = assets.find((asset) => asset.assetId === Number(values[0]));
+            const asset = assets.find((asset) => asset.assetId === Number(assetId));
             if (!asset) {
                 return;
+            }
+            const coolDown = coolDowns ? coolDowns[assetId] : null;
+            if (coolDown && coolDown > Date.now()) {
+                const minutesLeft = Math.floor((coolDown - Date.now()) / 60000);
+                const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes';
+                return interaction.editReply({
+                    content: `Please wait ${minutesLeft} ${minuteWord} before playing ${asset.assetName} again`,
+                });
             }
             let localPath;
             try {
@@ -45,7 +54,6 @@ module.exports = {
             index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, assets.length, 0);
             await interaction.editReply(`${asset.assetName} has entered the game`);
             await (0, helpers_1.wait)(messageDeleteInterval);
-            await interaction.deleteReply();
         }
         catch (error) {
             console.log(error);

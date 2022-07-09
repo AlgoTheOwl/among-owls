@@ -23,14 +23,11 @@ exports.default = {
     // Max amount of players allowed to join
     maxCapacity: 4,
     // Number of minutes a user will have to wait to join a game after participating once
-    userCooldown: 30,
+    assetCooldown: 30,
     // Max assets the game will capture
     maxAssets: 20,
     // Settings for native asa
     hootSettings: {
         hootOnWin: 20,
-    },
-    autoGameSettings: {
-        roundIntervalLength: 3000,
     },
 };

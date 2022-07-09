@@ -57,13 +57,13 @@ module.exports = {
             countDown--;
         }
         if (!__1.game.stopped) {
-            // send embed here
+            // Send Hero and Leaderboard
             interaction.editReply({ files: [file] });
-            // start game
-            __1.game.active = true;
             __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
+            __1.game.active = true;
             // Do Game
             (0, runGame_1.default)(interaction);
+            // Send Victim Select Menu
             const playerArr = Object.values(__1.game.players);
             const victims = playerArr
                 .filter((player) => !player.timedOut && !player.dead)
@@ -86,19 +86,6 @@ module.exports = {
             interaction.followUp({
                 components: [victimSelectMenu],
             });
-            // Add user cooldown
-            // const playerArr = Object.values(game.players)
-            // try {
-            //   asyncForEach(playerArr, async (player: Player) => {
-            //     const coolDownDoneDate = Date.now() + userCooldown * 60000
-            //     await collections.users.findOneAndUpdate(
-            //       { _id: player.userId },
-            //       { $set: { coolDownDone: coolDownDoneDate } }
-            //     )
-            //   })
-            // } catch (error) {
-            //   console.log(error)
-            // }
         }
     },
 };

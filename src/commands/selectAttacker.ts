@@ -43,14 +43,6 @@ module.exports = {
         })
       }
 
-      if (data?.coolDownDone && data.coolDownDone > Date.now()) {
-        const minutesLeft = Math.floor((data.coolDownDone - Date.now()) / 60000)
-        const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes'
-        return interaction.editReply({
-          content: `Please wait ${minutesLeft} ${minuteWord} before playing again`,
-        })
-      }
-
       const options = data.assets
         .map((asset: Asset, i: number) => {
           if (i < maxAssets) {

@@ -4,15 +4,13 @@ import axios from 'axios'
 import User from '../models/user'
 import { Interaction } from 'discord.js'
 import Player from '../models/player'
-import { collections } from '../database/database.service'
-import { WithId } from 'mongodb'
 import doEmbed from '../embeds'
-import { intervals } from '..'
-import Game from '../models/game'
 import Asset from '../models/asset'
 import settings from '../settings'
 import { game } from '..'
 import embeds from '../constants/embeds'
+import { collections } from '../database/database.service'
+import { WithId } from 'mongodb'
 
 const { damagePerAowl, hp } = settings
 
@@ -189,14 +187,10 @@ export const resetGame = (stopped: boolean = false): void => {
   game.win = false
   game.waitingRoom = false
   game.attackEngaged = false
+  game.stopped = false
 
   if (stopped) {
     game.stopped = true
-
-    setTimeout(() => {
-      game.stopped = false
-    }, 3000)
-
     stopped && game?.embed?.edit(doEmbed(embeds.stopped))
   }
 }
@@ -213,4 +207,15 @@ export const doDamage = (
   } else {
     return Math.floor(Math.random() * (hp / 5))
   }
+}
+
+export const getUsersFromPlayers = async (players: Player[]) => {
+  const users: User[] = []
+  await asyncForEach(players, async (player: Player) => {
+    const user = (await collections.users.findOne({
+      discordId: player.discordId,
+    })) as WithId<User>
+    users.push(user)
+  })
+  return users
 }

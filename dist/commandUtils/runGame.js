@@ -15,8 +15,7 @@ async function runGame(interaction) {
     if (!interaction.isCommand())
         return;
     const { players } = __1.game;
-    const { autoGameSettings, deathDeleteInterval } = settings_1.default;
-    const { roundIntervalLength } = autoGameSettings;
+    const { deathDeleteInterval } = settings_1.default;
     const playerArr = Object.values(players);
     let isWin = false;
     let attackField;
@@ -26,6 +25,7 @@ async function runGame(interaction) {
         __1.game.active &&
         playerArr.length > 1) {
         await (0, helpers_1.asyncForEach)(playerArr, async (player) => {
+            await (0, helpers_1.wait)(2000);
             const { discordId } = player;
             const attacker = __1.game.players[discordId];
             let victim;
@@ -73,7 +73,6 @@ async function runGame(interaction) {
                     attackField,
                 ].filter(Boolean);
                 __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
-                await (0, helpers_1.wait)(2000);
             }
         });
     }

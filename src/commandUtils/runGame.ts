@@ -1,4 +1,4 @@
-import { game, intervals } from '..'
+import { game } from '..'
 import {
   asyncForEach,
   doDamage,
@@ -19,8 +19,7 @@ export default async function runGame(interaction: Interaction) {
   if (!interaction.isCommand()) return
 
   const { players } = game
-  const { autoGameSettings, deathDeleteInterval } = settings
-  const { roundIntervalLength } = autoGameSettings
+  const { deathDeleteInterval } = settings
   const playerArr = Object.values(players)
 
   let isWin = false
@@ -34,6 +33,7 @@ export default async function runGame(interaction: Interaction) {
     playerArr.length > 1
   ) {
     await asyncForEach(playerArr, async (player: Player) => {
+      await wait(2000)
       const { discordId } = player
       const attacker = game.players[discordId] as Player
       let victim
@@ -94,7 +94,6 @@ export default async function runGame(interaction: Interaction) {
         ].filter(Boolean)
 
         game.embed.edit(doEmbed(embeds.activeGame, { fields }))
-        await wait(2000)
       }
     })
   }
