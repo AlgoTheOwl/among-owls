@@ -31,7 +31,7 @@ module.exports = {
     })) as WithId<User>
 
     const selectMenu = new MessageSelectMenu()
-      .setCustomId('register-player')
+      .setCustomId('asset-profile')
       .setPlaceholder('See your AOWL stats')
 
     const options = assets
@@ -71,7 +71,6 @@ module.exports = {
       { name: 'Games won', value: yaoWins }
     )
 
-    console.log('fields', fields)
     const row = new MessageActionRow().addComponents(selectMenu)
     const embed = doEmbed(embeds.profile, { thumbNail, fields }) as MessageEmbed
 

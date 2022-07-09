@@ -107,14 +107,13 @@ function doEmbed(type, options) {
     if (options && type === embeds_1.default.win) {
         const { player, winByTimeout } = options;
         const asserUrl = player.asset.assetUrl;
-        const ipfs = (0, helpers_1.isIpfs)(player.asset.assetUrl);
         data = {
             title: 'WINNER!!!',
             description: `${player === null || player === void 0 ? void 0 : player.username}'s ${player === null || player === void 0 ? void 0 : player.asset.assetName} ${winByTimeout
                 ? 'won by default - all other players timed out!'
                 : `destroyed the competition`}`,
             color: 'DARK_AQUA',
-            image: ipfs ? (0, helpers_1.normalizeIpfsUrl)(asserUrl) : player === null || player === void 0 ? void 0 : player.asset.assetUrl,
+            image: (0, helpers_1.normalizeIpfsUrl)(asserUrl),
         };
     }
     if (options && type === embeds_1.default.leaderBoard) {
@@ -140,6 +139,16 @@ function doEmbed(type, options) {
             title: 'Your Profile',
             description: '',
         };
+    }
+    if (type === embeds_1.default.assetProfile) {
+        const { assetUrl, fields, assetName } = options;
+        data = {
+            title: assetName,
+            description: `Your lil' ripper`,
+            thumbNail: (0, helpers_1.normalizeIpfsUrl)(assetUrl),
+            fields,
+        };
+        console.log(data);
     }
     let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();

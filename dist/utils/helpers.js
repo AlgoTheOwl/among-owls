@@ -193,7 +193,12 @@ exports.getUsersFromPlayers = getUsersFromPlayers;
 const isIpfs = (url) => (url === null || url === void 0 ? void 0 : url.slice(0, 4)) === 'ipfs';
 exports.isIpfs = isIpfs;
 const normalizeIpfsUrl = (url) => {
-    const ifpsHash = url.slice(7);
-    return `${ipfsGateway}${ifpsHash}`;
+    if ((0, exports.isIpfs)(url)) {
+        const ifpsHash = url.slice(7);
+        return `${ipfsGateway}${ifpsHash}`;
+    }
+    else {
+        return url;
+    }
 };
 exports.normalizeIpfsUrl = normalizeIpfsUrl;

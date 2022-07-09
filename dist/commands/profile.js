@@ -35,7 +35,7 @@ module.exports = {
             discordId: user.id,
         })), { assets } = _b, userData = __rest(_b, ["assets"]);
         const selectMenu = new discord_js_1.MessageSelectMenu()
-            .setCustomId('register-player')
+            .setCustomId('asset-profile')
             .setPlaceholder('See your AOWL stats');
         const options = assets
             .map((asset, i) => {
@@ -63,7 +63,6 @@ module.exports = {
         const yaoWins = userData.yaoWins ? userData.yaoWins.toString() : '0';
         // discord username
         fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot }, { name: 'Games won', value: yaoWins });
-        console.log('fields', fields);
         const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
         const embed = (0, embeds_2.default)(embeds_1.default.profile, { thumbNail, fields });
         await interaction.editReply({
