@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.doDamage = exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
+exports.getUsersFromPlayers = exports.doDamage = exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -11,6 +11,7 @@ const embeds_1 = __importDefault(require("../embeds"));
 const settings_1 = __importDefault(require("../settings"));
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
+const database_service_1 = require("../database/database.service");
 const { damagePerAowl, hp } = settings_1.default;
 const wait = async (duration) => {
     await new Promise((res) => {
@@ -160,11 +161,9 @@ const resetGame = (stopped = false) => {
     __1.game.win = false;
     __1.game.waitingRoom = false;
     __1.game.attackEngaged = false;
+    __1.game.stopped = false;
     if (stopped) {
         __1.game.stopped = true;
-        setTimeout(() => {
-            __1.game.stopped = false;
-        }, 3000);
         stopped && ((_a = __1.game === null || __1.game === void 0 ? void 0 : __1.game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped)));
     }
 };
@@ -180,3 +179,14 @@ const doDamage = (player, withMultiplier = false) => {
     }
 };
 exports.doDamage = doDamage;
+const getUsersFromPlayers = async (players) => {
+    const users = [];
+    await (0, exports.asyncForEach)(players, async (player) => {
+        const user = (await database_service_1.collections.users.findOne({
+            discordId: player.discordId,
+        }));
+        users.push(user);
+    });
+    return users;
+};
+exports.getUsersFromPlayers = getUsersFromPlayers;

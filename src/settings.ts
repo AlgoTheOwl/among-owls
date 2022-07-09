@@ -10,13 +10,10 @@ type Settings = {
   waitBeforeTimeoutInterval: number
   minCapacity: number
   maxCapacity: number
-  userCooldown: number
+  assetCooldown: number
   maxAssets: number
   hootSettings: {
     hootOnWin: number
-  }
-  autoGameSettings: {
-    roundIntervalLength: number
   }
 }
 
@@ -43,14 +40,11 @@ export default {
   // Max amount of players allowed to join
   maxCapacity: 4,
   // Number of minutes a user will have to wait to join a game after participating once
-  userCooldown: 30,
+  assetCooldown: 30,
   // Max assets the game will capture
   maxAssets: 20,
   // Settings for native asa
   hootSettings: {
     hootOnWin: 20,
-  },
-  autoGameSettings: {
-    roundIntervalLength: 3000,
   },
 } as Settings
