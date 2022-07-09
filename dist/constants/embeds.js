@@ -10,4 +10,5 @@ exports.default = {
     leaderBoard: 'leaderBoard',
     stopped: 'stopped',
     profile: 'profile',
+    assetProfile: 'assetProfile',
 };

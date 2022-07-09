@@ -16,7 +16,7 @@ export const handleWin = async (
 ) => {
   const { imageDir, hootSettings } = settings
   const { hootOnWin } = hootSettings
-  // handle win
+
   game.active = false
   intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
 
@@ -25,11 +25,10 @@ export const handleWin = async (
     _id: player.userId,
   })) as WithId<User>
 
+  // Update user stats
   const currentHoot = winningUser.hoot ? winningUser.hoot : 0
   const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
   const updatedHoot = currentHoot + hootOnWin
-
-  console.log('updated hoot', updatedHoot)
 
   await collections.users.findOneAndUpdate(
     { _id: player.userId },

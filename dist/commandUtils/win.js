@@ -13,17 +13,16 @@ const embeds_2 = __importDefault(require("../constants/embeds"));
 const handleWin = async (player, winByTimeout, game) => {
     const { imageDir, hootSettings } = settings_1.default;
     const { hootOnWin } = hootSettings;
-    // handle win
     game.active = false;
     __1.intervals.timeoutInterval && clearInterval(__1.intervals.timeoutInterval);
     // Increment score and hoot of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
         _id: player.userId,
     }));
+    // Update user stats
     const currentHoot = winningUser.hoot ? winningUser.hoot : 0;
     const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1;
     const updatedHoot = currentHoot + hootOnWin;
-    console.log('updated hoot', updatedHoot);
     await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, { $set: { yaoWins: updatedScore, hoot: updatedHoot } });
     const playerArr = Object.values(game.players);
     (0, helpers_1.resetGame)();

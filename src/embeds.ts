@@ -134,7 +134,7 @@ export default function doEmbed(
   if (options && type === embeds.win) {
     const { player, winByTimeout } = options
     const asserUrl = player.asset.assetUrl
-    const ipfs = isIpfs(player.asset.assetUrl)
+
     data = {
       title: 'WINNER!!!',
       description: `${player?.username}'s ${player?.asset.assetName} ${
@@ -143,7 +143,7 @@ export default function doEmbed(
           : `destroyed the competition`
       }`,
       color: 'DARK_AQUA',
-      image: ipfs ? normalizeIpfsUrl(asserUrl) : player?.asset.assetUrl,
+      image: normalizeIpfsUrl(asserUrl),
     }
   }
 
@@ -173,6 +173,18 @@ export default function doEmbed(
       title: 'Your Profile',
       description: '',
     }
+  }
+
+  if (type === embeds.assetProfile) {
+    const { assetUrl, fields, assetName } = options
+
+    data = {
+      title: assetName,
+      description: `Your lil' ripper`,
+      thumbNail: normalizeIpfsUrl(assetUrl),
+      fields,
+    }
+    console.log(data)
   }
 
   let {
