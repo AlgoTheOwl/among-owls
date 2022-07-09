@@ -19,6 +19,7 @@ exports.emojis = {};
 exports.playerTimeouts = {};
 exports.intervals = {
     timeoutInterval: null,
+    autoGameInterval: null,
     playerTimeouts: {},
 };
 const client = new discord_js_1.Client({

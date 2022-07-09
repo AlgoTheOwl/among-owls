@@ -7,6 +7,7 @@ export default class User {
     public discordId: string,
     public address: string,
     public assets: Asset[], // assetId
+    public hoot: number,
     public _id?: ObjectId,
     public yaoWins?: number,
     public coolDownDone?: number // timestamp

@@ -13,11 +13,12 @@ const defaultEmbedValues = {
     description: '💀 Who will survive? 💀',
     color: 'DARK_AQUA',
     image: 'attachment://main.gif',
-    thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+    // thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
     footer: {
         text: 'A HootGang Production',
         iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
     },
+    rawEmbed: false,
 };
 function doEmbed(type, options) {
     let data = {};
@@ -54,29 +55,38 @@ function doEmbed(type, options) {
             description: '💀 Who will survive? 💀',
             color: 'RANDOM',
             image: undefined,
-            thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+            // thumbNail:
+            //   'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
             fields,
             footer: {
                 text: 'A HootGang Production',
             },
         };
-        const victims = playerArr
-            .filter((player) => !player.timedOut && !player.dead)
-            .map((player) => ({
-            label: `Attack ${player.username}`,
-            description: '',
-            value: player.discordId,
-        }));
-        components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
-            .setCustomId('attack')
-            .setLabel('Attack!')
-            .setStyle('DANGER'), new discord_js_1.MessageButton()
-            .setCustomId('random-attack')
-            .setLabel('Blindly attack!')
-            .setStyle('DANGER')), new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageSelectMenu()
-            .setCustomId('select-victim')
-            .setPlaceholder('Select a victim to attack')
-            .addOptions(victims)));
+        // const victims = playerArr
+        //   .filter((player: Player) => !player.timedOut && !player.dead)
+        //   .map((player: Player) => ({
+        //     label: `Attack ${player.username}`,
+        //     description: '',
+        //     value: player.discordId,
+        //   }))
+        // components.push(
+        //   new MessageActionRow().addComponents(
+        //     new MessageButton()
+        //       .setCustomId('send-select')
+        //       .setLabel('Select a victim to attack')
+        //       .setStyle('DANGER')
+        //   new MessageButton()
+        //     .setCustomId('random-attack')
+        //     .setLabel('Blindly attack!')
+        //     .setStyle('DANGER')
+        // ),
+        // new MessageActionRow().addComponents(
+        //   new MessageSelectMenu()
+        //     .setCustomId('select-victim')
+        //     .setPlaceholder('Select a victim to attack')
+        //     .addOptions(victims)
+        // )
+        // )
     }
     if (type === embeds_1.default.countDown) {
         const imagePath = `src/images/${options === null || options === void 0 ? void 0 : options.countDown}.png`;
@@ -119,7 +129,12 @@ function doEmbed(type, options) {
             description: 'Game has been stopped',
         };
     }
-    let { title, description, color, image, thumbNail, fields, footer, files } = Object.assign(Object.assign({}, defaultEmbedValues), data);
+    if (type === embeds_1.default.profile) {
+        data = {
+            rawEmbed: true,
+        };
+    }
+    let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();
     if ((image === null || image === void 0 ? void 0 : image.slice(0, 4)) === 'ipfs') {
         const ifpsHash = image.slice(7);
@@ -132,6 +147,9 @@ function doEmbed(type, options) {
     thumbNail && embed.setThumbnail(thumbNail);
     (fields === null || fields === void 0 ? void 0 : fields.length) && embed.addFields(fields);
     footer && embed.setFooter(footer);
+    if (rawEmbed) {
+        return embed;
+    }
     return {
         embeds: [embed],
         fetchReply: true,
