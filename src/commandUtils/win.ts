@@ -20,13 +20,16 @@ export const handleWin = async (
   game.active = false
   intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
 
-  // Increment score of winning player
+  // Increment score and hoot of winning player
   const winningUser = (await collections.users.findOne({
     _id: player.userId,
   })) as WithId<User>
 
+  const currentHoot = winningUser.hoot ? winningUser.hoot : 0
   const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
-  const updatedHoot = (winningUser.hoot += hootOnWin)
+  const updatedHoot = currentHoot + hootOnWin
+
+  console.log('updated hoot', updatedHoot)
 
   await collections.users.findOneAndUpdate(
     { _id: player.userId },

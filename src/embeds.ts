@@ -12,7 +12,7 @@ import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
 import Player from './models/player'
 import embeds from './constants/embeds'
-import { mapPlayersForEmbed } from './utils/helpers'
+import { isIpfs, mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
 
 const ipfsGateway = process.env.IPFS_GATEWAY
 
@@ -31,7 +31,7 @@ const defaultEmbedValues: EmbedData = {
 
 export default function doEmbed(
   type: string,
-  options?: EmbedData
+  options?: any
 ): string | MessagePayload | InteractionReplyOptions | MessageEmbed {
   let data: EmbedData = {}
   let components = []
@@ -133,6 +133,8 @@ export default function doEmbed(
 
   if (options && type === embeds.win) {
     const { player, winByTimeout } = options
+    const asserUrl = player.asset.assetUrl
+    const ipfs = isIpfs(player.asset.assetUrl)
     data = {
       title: 'WINNER!!!',
       description: `${player?.username}'s ${player?.asset.assetName} ${
@@ -141,7 +143,7 @@ export default function doEmbed(
           : `destroyed the competition`
       }`,
       color: 'DARK_AQUA',
-      image: player?.asset.assetUrl,
+      image: ipfs ? normalizeIpfsUrl(asserUrl) : player?.asset.assetUrl,
     }
   }
 
@@ -163,8 +165,13 @@ export default function doEmbed(
   }
 
   if (type === embeds.profile) {
+    const { thumbNail, fields } = options
     data = {
       rawEmbed: true,
+      thumbNail,
+      fields,
+      title: 'Your Profile',
+      description: '',
     }
   }
 
@@ -185,9 +192,11 @@ export default function doEmbed(
 
   const embed = new MessageEmbed()
 
-  if (image?.slice(0, 4) === 'ipfs') {
-    const ifpsHash = image.slice(7)
-    image = `${ipfsGateway}${ifpsHash}`
+  const ipfs = thumbNail ? isIpfs(thumbNail) : false
+
+  if (ipfs && thumbNail) {
+    console.log('normalizing image')
+    thumbNail = normalizeIpfsUrl(thumbNail)
   }
 
   title && embed.setTitle(title)

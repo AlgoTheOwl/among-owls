@@ -106,13 +106,15 @@ function doEmbed(type, options) {
     }
     if (options && type === embeds_1.default.win) {
         const { player, winByTimeout } = options;
+        const asserUrl = player.asset.assetUrl;
+        const ipfs = (0, helpers_1.isIpfs)(player.asset.assetUrl);
         data = {
             title: 'WINNER!!!',
             description: `${player === null || player === void 0 ? void 0 : player.username}'s ${player === null || player === void 0 ? void 0 : player.asset.assetName} ${winByTimeout
                 ? 'won by default - all other players timed out!'
                 : `destroyed the competition`}`,
             color: 'DARK_AQUA',
-            image: player === null || player === void 0 ? void 0 : player.asset.assetUrl,
+            image: ipfs ? (0, helpers_1.normalizeIpfsUrl)(asserUrl) : player === null || player === void 0 ? void 0 : player.asset.assetUrl,
         };
     }
     if (options && type === embeds_1.default.leaderBoard) {
@@ -130,15 +132,21 @@ function doEmbed(type, options) {
         };
     }
     if (type === embeds_1.default.profile) {
+        const { thumbNail, fields } = options;
         data = {
             rawEmbed: true,
+            thumbNail,
+            fields,
+            title: 'Your Profile',
+            description: '',
         };
     }
     let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();
-    if ((image === null || image === void 0 ? void 0 : image.slice(0, 4)) === 'ipfs') {
-        const ifpsHash = image.slice(7);
-        image = `${ipfsGateway}${ifpsHash}`;
+    const ipfs = thumbNail ? (0, helpers_1.isIpfs)(thumbNail) : false;
+    if (ipfs && thumbNail) {
+        console.log('normalizing image');
+        thumbNail = (0, helpers_1.normalizeIpfsUrl)(thumbNail);
     }
     title && embed.setTitle(title);
     description && embed.setDescription(description);
