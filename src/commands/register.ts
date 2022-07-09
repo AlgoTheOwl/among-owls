@@ -99,7 +99,7 @@ export const processRegistration = async (
 
     // If user doesn't exist, add to db and grab instance
     if (!user) {
-      const userEntry = new User(username, discordId, address, nftsOwned)
+      const userEntry = new User(username, discordId, address, nftsOwned, 0)
       const { acknowledged, insertedId } = await collections.users?.insertOne(
         userEntry
       )

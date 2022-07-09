@@ -5,6 +5,8 @@ import {
   MessageButton,
   ColorResolvable,
   MessageAttachment,
+  MessagePayload,
+  InteractionReplyOptions,
 } from 'discord.js'
 import { EmbedData, EmbedReply } from './types/game'
 import { game } from '.'
@@ -19,14 +21,18 @@ const defaultEmbedValues: EmbedData = {
   description: '💀 Who will survive? 💀',
   color: 'DARK_AQUA',
   image: 'attachment://main.gif',
-  thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+  // thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   footer: {
     text: 'A HootGang Production',
     iconUrl: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   },
+  rawEmbed: false,
 }
 
-export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
+export default function doEmbed(
+  type: string,
+  options?: EmbedData
+): string | MessagePayload | InteractionReplyOptions | MessageEmbed {
   let data: EmbedData = {}
   let components = []
   const playerArr = Object.values(game.players)
@@ -70,40 +76,40 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
       description: '💀 Who will survive? 💀',
       color: 'RANDOM',
       image: undefined,
-      thumbNail:
-        'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
+      // thumbNail:
+      //   'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
       fields,
       footer: {
         text: 'A HootGang Production',
       },
     }
 
-    const victims = playerArr
-      .filter((player: Player) => !player.timedOut && !player.dead)
-      .map((player: Player) => ({
-        label: `Attack ${player.username}`,
-        description: '',
-        value: player.discordId,
-      }))
+    // const victims = playerArr
+    //   .filter((player: Player) => !player.timedOut && !player.dead)
+    //   .map((player: Player) => ({
+    //     label: `Attack ${player.username}`,
+    //     description: '',
+    //     value: player.discordId,
+    //   }))
 
-    components.push(
-      new MessageActionRow().addComponents(
-        new MessageButton()
-          .setCustomId('attack')
-          .setLabel('Attack!')
-          .setStyle('DANGER'),
-        new MessageButton()
-          .setCustomId('random-attack')
-          .setLabel('Blindly attack!')
-          .setStyle('DANGER')
-      ),
-      new MessageActionRow().addComponents(
-        new MessageSelectMenu()
-          .setCustomId('select-victim')
-          .setPlaceholder('Select a victim to attack')
-          .addOptions(victims)
-      )
-    )
+    // components.push(
+    //   new MessageActionRow().addComponents(
+    //     new MessageButton()
+    //       .setCustomId('send-select')
+    //       .setLabel('Select a victim to attack')
+    //       .setStyle('DANGER')
+    //   new MessageButton()
+    //     .setCustomId('random-attack')
+    //     .setLabel('Blindly attack!')
+    //     .setStyle('DANGER')
+    // ),
+    // new MessageActionRow().addComponents(
+    //   new MessageSelectMenu()
+    //     .setCustomId('select-victim')
+    //     .setPlaceholder('Select a victim to attack')
+    //     .addOptions(victims)
+    // )
+    // )
   }
 
   if (type === embeds.countDown) {
@@ -156,7 +162,23 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
     }
   }
 
-  let { title, description, color, image, thumbNail, fields, footer, files } = {
+  if (type === embeds.profile) {
+    data = {
+      rawEmbed: true,
+    }
+  }
+
+  let {
+    title,
+    description,
+    color,
+    image,
+    thumbNail,
+    fields,
+    footer,
+    files,
+    rawEmbed,
+  } = {
     ...defaultEmbedValues,
     ...data,
   }
@@ -175,6 +197,10 @@ export default function doEmbed(type: string, options?: EmbedData): EmbedReply {
   thumbNail && embed.setThumbnail(thumbNail)
   fields?.length && embed.addFields(fields)
   footer && embed.setFooter(footer)
+
+  if (rawEmbed) {
+    return embed
+  }
 
   return {
     embeds: [embed],

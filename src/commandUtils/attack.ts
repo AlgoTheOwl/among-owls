@@ -4,16 +4,16 @@ import doEmbed from '../embeds'
 import {
   wait,
   mapPlayersForEmbed,
-  handleWin,
   randomNumber,
   getWinningPlayer,
   getPlayerArray,
+  doDamage,
 } from '../utils/helpers'
+import { handleWin } from './win'
 import { game } from '..'
 import settings from '../settings'
 import { playerTimeouts } from '..'
 import { intervals } from '..'
-import Player from '../models/player'
 import embeds from '../constants/embeds'
 
 const {
@@ -27,11 +27,11 @@ const {
 } = settings
 
 const attackStrings = [
-  'HOOT, HOOT! {assetName} slashes at {victimName} for {damage} damage',
-  'HI-YAH!. {assetName} karate chops at {victimName} for {damage} damage',
-  'SCREEEECH!. {assetName} chucks ninja stars at {victimName} for {damage} damage',
-  'HMPH!. {assetName} throws a spear at {victimName} for {damage} damage',
-  'SL-SL-SL-IIICE!. {assetName} slices and dices you {victimName} for {damage} damage',
+  'HOOT, HOOT! {assetName} slashes at\n {victimName} for {damage} damage',
+  'HI-YAH!. {assetName} karate chops at\n {victimName} for {damage} damage',
+  'SCREEEECH!. {assetName} chucks ninja\n stars at {victimName} for {damage} damage',
+  'HMPH!. {assetName} throws a spear at\n {victimName} for {damage} damage',
+  'SL-SL-SL-IIICE!. {assetName} slices and\n dices you {victimName} for {damage} damage',
 ]
 
 const errorMessages = {
@@ -162,7 +162,7 @@ export const attack = async (
   await game.embed.edit(doEmbed(embeds.activeGame, { fields }))
 }
 
-const getAttackString = (
+export const getAttackString = (
   assetName: string,
   victimName: string,
   damage: number
@@ -244,14 +244,7 @@ const doPlayerTimeout = async (id: string): Promise<void> => {
   }, kickPlayerTimeout)
 }
 
-const doDamage = (player: Player): number => {
-  const { assetMultiplier } = player
-  const multiplierDamage =
-    (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl
-  return Math.floor(Math.random() * (hp / 10)) + multiplierDamage
-}
-
-const getRandomVictimId = (attackerId: string): string => {
+export const getRandomVictimId = (attackerId: string): string => {
   const filteredPlayerArray = Object.values(game.players).filter(
     (player) =>
       player?.discordId !== attackerId && !player.timedOut && !player.dead

@@ -79,7 +79,7 @@ const processRegistration = async (username, discordId, address) => {
         }
         // If user doesn't exist, add to db and grab instance
         if (!user) {
-            const userEntry = new user_1.default(username, discordId, address, nftsOwned);
+            const userEntry = new user_1.default(username, discordId, address, nftsOwned, 0);
             const { acknowledged, insertedId } = await ((_b = database_service_1.collections.users) === null || _b === void 0 ? void 0 : _b.insertOne(userEntry));
             if (acknowledged) {
                 user = (await ((_c = database_service_1.collections.users) === null || _c === void 0 ? void 0 : _c.findOne({

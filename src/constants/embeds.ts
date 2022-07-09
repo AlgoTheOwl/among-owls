@@ -7,4 +7,5 @@ export default {
   win: 'win',
   leaderBoard: 'leaderBoard',
   stopped: 'stopped',
+  profile: 'profile',
 }

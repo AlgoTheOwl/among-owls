@@ -1,9 +1,16 @@
-import { ButtonInteraction, Interaction, MessageAttachment } from 'discord.js'
+import {
+  ButtonInteraction,
+  Interaction,
+  InteractionReplyOptions,
+  InteractionResponseType,
+  MessageAttachment,
+} from 'discord.js'
 import { resetGame, confirmRole, wait } from '../utils/helpers'
 import { game } from '..'
 import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
 import settings from '../settings'
+import runGame from './runGame'
 
 const roleId = process.env.ADMIN_ID
 
@@ -48,17 +55,14 @@ export default async function start(
   game.waitingRoom = true
   let playerCount = 0
 
-  game.embed = await interaction.followUp(doEmbed(embeds.waitingRoom))
+  game.embed = await interaction.followUp(
+    doEmbed(embeds.waitingRoom) as InteractionReplyOptions
+  )
 
   while (playerCount < capacity) {
-    try {
-      await wait(2000)
-      playerCount = Object.values(game.players).length
-      await game.embed.edit(doEmbed(embeds.waitingRoom))
-    } catch (error) {
-      // @ts-ignore
-      console.log('ERROR', error)
-    }
+    await wait(2000)
+    playerCount = Object.values(game.players).length
+    await game.embed.edit(doEmbed(embeds.waitingRoom))
   }
 
   game.waitingRoom = false
@@ -66,6 +70,7 @@ export default async function start(
   // Do countdown
   let countDown = 5
   while (countDown >= 1) {
+    console.log('running while loop')
     countDown--
     await wait(1000)
     await game.embed.edit(doEmbed(embeds.countDown, { countDown }))
@@ -74,4 +79,5 @@ export default async function start(
   // start game
   game.active = true
   game.embed.edit(doEmbed(embeds.activeGame))
+  runGame(interaction)
 }

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
-    hp: 1000,
+    hp: 420,
     // Score modifier
     damagePerAowl: 5,
     // File where player assets are stored
@@ -13,7 +13,7 @@ exports.default = {
     // Determines how quickly normal messages are deleted
     messageDeleteInterval: 2000,
     // Determines how quickly death gifs are deleted
-    deathDeleteInterval: 8000,
+    deathDeleteInterval: 5000,
     // Determines how long a player has to be inactive before timing out
     timeoutInterval: 30000,
     // Wait this long before kicking timeed out players after the game starts
@@ -21,9 +21,16 @@ exports.default = {
     // Minimum players needed to start a game
     minCapacity: 2,
     // Max amount of players allowed to join
-    maxCapacity: 20,
+    maxCapacity: 4,
     // Number of minutes a user will have to wait to join a game after participating once
     userCooldown: 30,
     // Max assets the game will capture
     maxAssets: 20,
+    // Settings for native asa
+    hootSettings: {
+        hootOnWin: 20,
+    },
+    autoGameSettings: {
+        roundIntervalLength: 3000,
+    },
 };
