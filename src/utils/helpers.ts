@@ -70,12 +70,18 @@ export const mapPlayersForEmbed = (
   playerArr: Player[],
   type: string
 ): { name: string; value: string }[] =>
-  playerArr
-    .filter((player) => !player.timedOut && !player.dead)
-    .map((player) => ({
+  playerArr.map((player) => {
+    let value
+    if (player.dead || player.hp <= 0) {
+      value = '💀'
+    } else {
+      value = type === 'game' ? `HP: ${player.hp}` : `${player.asset.assetName}`
+    }
+    return {
       name: player.username,
-      value: type === 'game' ? `HP: ${player.hp}` : `${player.asset.assetName}`,
-    }))
+      value,
+    }
+  })
 
 export const emptyDir = (dirPath: string) => {
   try {
@@ -203,8 +209,8 @@ export const doDamage = (
     const { assetMultiplier } = player
     const multiplierDamage =
       (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl
-    return Math.floor(Math.random() * (hp / 10)) + multiplierDamage
+    return Math.floor(Math.random() * (hp / 5)) + multiplierDamage
   } else {
-    return Math.floor(Math.random() * (hp / 10))
+    return Math.floor(Math.random() * (hp / 5))
   }
 }

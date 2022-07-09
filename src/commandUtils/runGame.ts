@@ -25,6 +25,7 @@ export default async function runGame(interaction: Interaction) {
 
   let isWin = false
   let attackField: Field | null
+  let handlingDeath = false
 
   while (
     !game.stopped &&
@@ -39,7 +40,7 @@ export default async function runGame(interaction: Interaction) {
       let victimDead = false
 
       // DO DAMAGE
-      if (attacker && !attacker?.timedOut && !attacker?.dead) {
+      if (attacker && !attacker?.timedOut && !attacker?.dead && game.active) {
         if (player.victimId) {
           victim = game.players[player.victimId]
         } else {
@@ -54,7 +55,8 @@ export default async function runGame(interaction: Interaction) {
         }
 
         // HANDLE DEATH
-        if (victimDead && attacker) {
+        if (victimDead && attacker && !handlingDeath) {
+          handlingDeath = true
           const attachment = new MessageAttachment(
             'src/images/death.gif',
             'death.gif'
@@ -64,8 +66,9 @@ export default async function runGame(interaction: Interaction) {
             content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
           })
 
-          setTimeout(() => {
-            interaction.deleteReply()
+          setTimeout(async () => {
+            const file = new MessageAttachment('src/images/main.gif')
+            await interaction.editReply({ files: [file] })
           }, deathDeleteInterval)
         }
 

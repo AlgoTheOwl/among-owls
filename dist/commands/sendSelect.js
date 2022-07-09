@@ -10,9 +10,10 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isButton())
             return;
+        const { user } = interaction;
         const playerArr = Object.values(__1.game.players);
         const victims = playerArr
-            .filter((player) => !player.timedOut && !player.dead)
+            .filter((player) => !player.timedOut && !player.dead && player.discordId !== user.id)
             .map((player) => ({
             label: `Attack ${player.username}`,
             description: '',

@@ -57,12 +57,19 @@ const normalizeLink = (imageUrl) => {
     return imageUrl;
 };
 exports.normalizeLink = normalizeLink;
-const mapPlayersForEmbed = (playerArr, type) => playerArr
-    .filter((player) => !player.timedOut && !player.dead)
-    .map((player) => ({
-    name: player.username,
-    value: type === 'game' ? `HP: ${player.hp}` : `${player.asset.assetName}`,
-}));
+const mapPlayersForEmbed = (playerArr, type) => playerArr.map((player) => {
+    let value;
+    if (player.dead || player.hp <= 0) {
+        value = '💀';
+    }
+    else {
+        value = type === 'game' ? `HP: ${player.hp}` : `${player.asset.assetName}`;
+    }
+    return {
+        name: player.username,
+        value,
+    };
+});
 exports.mapPlayersForEmbed = mapPlayersForEmbed;
 const emptyDir = (dirPath) => {
     try {
@@ -166,10 +173,10 @@ const doDamage = (player, withMultiplier = false) => {
     if (withMultiplier) {
         const { assetMultiplier } = player;
         const multiplierDamage = (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl;
-        return Math.floor(Math.random() * (hp / 10)) + multiplierDamage;
+        return Math.floor(Math.random() * (hp / 5)) + multiplierDamage;
     }
     else {
-        return Math.floor(Math.random() * (hp / 10));
+        return Math.floor(Math.random() * (hp / 5));
     }
 };
 exports.doDamage = doDamage;
