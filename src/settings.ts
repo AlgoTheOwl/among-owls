@@ -33,7 +33,7 @@ export default {
   // Determines how quickly normal messages are deleted
   messageDeleteInterval: 2000,
   // Determines how quickly death gifs are deleted
-  deathDeleteInterval: 8000,
+  deathDeleteInterval: 5000,
   // Determines how long a player has to be inactive before timing out
   timeoutInterval: 30000,
   // Wait this long before kicking timeed out players after the game starts

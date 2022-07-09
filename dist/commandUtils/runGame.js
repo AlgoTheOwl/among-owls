@@ -20,6 +20,7 @@ async function runGame(interaction) {
     const playerArr = Object.values(players);
     let isWin = false;
     let attackField;
+    let handlingDeath = false;
     while (!__1.game.stopped &&
         !__1.game.waitingRoom &&
         __1.game.active &&
@@ -30,7 +31,7 @@ async function runGame(interaction) {
             let victim;
             let victimDead = false;
             // DO DAMAGE
-            if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead)) {
+            if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead) && __1.game.active) {
                 if (player.victimId) {
                     victim = __1.game.players[player.victimId];
                 }
@@ -44,14 +45,16 @@ async function runGame(interaction) {
                     victimDead = true;
                 }
                 // HANDLE DEATH
-                if (victimDead && attacker) {
+                if (victimDead && attacker && !handlingDeath) {
+                    handlingDeath = true;
                     const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
                     await interaction.editReply({
                         files: [attachment],
                         content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
                     });
-                    setTimeout(() => {
-                        interaction.deleteReply();
+                    setTimeout(async () => {
+                        const file = new discord_js_1.MessageAttachment('src/images/main.gif');
+                        await interaction.editReply({ files: [file] });
                     }, deathDeleteInterval);
                 }
                 const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);

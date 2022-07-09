@@ -13,23 +13,35 @@ module.exports = {
         const victimId = idArr[0];
         const player = __1.game.players[user.id];
         const victim = __1.game.players[victimId];
-        if (victimId === 'random') {
-            player.victimId = undefined;
+        if (player && victim) {
+            if (victimId === 'random') {
+                player.victimId = undefined;
+                return interaction.reply({
+                    ephemeral: true,
+                    content: `You have chosen to attack a random player`,
+                });
+            }
+            if (victimId === user.id) {
+                return interaction.reply({
+                    content: "You can't attack yourself, try again",
+                    ephemeral: true,
+                });
+            }
+            if (player === null || player === void 0 ? void 0 : player.victimId) {
+                player.victimId = victimId;
+            }
+            if (victim) {
+                return interaction.reply({
+                    ephemeral: true,
+                    content: `You have chosen ${victim.username}'s AOWL to be your victim, good choice. 😈`,
+                });
+            }
+        }
+        else {
             return interaction.reply({
                 ephemeral: true,
-                content: `You have chosen to attack a random player`,
+                content: 'Something went wrong. Please try again.',
             });
         }
-        if (victimId === user.id) {
-            return interaction.reply({
-                content: "You can't attack yourself, try again",
-                ephemeral: true,
-            });
-        }
-        player.victimId = victimId;
-        interaction.reply({
-            ephemeral: true,
-            content: `You have chosen ${victim.username}'s AOWL to be your victim, good choice. 😈`,
-        });
     },
 };
