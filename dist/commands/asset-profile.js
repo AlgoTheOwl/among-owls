@@ -30,7 +30,7 @@ module.exports = {
                 { name: 'Asset ID', value: assetId.toString() },
                 { name: 'Wins', value: winNumber.toString() },
             ];
-            interaction.editReply((0, embeds_2.default)(embeds_1.default.assetProfile, {
+            await interaction.editReply((0, embeds_2.default)(embeds_1.default.assetProfile, {
                 assetUrl,
                 fields,
                 assetName,
