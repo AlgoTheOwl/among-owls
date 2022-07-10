@@ -24,7 +24,7 @@ module.exports = {
 
     const { user } = interaction
 
-    await interaction.deferReply()
+    await interaction.deferReply({ ephemeral: true })
 
     const { assets, ...userData } = (await collections.users.findOne({
       discordId: user.id,

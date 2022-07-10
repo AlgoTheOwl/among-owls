@@ -30,7 +30,7 @@ module.exports = {
             return;
         const { maxAssets } = settings_1.default;
         const { user } = interaction;
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         const _b = (await database_service_1.collections.users.findOne({
             discordId: user.id,
         })), { assets } = _b, userData = __rest(_b, ["assets"]);
