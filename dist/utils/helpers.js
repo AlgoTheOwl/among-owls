@@ -12,7 +12,7 @@ const settings_1 = __importDefault(require("../settings"));
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const database_service_1 = require("../database/database.service");
-const { damagePerAowl, hp } = settings_1.default;
+const { damagePerAowl, hp, damageRange } = settings_1.default;
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -172,10 +172,10 @@ const doDamage = (player, withMultiplier = false) => {
     if (withMultiplier) {
         const { assetMultiplier } = player;
         const multiplierDamage = (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl;
-        return Math.floor(Math.random() * (hp / 5)) + multiplierDamage;
+        return Math.floor(Math.random() * damageRange) + multiplierDamage;
     }
     else {
-        return Math.floor(Math.random() * (hp / 5));
+        return Math.floor(Math.random() * damageRange);
     }
 };
 exports.doDamage = doDamage;
@@ -193,6 +193,9 @@ exports.getUsersFromPlayers = getUsersFromPlayers;
 const isIpfs = (url) => (url === null || url === void 0 ? void 0 : url.slice(0, 4)) === 'ipfs';
 exports.isIpfs = isIpfs;
 const normalizeIpfsUrl = (url) => {
+    if (!url) {
+        return undefined;
+    }
     if ((0, exports.isIpfs)(url)) {
         const ifpsHash = url.slice(7);
         return `${ipfsGateway}${ifpsHash}`;

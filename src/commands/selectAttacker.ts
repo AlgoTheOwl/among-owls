@@ -37,13 +37,13 @@ module.exports = {
         discordId: id,
       })) as WithId<User>
 
-      if (!data?.assets.length) {
+      if (!Object.values(data?.assets).length) {
         return interaction.editReply({
           content: 'You have no AOWLs to select!',
         })
       }
 
-      const options = data.assets
+      const options = Object.values(data.assets)
         .map((asset: Asset, i: number) => {
           if (i < maxAssets) {
             return {

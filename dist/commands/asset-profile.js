@@ -15,19 +15,20 @@ module.exports = {
         if (!interaction.isSelectMenu())
             return;
         await interaction.deferReply({ ephemeral: true });
-        console.log('getting asset profile');
         const { values, user } = interaction;
         const assetId = Number(values[0]);
         const discordId = user.id;
         const { assets } = (await database_service_1.collections.users.findOne({
             discordId,
         }));
-        const asset = assets.find((asset) => asset.assetId === assetId);
+        const asset = assets[assetId];
         if (asset) {
-            const { assetUrl, assetName, unitName, assetId } = asset;
+            const { assetUrl, assetName, unitName, assetId, wins } = asset;
+            const winNumber = wins ? wins : 0;
             const fields = [
                 { name: 'Unit name', value: unitName },
                 { name: 'Asset ID', value: assetId.toString() },
+                { name: 'Wins', value: winNumber.toString() },
             ];
             interaction.editReply((0, embeds_2.default)(embeds_1.default.assetProfile, {
                 assetUrl,

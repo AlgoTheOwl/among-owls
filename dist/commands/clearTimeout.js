@@ -10,7 +10,7 @@ module.exports = {
         if (!interaction.isCommand())
             return;
         await interaction.deferReply({ ephemeral: true });
-        await database_service_1.collections.users.updateMany({}, { $set: { coolDownDone: null } });
+        await database_service_1.collections.users.updateMany({}, { $set: { coolDowns: {} } });
         return await interaction.editReply('Timeouts cleared');
     },
 };

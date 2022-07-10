@@ -12,7 +12,7 @@ import embeds from '../constants/embeds'
 import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
 
-const { damagePerAowl, hp } = settings
+const { damagePerAowl, hp, damageRange } = settings
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -203,9 +203,9 @@ export const doDamage = (
     const { assetMultiplier } = player
     const multiplierDamage =
       (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl
-    return Math.floor(Math.random() * (hp / 5)) + multiplierDamage
+    return Math.floor(Math.random() * damageRange) + multiplierDamage
   } else {
-    return Math.floor(Math.random() * (hp / 5))
+    return Math.floor(Math.random() * damageRange)
   }
 }
 
@@ -222,7 +222,12 @@ export const getUsersFromPlayers = async (players: Player[]) => {
 
 export const isIpfs = (url: string): boolean => url?.slice(0, 4) === 'ipfs'
 
-export const normalizeIpfsUrl = (url: string) => {
+export const normalizeIpfsUrl = (
+  url: string | undefined
+): string | undefined => {
+  if (!url) {
+    return undefined
+  }
   if (isIpfs(url)) {
     const ifpsHash = url.slice(7)
     return `${ipfsGateway}${ifpsHash}`

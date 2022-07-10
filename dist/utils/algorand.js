@@ -29,7 +29,7 @@ const determineOwnership = async function (address) {
         const nftsOwned = [];
         // Create array of unique assetIds
         const uniqueAssets = [];
-        assets.forEach((asset, i) => {
+        assets.forEach((asset) => {
             // Check if opt-in asset
             if (asset['asset-id'] === Number(optInAssetId)) {
                 walletOwned = true;

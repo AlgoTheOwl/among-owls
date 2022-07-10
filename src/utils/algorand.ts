@@ -32,7 +32,7 @@ export const determineOwnership = async function (
 
     // Create array of unique assetIds
     const uniqueAssets: AlgoAsset[] = []
-    assets.forEach((asset: AlgoAsset, i: number) => {
+    assets.forEach((asset: AlgoAsset) => {
       // Check if opt-in asset
       if (asset['asset-id'] === Number(optInAssetId)) {
         walletOwned = true

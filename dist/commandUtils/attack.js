@@ -114,7 +114,7 @@ const attack = async (interaction, random) => {
         const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
         isWin = !!winningPlayer;
         if (isWin && winningPlayer && __1.game.active) {
-            return (0, win_1.handleWin)(winningPlayer, winByTimeout, __1.game);
+            return (0, win_1.handleWin)(winningPlayer, winByTimeout);
         }
         // push attack value into embed
         attackRow.push({
@@ -168,7 +168,7 @@ const doPlayerTimeout = async (id) => {
             // If win
             if (winningPlayer && __1.game.active) {
                 __3.intervals.timeoutInterval && clearInterval(__3.intervals.timeoutInterval);
-                return (0, win_1.handleWin)(winningPlayer, winByTimeout, __1.game);
+                return (0, win_1.handleWin)(winningPlayer, winByTimeout);
             }
             const usersTimedOut = playerArr.filter((player) => player.timedOut);
             // If everyone timed out

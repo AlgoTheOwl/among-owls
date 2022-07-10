@@ -1,5 +1,4 @@
 import Player from '../models/player'
-import Game from '../models/game'
 import { intervals } from '..'
 import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
@@ -8,15 +7,12 @@ import { resetGame, emptyDir, asyncForEach } from '../utils/helpers'
 import settings from '../settings'
 import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
+import { game } from '..'
 
-export const handleWin = async (
-  player: Player,
-  winByTimeout: boolean,
-  game: Game
-) => {
-  const { imageDir, hootSettings } = settings
-  const { hootOnWin } = hootSettings
+const { imageDir, hootSettings } = settings
+const { hootOnWin } = hootSettings
 
+export const handleWin = async (player: Player, winByTimeout: boolean) => {
   game.active = false
   intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
 
@@ -27,12 +23,15 @@ export const handleWin = async (
 
   // Update user stats
   const currentHoot = winningUser.hoot ? winningUser.hoot : 0
-  const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
   const updatedHoot = currentHoot + hootOnWin
+  const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
+  const updatedAssets = updateAsset(winningUser)
 
   await collections.users.findOneAndUpdate(
     { _id: player.userId },
-    { $set: { yaoWins: updatedScore, hoot: updatedHoot } }
+    {
+      $set: { yaoWins: updatedScore, hoot: updatedHoot, assets: updatedAssets },
+    }
   )
 
   const playerArr = Object.values(game.players)
@@ -60,4 +59,12 @@ const setAssetTimeout = async (players: Player[]) => {
       }
     )
   })
+}
+
+const updateAsset = (winningUser: User) => {
+  const winnerAssets = winningUser.assets
+  const winningAsset = game.players[winningUser.discordId].asset
+  const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1
+  const updatedAsset = { ...winningAsset, wins: winningAssetWins }
+  return { ...winnerAssets, updatedAsset }
 }

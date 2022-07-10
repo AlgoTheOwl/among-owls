@@ -37,7 +37,7 @@ module.exports = {
         const selectMenu = new discord_js_1.MessageSelectMenu()
             .setCustomId('asset-profile')
             .setPlaceholder('See your AOWL stats');
-        const options = assets
+        const options = Object.values(assets)
             .map((asset, i) => {
             var _a;
             if (i < maxAssets) {

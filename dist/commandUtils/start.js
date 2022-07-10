@@ -51,7 +51,6 @@ async function start(interaction) {
     // Do countdown
     let countDown = 5;
     while (countDown >= 1) {
-        console.log('running while loop');
         countDown--;
         await (0, helpers_1.wait)(1000);
         await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.countDown, { countDown }));

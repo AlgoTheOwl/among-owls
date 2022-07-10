@@ -148,7 +148,7 @@ export const attack = async (
     isWin = !!winningPlayer
 
     if (isWin && winningPlayer && game.active) {
-      return handleWin(winningPlayer, winByTimeout, game)
+      return handleWin(winningPlayer, winByTimeout)
     }
     // push attack value into embed
     attackRow.push({
@@ -223,7 +223,7 @@ const doPlayerTimeout = async (id: string): Promise<void> => {
       // If win
       if (winningPlayer && game.active) {
         intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
-        return handleWin(winningPlayer, winByTimeout, game)
+        return handleWin(winningPlayer, winByTimeout)
       }
 
       const usersTimedOut = playerArr.filter((player) => player.timedOut)
