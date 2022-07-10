@@ -1,20 +1,16 @@
 import {
   MessageEmbed,
   MessageActionRow,
-  MessageSelectMenu,
   MessageButton,
   ColorResolvable,
   MessageAttachment,
   MessagePayload,
   InteractionReplyOptions,
 } from 'discord.js'
-import { EmbedData, EmbedReply } from './types/game'
+import { EmbedData } from './types/game'
 import { game } from '.'
-import Player from './models/player'
 import embeds from './constants/embeds'
 import { isIpfs, mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
-
-const ipfsGateway = process.env.IPFS_GATEWAY
 
 const defaultEmbedValues: EmbedData = {
   title: '🔥 Ye Among AOWLs 🔥',
@@ -38,6 +34,7 @@ export default function doEmbed(
   const playerArr = Object.values(game.players)
   const playerCount = playerArr.length
 
+  // Waiting Room
   if (type === embeds.waitingRoom) {
     const playerWord = playerCount === 1 ? 'player' : 'players'
     const hasWord = playerCount === 1 ? 'has' : 'have'
@@ -76,42 +73,14 @@ export default function doEmbed(
       description: '💀 Who will survive? 💀',
       color: 'RANDOM',
       image: undefined,
-      // thumbNail:
-      //   'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
       fields,
       footer: {
         text: 'A HootGang Production',
       },
     }
-
-    // const victims = playerArr
-    //   .filter((player: Player) => !player.timedOut && !player.dead)
-    //   .map((player: Player) => ({
-    //     label: `Attack ${player.username}`,
-    //     description: '',
-    //     value: player.discordId,
-    //   }))
-
-    // components.push(
-    //   new MessageActionRow().addComponents(
-    //     new MessageButton()
-    //       .setCustomId('send-select')
-    //       .setLabel('Select a victim to attack')
-    //       .setStyle('DANGER')
-    //   new MessageButton()
-    //     .setCustomId('random-attack')
-    //     .setLabel('Blindly attack!')
-    //     .setStyle('DANGER')
-    // ),
-    // new MessageActionRow().addComponents(
-    //   new MessageSelectMenu()
-    //     .setCustomId('select-victim')
-    //     .setPlaceholder('Select a victim to attack')
-    //     .addOptions(victims)
-    // )
-    // )
   }
 
+  // Waiting Room Countdown
   if (type === embeds.countDown) {
     const imagePath = `src/images/${options?.countDown}.png`
     const countDownImage = new MessageAttachment(imagePath)
@@ -123,6 +92,7 @@ export default function doEmbed(
     }
   }
 
+  // Players timed out
   if (type === embeds.timedOut) {
     data = {
       title: 'BOOOO!!!',
@@ -131,6 +101,7 @@ export default function doEmbed(
     }
   }
 
+  // Win
   if (options && type === embeds.win) {
     const { player, winByTimeout } = options
     const asserUrl = player.asset.assetUrl
@@ -147,6 +118,7 @@ export default function doEmbed(
     }
   }
 
+  // Leaderboard
   if (options && type === embeds.leaderBoard) {
     const { fields } = options
 
@@ -157,6 +129,7 @@ export default function doEmbed(
     }
   }
 
+  // Stopped game
   if (type === embeds.stopped) {
     data = {
       title: 'Game stopped',
@@ -164,6 +137,7 @@ export default function doEmbed(
     }
   }
 
+  // User Profile
   if (type === embeds.profile) {
     const { thumbNail, fields } = options
     data = {
@@ -175,6 +149,7 @@ export default function doEmbed(
     }
   }
 
+  // Asset Profile
   if (type === embeds.assetProfile) {
     const { assetUrl, fields, assetName } = options
 
@@ -184,7 +159,6 @@ export default function doEmbed(
       thumbNail: normalizeIpfsUrl(assetUrl),
       fields,
     }
-    console.log(data)
   }
 
   let {
@@ -204,12 +178,7 @@ export default function doEmbed(
 
   const embed = new MessageEmbed()
 
-  const ipfs = thumbNail ? isIpfs(thumbNail) : false
-
-  if (ipfs && thumbNail) {
-    console.log('normalizing image')
-    thumbNail = normalizeIpfsUrl(thumbNail)
-  }
+  thumbNail = normalizeIpfsUrl(thumbNail)
 
   title && embed.setTitle(title)
   description && embed.setDescription(description)

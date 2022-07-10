@@ -27,12 +27,12 @@ module.exports = {
             const data = (await database_service_1.collections.users.findOne({
                 discordId: id,
             }));
-            if (!(data === null || data === void 0 ? void 0 : data.assets.length)) {
+            if (!Object.values(data === null || data === void 0 ? void 0 : data.assets).length) {
                 return interaction.editReply({
                     content: 'You have no AOWLs to select!',
                 });
             }
-            const options = data.assets
+            const options = Object.values(data.assets)
                 .map((asset, i) => {
                 var _a;
                 if (i < maxAssets) {

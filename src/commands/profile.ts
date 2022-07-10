@@ -34,7 +34,7 @@ module.exports = {
       .setCustomId('asset-profile')
       .setPlaceholder('See your AOWL stats')
 
-    const options = assets
+    const options = Object.values(assets)
       .map((asset: Asset, i: number) => {
         if (i < maxAssets) {
           return {

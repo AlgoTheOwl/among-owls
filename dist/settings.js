@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
-    hp: 10,
+    hp: 420,
+    damageRange: 150,
     // Score modifier
     damagePerAowl: 5,
     // File where player assets are stored
@@ -28,6 +29,6 @@ exports.default = {
     maxAssets: 20,
     // Settings for native asa
     hootSettings: {
-        hootOnWin: 20,
+        hootOnWin: 5,
     },
 };

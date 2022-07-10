@@ -55,12 +55,13 @@ async function runGame(interaction) {
                     setTimeout(async () => {
                         const file = new discord_js_1.MessageAttachment('src/images/main.gif');
                         await interaction.editReply({ files: [file] });
+                        handlingDeath = false;
                     }, deathDeleteInterval);
                 }
                 const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
                 isWin = !!winningPlayer;
                 if (isWin && winningPlayer && __1.game.active) {
-                    return (0, win_1.handleWin)(winningPlayer, winByTimeout, __1.game);
+                    return (0, win_1.handleWin)(winningPlayer, winByTimeout);
                 }
                 // push attack value into embed
                 attackField = {

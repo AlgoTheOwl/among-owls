@@ -30,7 +30,7 @@ module.exports = {
           discordId: user.id,
         })) as WithId<User>
 
-      const asset = assets.find((asset) => asset.assetId === Number(assetId))
+      const asset = assets[assetId]
 
       if (!asset) {
         return
@@ -74,7 +74,7 @@ module.exports = {
         gameAsset,
         _id,
         hp,
-        assets.length,
+        Object.values(assets).length,
         0
       )
       await interaction.editReply(`${asset.assetName} has entered the game`)

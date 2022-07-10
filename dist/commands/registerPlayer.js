@@ -28,7 +28,7 @@ module.exports = {
             const { assets, address, _id, coolDowns } = (await database_service_1.collections.users.findOne({
                 discordId: user.id,
             }));
-            const asset = assets.find((asset) => asset.assetId === Number(assetId));
+            const asset = assets[assetId];
             if (!asset) {
                 return;
             }
@@ -51,7 +51,7 @@ module.exports = {
                 return;
             }
             const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath);
-            index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, assets.length, 0);
+            index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, Object.values(assets).length, 0);
             await interaction.editReply(`${asset.assetName} has entered the game`);
             await (0, helpers_1.wait)(messageDeleteInterval);
         }

@@ -11,7 +11,7 @@ module.exports = {
 
     await interaction.deferReply({ ephemeral: true })
 
-    await collections.users.updateMany({}, { $set: { coolDownDone: null } })
+    await collections.users.updateMany({}, { $set: { coolDowns: {} } })
 
     return await interaction.editReply('Timeouts cleared')
   },

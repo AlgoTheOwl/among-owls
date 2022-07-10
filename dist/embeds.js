@@ -7,7 +7,6 @@ const discord_js_1 = require("discord.js");
 const _1 = require(".");
 const embeds_1 = __importDefault(require("./constants/embeds"));
 const helpers_1 = require("./utils/helpers");
-const ipfsGateway = process.env.IPFS_GATEWAY;
 const defaultEmbedValues = {
     title: '🔥 Ye Among AOWLs 🔥',
     description: '💀 Who will survive? 💀',
@@ -25,6 +24,7 @@ function doEmbed(type, options) {
     let components = [];
     const playerArr = Object.values(_1.game.players);
     const playerCount = playerArr.length;
+    // Waiting Room
     if (type === embeds_1.default.waitingRoom) {
         const playerWord = playerCount === 1 ? 'player' : 'players';
         const hasWord = playerCount === 1 ? 'has' : 'have';
@@ -55,39 +55,13 @@ function doEmbed(type, options) {
             description: '💀 Who will survive? 💀',
             color: 'RANDOM',
             image: undefined,
-            // thumbNail:
-            //   'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
             fields,
             footer: {
                 text: 'A HootGang Production',
             },
         };
-        // const victims = playerArr
-        //   .filter((player: Player) => !player.timedOut && !player.dead)
-        //   .map((player: Player) => ({
-        //     label: `Attack ${player.username}`,
-        //     description: '',
-        //     value: player.discordId,
-        //   }))
-        // components.push(
-        //   new MessageActionRow().addComponents(
-        //     new MessageButton()
-        //       .setCustomId('send-select')
-        //       .setLabel('Select a victim to attack')
-        //       .setStyle('DANGER')
-        //   new MessageButton()
-        //     .setCustomId('random-attack')
-        //     .setLabel('Blindly attack!')
-        //     .setStyle('DANGER')
-        // ),
-        // new MessageActionRow().addComponents(
-        //   new MessageSelectMenu()
-        //     .setCustomId('select-victim')
-        //     .setPlaceholder('Select a victim to attack')
-        //     .addOptions(victims)
-        // )
-        // )
     }
+    // Waiting Room Countdown
     if (type === embeds_1.default.countDown) {
         const imagePath = `src/images/${options === null || options === void 0 ? void 0 : options.countDown}.png`;
         const countDownImage = new discord_js_1.MessageAttachment(imagePath);
@@ -98,12 +72,14 @@ function doEmbed(type, options) {
             image: `attachment://${options === null || options === void 0 ? void 0 : options.countDown}.png`,
         };
     }
+    // Players timed out
     if (type === embeds_1.default.timedOut) {
         data = {
             title: 'BOOOO!!!',
             description: 'Game has ended due to all players being removed for inactivity',
         };
     }
+    // Win
     if (options && type === embeds_1.default.win) {
         const { player, winByTimeout } = options;
         const asserUrl = player.asset.assetUrl;
@@ -116,6 +92,7 @@ function doEmbed(type, options) {
             image: (0, helpers_1.normalizeIpfsUrl)(asserUrl),
         };
     }
+    // Leaderboard
     if (options && type === embeds_1.default.leaderBoard) {
         const { fields } = options;
         data = {
@@ -124,12 +101,14 @@ function doEmbed(type, options) {
             fields,
         };
     }
+    // Stopped game
     if (type === embeds_1.default.stopped) {
         data = {
             title: 'Game stopped',
             description: 'Game has been stopped',
         };
     }
+    // User Profile
     if (type === embeds_1.default.profile) {
         const { thumbNail, fields } = options;
         data = {
@@ -140,6 +119,7 @@ function doEmbed(type, options) {
             description: '',
         };
     }
+    // Asset Profile
     if (type === embeds_1.default.assetProfile) {
         const { assetUrl, fields, assetName } = options;
         data = {
@@ -148,15 +128,10 @@ function doEmbed(type, options) {
             thumbNail: (0, helpers_1.normalizeIpfsUrl)(assetUrl),
             fields,
         };
-        console.log(data);
     }
     let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();
-    const ipfs = thumbNail ? (0, helpers_1.isIpfs)(thumbNail) : false;
-    if (ipfs && thumbNail) {
-        console.log('normalizing image');
-        thumbNail = (0, helpers_1.normalizeIpfsUrl)(thumbNail);
-    }
+    thumbNail = (0, helpers_1.normalizeIpfsUrl)(thumbNail);
     title && embed.setTitle(title);
     description && embed.setDescription(description);
     color && embed.setColor(color);

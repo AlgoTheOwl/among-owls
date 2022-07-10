@@ -1,5 +1,6 @@
 type Settings = {
   hp: number
+  damageRange: number
   damagePerAowl: number
   imageDir: string
   kickPlayerTimeout: number
@@ -18,7 +19,8 @@ type Settings = {
 }
 
 export default {
-  hp: 10,
+  hp: 420,
+  damageRange: 150,
   // Score modifier
   damagePerAowl: 5,
   // File where player assets are stored
@@ -45,6 +47,6 @@ export default {
   maxAssets: 20,
   // Settings for native asa
   hootSettings: {
-    hootOnWin: 20,
+    hootOnWin: 5,
   },
 } as Settings

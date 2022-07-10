@@ -70,7 +70,6 @@ export default async function start(
   // Do countdown
   let countDown = 5
   while (countDown >= 1) {
-    console.log('running while loop')
     countDown--
     await wait(1000)
     await game.embed.edit(doEmbed(embeds.countDown, { countDown }))

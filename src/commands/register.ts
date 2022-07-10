@@ -7,6 +7,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
 import { game } from '..'
 import { addRole } from '../utils/helpers'
+import Asset from '../models/asset'
 
 const optInAssetId: number = Number(process.env.OPT_IN_ASSET_ID)
 const unitName: string = process.env.UNIT_NAME
@@ -85,6 +86,11 @@ export const processRegistration = async (
     // Retreive assetIds from specific collections
     const { walletOwned, nftsOwned } = await determineOwnership(address)
 
+    const keyedNfts: { [key: string]: Asset } = {}
+    nftsOwned.forEach((nft) => {
+      keyedNfts[nft.assetId] = nft
+    })
+
     if (!nftsOwned?.length) {
       return {
         status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
@@ -99,7 +105,7 @@ export const processRegistration = async (
 
     // If user doesn't exist, add to db and grab instance
     if (!user) {
-      const userEntry = new User(username, discordId, address, nftsOwned, 0)
+      const userEntry = new User(username, discordId, address, keyedNfts, 0)
       const { acknowledged, insertedId } = await collections.users?.insertOne(
         userEntry
       )
@@ -115,7 +121,7 @@ export const processRegistration = async (
     } else {
       collections.users.findOneAndUpdate(
         { _id: user._id },
-        { $set: { assets: nftsOwned, address } }
+        { $set: { assets: keyedNfts, address } }
       )
     }
 
