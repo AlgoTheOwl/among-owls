@@ -17,6 +17,9 @@ declare global {
       IPFS_GATEWAY: string
       ADMIN_ID: string
       REGISTERED_ID: string
+      HOOT_WALLET_ADDRESS: string
+      HOOT_CLAWBACK_ADDRESS: string
+      HOOT_SOURCE_MNEMONIC: string
     }
   }
 }
