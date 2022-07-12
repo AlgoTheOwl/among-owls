@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findAsset = exports.determineOwnership = void 0;
+exports.claimHoot = exports.findAsset = exports.determineOwnership = void 0;
 const asset_1 = __importDefault(require("../models/asset"));
 const helpers_1 = require("./helpers");
 const algosdk_1 = __importDefault(require("algosdk"));
@@ -13,6 +13,7 @@ const pureStakeApi = process.env.PURESTAKE_API;
 const algoIndexerNode = process.env.ALGO_INDEXER_NODE;
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
 const unitPrefix = process.env.UNIT_NAME;
+const hootAccountMnemonic = process.env.HOOT_SOURCE_MNEMONIC;
 const token = {
     'X-API-Key': pureStakeApi,
 };
@@ -79,3 +80,21 @@ const findAsset = async (assetId) => {
     }
 };
 exports.findAsset = findAsset;
+const claimHoot = async (amount, receiverAddress) => {
+    try {
+        const params = await algodClient.getTransactionParams().do();
+        const { sk, addr: senderAddress } = algosdk_1.default.mnemonicToSecretKey(hootAccountMnemonic);
+        const revocationTarget = undefined;
+        const closeRemainderTo = undefined;
+        const note = undefined;
+        const assetId = optInAssetId;
+        let xtxn = algosdk_1.default.makeAssetTransferTxnWithSuggestedParams(senderAddress, receiverAddress, closeRemainderTo, revocationTarget, amount, note, assetId, params);
+        const rawSignedTxn = xtxn.signTxn(sk);
+        let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do();
+        return await algosdk_1.default.waitForConfirmation(algodClient, xtx.txId, 4);
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+exports.claimHoot = claimHoot;

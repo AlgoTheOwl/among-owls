@@ -8,6 +8,7 @@ export default class Asset {
     public unitName: string,
     public userId?: ObjectId,
     public localPath?: string,
-    public wins?: number
+    public wins?: number,
+    public alias?: string
   ) {}
 }

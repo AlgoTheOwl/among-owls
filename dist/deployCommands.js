@@ -18,7 +18,9 @@ const commandFiles = node_fs_1.default
 for (const file of commandFiles) {
     const filePath = node_path_1.default.join(commandsPath, file);
     const command = require(filePath);
-    commands.push(command.data.toJSON());
+    if (command.enabled) {
+        commands.push(command.data.toJSON());
+    }
 }
 const rest = new rest_1.REST({ version: '9' }).setToken(token);
 rest

@@ -24,16 +24,17 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('profile')
         .setDescription('view your profile'),
+    enabled: true,
     async execute(interaction) {
         var _a;
         if (!interaction.isCommand())
             return;
         const { maxAssets } = settings_1.default;
         const { user } = interaction;
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         const _b = (await database_service_1.collections.users.findOne({
             discordId: user.id,
-        })), { assets } = _b, userData = __rest(_b, ["assets"]);
+        })), { assets = {} } = _b, userData = __rest(_b, ["assets"]);
         const selectMenu = new discord_js_1.MessageSelectMenu()
             .setCustomId('asset-profile')
             .setPlaceholder('See your AOWL stats');

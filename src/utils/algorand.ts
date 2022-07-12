@@ -9,6 +9,7 @@ const pureStakeApi: string = process.env.PURESTAKE_API
 const algoIndexerNode: string = process.env.ALGO_INDEXER_NODE
 const optInAssetId: number = Number(process.env.OPT_IN_ASSET_ID)
 const unitPrefix: string = process.env.UNIT_NAME
+const hootAccountMnemonic: string = process.env.HOOT_SOURCE_MNEMONIC
 
 const token = {
   'X-API-Key': pureStakeApi,
@@ -82,5 +83,35 @@ export const findAsset = async (
     if (assetData?.asset) return assetData.asset
   } catch (error) {
     // console.log(error)
+  }
+}
+
+export const claimHoot = async (amount: number, receiverAddress: string) => {
+  try {
+    const params = await algodClient.getTransactionParams().do()
+    const { sk, addr: senderAddress } =
+      algosdk.mnemonicToSecretKey(hootAccountMnemonic)
+
+    const revocationTarget = undefined
+    const closeRemainderTo = undefined
+    const note = undefined
+    const assetId = optInAssetId
+
+    let xtxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+      senderAddress,
+      receiverAddress,
+      closeRemainderTo,
+      revocationTarget,
+      amount,
+      note,
+      assetId,
+      params
+    )
+
+    const rawSignedTxn = xtxn.signTxn(sk)
+    let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do()
+    return await algosdk.waitForConfirmation(algodClient, xtx.txId, 4)
+  } catch (error) {
+    console.log(error)
   }
 }

@@ -178,13 +178,17 @@ export default function doEmbed(
 
   const embed = new MessageEmbed()
 
-  thumbNail = normalizeIpfsUrl(thumbNail)
+  let thumbNailUrl
+
+  if (thumbNail) {
+    thumbNailUrl = normalizeIpfsUrl(thumbNail)
+  }
 
   title && embed.setTitle(title)
   description && embed.setDescription(description)
   color && embed.setColor(color as ColorResolvable)
   image && embed.setImage(image)
-  thumbNail && embed.setThumbnail(thumbNail)
+  thumbNailUrl && embed.setThumbnail(thumbNailUrl)
   fields?.length && embed.addFields(fields)
   footer && embed.setFooter(footer)
 
