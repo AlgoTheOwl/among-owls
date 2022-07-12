@@ -11,32 +11,31 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
-        const { user } = interaction;
-        await interaction.deferReply({ ephemeral: true });
-        const userData = (await database_service_1.collections.users.findOne({
-            discordId: user.id,
-        }));
-        if (!userData) {
-            return interaction.editReply({
-                content: 'You are not in the database',
-            });
+        try {
+            const { user } = interaction;
+            await interaction.deferReply({ ephemeral: true });
+            const userData = (await database_service_1.collections.users.findOne({
+                discordId: user.id,
+            }));
+            if (!userData) {
+                return interaction.editReply({
+                    content: 'You are not in the database',
+                });
+            }
+            const { hoot, address } = userData;
+            if (!hoot) {
+                return interaction.editReply({
+                    content: 'You have no hoot to claim',
+                });
+            }
+            await database_service_1.collections.users.findOneAndUpdate({ discordId: user.id }, { $set: { hoot: 0 } });
+            const status = await (0, algorand_1.claimHoot)(hoot, address);
+            if (status) {
+                return interaction.editReply(`Congrats, you've just received ${hoot} HOOT!`);
+            }
         }
-        const { hoot, address } = userData;
-        if (!hoot) {
-            return interaction.editReply({
-                content: 'You have no hoot to claim',
-            });
+        catch (error) {
+            return interaction.editReply('Something went wrong with your claim :( - please try again');
         }
-        const status = await (0, algorand_1.claimHoot)(hoot, address);
-        console.log(status);
-        // if (status) {
-        //   return interaction.editReply(
-        //     `Congrats, you've just received ${hoot} $HOOT!`
-        //   )
-        // } else {
-        //   return interaction.editReply(
-        //     'Something went wrong with your claim :( - please try again'
-        //   )
-        // }
     },
 };
