@@ -20,6 +20,7 @@ module.exports = {
         .setName('address')
         .setDescription('enter the your wallet address')
         .setRequired(true)),
+    enabled: true,
     async execute(interaction) {
         if (!interaction.isCommand())
             return;

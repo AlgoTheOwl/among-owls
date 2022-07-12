@@ -11,6 +11,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('leaderboard')
     .setDescription('show global leaderboard for AOWL games'),
+  enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 

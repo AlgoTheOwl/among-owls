@@ -10,6 +10,7 @@ module.exports = {
         .setName('name')
         .setDescription('enter a new name for your AOWL')
         .setRequired(true)),
+    enabled: true,
     async execute(interaction) {
         if (!interaction.isCommand())
             return;

@@ -27,6 +27,8 @@ exports.default = {
     assetCooldown: 30,
     // Max assets the game will capture
     maxAssets: 20,
+    // How often we refersh the waiting room embed
+    waitingRoomRefreshRate: 2000,
     // Settings for native asa
     hootSettings: {
         hootOnWin: 5,

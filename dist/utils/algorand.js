@@ -81,19 +81,20 @@ const findAsset = async (assetId) => {
 };
 exports.findAsset = findAsset;
 const claimHoot = async (amount, receiverAddress) => {
-    const params = await algodClient.getTransactionParams().do();
-    const { sk, addr: senderAddress } = algosdk_1.default.mnemonicToSecretKey(hootAccountMnemonic);
-    const revocationTarget = undefined;
-    const closeRemainderTo = undefined;
-    const note = undefined;
-    const assetId = optInAssetId;
-    let xtxn = algosdk_1.default.makeAssetTransferTxnWithSuggestedParams(senderAddress, receiverAddress, closeRemainderTo, revocationTarget, amount, note, assetId, params);
-    const rawSignedTxn = xtxn.signTxn(sk);
-    let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-    const confirmedTxn = await algosdk_1.default.waitForConfirmation(algodClient, xtx.txId, 4);
-    console.log('Transaction ' +
-        xtx.txId +
-        ' confirmed in round ' +
-        confirmedTxn['confirmed-round']);
+    try {
+        const params = await algodClient.getTransactionParams().do();
+        const { sk, addr: senderAddress } = algosdk_1.default.mnemonicToSecretKey(hootAccountMnemonic);
+        const revocationTarget = undefined;
+        const closeRemainderTo = undefined;
+        const note = undefined;
+        const assetId = optInAssetId;
+        let xtxn = algosdk_1.default.makeAssetTransferTxnWithSuggestedParams(senderAddress, receiverAddress, closeRemainderTo, revocationTarget, amount, note, assetId, params);
+        const rawSignedTxn = xtxn.signTxn(sk);
+        let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do();
+        return await algosdk_1.default.waitForConfirmation(algodClient, xtx.txId, 4);
+    }
+    catch (error) {
+        console.log(error);
+    }
 };
 exports.claimHoot = claimHoot;
