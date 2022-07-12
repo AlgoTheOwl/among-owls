@@ -35,9 +35,7 @@ client.once('ready', async () => {
     for (const file of commandFiles) {
         const filePath = node_path_1.default.join(commandsPath, file);
         const command = require(filePath);
-        if (command.enabled) {
-            client.commands.set(command.data.name, command);
-        }
+        client.commands.set(command.data.name, command);
     }
 });
 /*
