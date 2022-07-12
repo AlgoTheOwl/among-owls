@@ -5,7 +5,7 @@ import {
   MessageActionRow,
   MessageSelectMenu,
 } from 'discord.js'
-import { asyncForEach, resetGame, wait } from '../utils/helpers'
+import { resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { game } from '..'
@@ -13,7 +13,6 @@ import embedTypes from '../constants/embeds'
 import settings from '../settings'
 import runGame from '../commandUtils/runGame'
 import Player from '../models/player'
-import { collections } from '../database/database.service'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -21,7 +20,7 @@ module.exports = {
     .setDescription('start When AOWLS Attack'),
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
-    const { maxCapacity } = settings
+    const { maxCapacity, waitingRoomRefreshRate } = settings
 
     if (game?.active || game?.waitingRoom) {
       return await interaction.reply({
@@ -34,12 +33,19 @@ module.exports = {
 
     await interaction.deferReply()
 
+    /*
+     ************
+     * MEGATRON *
+     ************
+     */
     const file = new MessageAttachment('src/images/main.gif')
-
-    // send embed here
     await interaction.editReply({ files: [file] })
 
-    // Do waiting room
+    /*
+     ****************
+     * WAITING ROOM *
+     ****************
+     */
     game.waitingRoom = true
     let playerCount = 0
 
@@ -49,7 +55,7 @@ module.exports = {
 
     while (playerCount < maxCapacity && game.waitingRoom && !game.stopped) {
       try {
-        await wait(2000)
+        await wait(waitingRoomRefreshRate)
         playerCount = Object.values(game.players).length
 
         !game.stopped &&
@@ -62,7 +68,11 @@ module.exports = {
 
     game.waitingRoom = false
 
-    // Do countdown
+    /*
+     *************
+     * COUNTDOWN *
+     *************
+     */
     let countDown = 5
     while (countDown > 0 && !game.stopped) {
       await wait(1000)
@@ -72,8 +82,12 @@ module.exports = {
       countDown--
     }
 
+    /*
+     ***************
+     * ACTIVE GAME *
+     ***************
+     */
     if (!game.stopped) {
-      // Send Hero and Leaderboard
       interaction.editReply({ files: [file] })
       game.embed.edit(doEmbed(embedTypes.activeGame))
       game.active = true

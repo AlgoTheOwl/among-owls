@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeIpfsUrl = exports.isIpfs = exports.getUsersFromPlayers = exports.doDamage = exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.normalizeLink = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
+exports.normalizeIpfsUrl = exports.isIpfs = exports.getUsersFromPlayers = exports.doDamage = exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -30,7 +30,7 @@ const downloadFile = async (asset, directory, username) => {
     try {
         const { assetUrl } = asset;
         if (assetUrl) {
-            const url = (0, exports.normalizeLink)(assetUrl);
+            const url = (0, exports.normalizeIpfsUrl)(assetUrl);
             const path = `${directory}/${username}.jpg`;
             const writer = fs_1.default.createWriteStream(path);
             const res = await axios_1.default.get(url, {
@@ -50,14 +50,13 @@ const downloadFile = async (asset, directory, username) => {
     }
 };
 exports.downloadFile = downloadFile;
-const normalizeLink = (imageUrl) => {
-    if ((imageUrl === null || imageUrl === void 0 ? void 0 : imageUrl.slice(0, 4)) === 'ipfs') {
-        const ifpsHash = imageUrl.slice(7);
-        imageUrl = `${ipfsGateway}${ifpsHash}`;
-    }
-    return imageUrl;
-};
-exports.normalizeLink = normalizeLink;
+// export const normalizeLink = (imageUrl: string): string => {
+//   if (imageUrl?.slice(0, 4) === 'ipfs') {
+//     const ifpsHash = imageUrl.slice(7)
+//     imageUrl = `${ipfsGateway}${ifpsHash}`
+//   }
+//   return imageUrl
+// }
 const mapPlayersForEmbed = (playerArr, type) => playerArr.map((player) => {
     let value;
     if (player.dead || player.hp <= 0) {
@@ -193,9 +192,6 @@ exports.getUsersFromPlayers = getUsersFromPlayers;
 const isIpfs = (url) => (url === null || url === void 0 ? void 0 : url.slice(0, 4)) === 'ipfs';
 exports.isIpfs = isIpfs;
 const normalizeIpfsUrl = (url) => {
-    if (!url) {
-        return undefined;
-    }
     if ((0, exports.isIpfs)(url)) {
         const ifpsHash = url.slice(7);
         return `${ipfsGateway}${ifpsHash}`;

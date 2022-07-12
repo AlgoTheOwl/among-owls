@@ -7,13 +7,12 @@ import {
   wait,
 } from '../utils/helpers'
 import { handleWin } from './win'
-import { getRandomVictimId, getAttackString } from './attack'
+import { getRandomVictimId, getAttackString } from '../utils/attack'
 import settings from '../settings'
 import Player from '../models/player'
 import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
 import { Interaction, MessageAttachment } from 'discord.js'
-import { Field } from '../types/game'
 
 export default async function runGame(interaction: Interaction) {
   if (!interaction.isCommand()) return
@@ -23,9 +22,10 @@ export default async function runGame(interaction: Interaction) {
   const playerArr = Object.values(players)
 
   let isWin = false
-  let attackField: Field | null
+
   let handlingDeath = false
 
+  // MAIN GAME LOOP
   while (
     !game.stopped &&
     !game.waitingRoom &&
@@ -37,7 +37,6 @@ export default async function runGame(interaction: Interaction) {
       const { discordId } = player
       const attacker = game.players[discordId] as Player
       let victim
-      let victimDead = false
 
       // DO DAMAGE
       if (attacker && !attacker?.timedOut && !attacker?.dead && game.active) {
@@ -49,18 +48,16 @@ export default async function runGame(interaction: Interaction) {
         const damage = doDamage(attacker, false)
         victim.hp -= damage
 
-        if (victim.hp <= 0) {
-          victim.dead = true
-          victimDead = true
-        }
-
         // HANDLE DEATH
-        if (victimDead && attacker && !handlingDeath) {
+        if (victim.hp <= 0 && attacker && !handlingDeath) {
+          victim.dead = true
           handlingDeath = true
+
           const attachment = new MessageAttachment(
             'src/images/death.gif',
             'death.gif'
           )
+
           await interaction.editReply({
             files: [attachment],
             content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
@@ -73,14 +70,16 @@ export default async function runGame(interaction: Interaction) {
           }, deathDeleteInterval)
         }
 
+        // HANDLE WIN
         const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
         isWin = !!winningPlayer
 
         if (isWin && winningPlayer && game.active) {
           return handleWin(winningPlayer, winByTimeout)
         }
-        // push attack value into embed
-        attackField = {
+
+        // REFRESH EMBED
+        const attackField = {
           name: 'ATTACK',
           value: getAttackString(
             attacker.asset.assetName,
@@ -88,13 +87,13 @@ export default async function runGame(interaction: Interaction) {
             damage
           ),
         }
-        // RESPOND WITH EMEBED
+
         const fields = [
           ...mapPlayersForEmbed(playerArr, 'game'),
           attackField,
         ].filter(Boolean)
 
-        game.embed.edit(doEmbed(embeds.activeGame, { fields }))
+        await game.embed.edit(doEmbed(embeds.activeGame, { fields }))
       }
     })
   }

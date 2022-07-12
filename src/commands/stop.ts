@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
 import { confirmRole, resetGame } from '../utils/helpers'
 import { game } from '..'
-import { intervals } from '..'
 
 const roleId: string = process.env.ADMIN_ID
 
@@ -10,7 +9,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('stop')
     .setDescription('Stop the current game'),
-
+  enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 
@@ -32,7 +31,6 @@ module.exports = {
       })
 
     resetGame(true)
-    intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
     return interaction.reply({ content: 'Game stopped', ephemeral: true })
   },
 }

@@ -10,6 +10,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('asset-profile')
     .setDescription('view an asset profile'),
+  enabled: true,
   async execute(interaction: SelectMenuInteraction) {
     if (!interaction.isSelectMenu()) return
 

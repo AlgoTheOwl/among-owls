@@ -4,18 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleWin = void 0;
-const __1 = require("..");
 const database_service_1 = require("../database/database.service");
 const helpers_1 = require("../utils/helpers");
 const settings_1 = __importDefault(require("../settings"));
 const embeds_1 = __importDefault(require("../embeds"));
 const embeds_2 = __importDefault(require("../constants/embeds"));
-const __2 = require("..");
+const __1 = require("..");
 const { imageDir, hootSettings } = settings_1.default;
 const { hootOnWin } = hootSettings;
 const handleWin = async (player, winByTimeout) => {
-    __2.game.active = false;
-    __1.intervals.timeoutInterval && clearInterval(__1.intervals.timeoutInterval);
+    __1.game.active = false;
     // Increment score and hoot of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
         _id: player.userId,
@@ -28,11 +26,11 @@ const handleWin = async (player, winByTimeout) => {
     await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, {
         $set: { yaoWins: updatedScore, hoot: updatedHoot, assets: updatedAssets },
     });
-    const playerArr = Object.values(__2.game.players);
+    const playerArr = Object.values(__1.game.players);
     (0, helpers_1.resetGame)();
     (0, helpers_1.emptyDir)(imageDir);
     setAssetTimeout(playerArr);
-    return __2.game.embed.edit((0, embeds_1.default)(embeds_2.default.win, { winByTimeout, player }));
+    return __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.win, { winByTimeout, player }));
 };
 exports.handleWin = handleWin;
 const setAssetTimeout = async (players) => {
@@ -52,7 +50,7 @@ const setAssetTimeout = async (players) => {
 };
 const updateAsset = (winningUser) => {
     const winnerAssets = winningUser.assets;
-    const winningAsset = __2.game.players[winningUser.discordId].asset;
+    const winningAsset = __1.game.players[winningUser.discordId].asset;
     const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1;
     const updatedAsset = Object.assign(Object.assign({}, winningAsset), { wins: winningAssetWins });
     return Object.assign(Object.assign({}, winnerAssets), { updatedAsset });

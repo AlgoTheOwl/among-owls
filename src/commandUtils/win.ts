@@ -1,5 +1,4 @@
 import Player from '../models/player'
-import { intervals } from '..'
 import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
 import User from '../models/user'
@@ -14,7 +13,6 @@ const { hootOnWin } = hootSettings
 
 export const handleWin = async (player: Player, winByTimeout: boolean) => {
   game.active = false
-  intervals.timeoutInterval && clearInterval(intervals.timeoutInterval)
 
   // Increment score and hoot of winning player
   const winningUser = (await collections.users.findOne({

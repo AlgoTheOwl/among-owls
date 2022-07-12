@@ -12,6 +12,7 @@ module.exports = {
         .setDescription('enter a new name for your AOWL')
         .setRequired(true)
     ),
+  enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
     const { user } = interaction

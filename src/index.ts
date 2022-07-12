@@ -12,7 +12,6 @@ import path from 'node:path'
 import { connectToDatabase } from './database/database.service'
 import settings from './settings'
 import Game from './models/game'
-import { Intervals } from './types/game'
 
 const token: string = process.env.DISCORD_TOKEN
 
@@ -21,14 +20,6 @@ const { coolDownInterval } = settings
 // Gloval vars
 export let game: Game = new Game({}, false, false, coolDownInterval)
 export let emojis = {}
-export const playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> } =
-  {}
-
-export const intervals: Intervals = {
-  timeoutInterval: null,
-  autoGameInterval: null,
-  playerTimeouts: {},
-}
 
 const client: Client = new Client({
   intents: [
@@ -42,7 +33,6 @@ const client: Client = new Client({
 client.once('ready', async () => {
   await connectToDatabase()
   console.log('Ye Among AOWLs - Server ready')
-  // load emojis into gamej
 
   client.commands = new Collection()
 
@@ -54,7 +44,9 @@ client.once('ready', async () => {
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file)
     const command = require(filePath)
-    client.commands.set(command.data.name, command)
+    if (command.enabled) {
+      client.commands.set(command.data.name, command)
+    }
   }
 })
 
@@ -66,7 +58,9 @@ client.once('ready', async () => {
 
 client.on(
   'interactionCreate',
-  async (interaction: Interaction | SelectMenuInteraction) => {
+  async (
+    interaction: Interaction | SelectMenuInteraction | ButtonInteraction
+  ) => {
     let command
     if (interaction.isCommand()) {
       command = client.commands.get(interaction.commandName)
