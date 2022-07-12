@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
 const helpers_1 = require("../utils/helpers");
 const win_1 = require("./win");
-const attack_1 = require("./attack");
+const attack_1 = require("../utils/attack");
 const settings_1 = __importDefault(require("../settings"));
 const embeds_1 = __importDefault(require("../embeds"));
 const embeds_2 = __importDefault(require("../constants/embeds"));
@@ -18,8 +18,8 @@ async function runGame(interaction) {
     const { deathDeleteInterval } = settings_1.default;
     const playerArr = Object.values(players);
     let isWin = false;
-    let attackField;
     let handlingDeath = false;
+    // MAIN GAME LOOP
     while (!__1.game.stopped &&
         !__1.game.waitingRoom &&
         __1.game.active &&
@@ -29,7 +29,6 @@ async function runGame(interaction) {
             const { discordId } = player;
             const attacker = __1.game.players[discordId];
             let victim;
-            let victimDead = false;
             // DO DAMAGE
             if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead) && __1.game.active) {
                 if (player.victimId) {
@@ -40,12 +39,9 @@ async function runGame(interaction) {
                 }
                 const damage = (0, helpers_1.doDamage)(attacker, false);
                 victim.hp -= damage;
-                if (victim.hp <= 0) {
-                    victim.dead = true;
-                    victimDead = true;
-                }
                 // HANDLE DEATH
-                if (victimDead && attacker && !handlingDeath) {
+                if (victim.hp <= 0 && attacker && !handlingDeath) {
+                    victim.dead = true;
                     handlingDeath = true;
                     const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
                     await interaction.editReply({
@@ -58,22 +54,22 @@ async function runGame(interaction) {
                         handlingDeath = false;
                     }, deathDeleteInterval);
                 }
+                // HANDLE WIN
                 const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
                 isWin = !!winningPlayer;
                 if (isWin && winningPlayer && __1.game.active) {
                     return (0, win_1.handleWin)(winningPlayer, winByTimeout);
                 }
-                // push attack value into embed
-                attackField = {
+                // REFRESH EMBED
+                const attackField = {
                     name: 'ATTACK',
                     value: (0, attack_1.getAttackString)(attacker.asset.assetName, victim.username, damage),
                 };
-                // RESPOND WITH EMEBED
                 const fields = [
                     ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
                     attackField,
                 ].filter(Boolean);
-                __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
+                await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
             }
         });
     }

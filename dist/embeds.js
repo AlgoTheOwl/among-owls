@@ -131,12 +131,15 @@ function doEmbed(type, options) {
     }
     let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);
     const embed = new discord_js_1.MessageEmbed();
-    thumbNail = (0, helpers_1.normalizeIpfsUrl)(thumbNail);
+    let thumbNailUrl;
+    if (thumbNail) {
+        thumbNailUrl = (0, helpers_1.normalizeIpfsUrl)(thumbNail);
+    }
     title && embed.setTitle(title);
     description && embed.setDescription(description);
     color && embed.setColor(color);
     image && embed.setImage(image);
-    thumbNail && embed.setThumbnail(thumbNail);
+    thumbNailUrl && embed.setThumbnail(thumbNailUrl);
     (fields === null || fields === void 0 ? void 0 : fields.length) && embed.addFields(fields);
     footer && embed.setFooter(footer);
     if (rawEmbed) {

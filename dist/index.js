@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.intervals = exports.playerTimeouts = exports.emojis = exports.game = void 0;
+exports.emojis = exports.game = void 0;
 // Library
 const discord_js_1 = require("discord.js");
 const node_fs_1 = __importDefault(require("node:fs"));
@@ -16,12 +16,6 @@ const { coolDownInterval } = settings_1.default;
 // Gloval vars
 exports.game = new game_1.default({}, false, false, coolDownInterval);
 exports.emojis = {};
-exports.playerTimeouts = {};
-exports.intervals = {
-    timeoutInterval: null,
-    autoGameInterval: null,
-    playerTimeouts: {},
-};
 const client = new discord_js_1.Client({
     intents: [
         discord_js_1.Intents.FLAGS.GUILDS,
@@ -33,7 +27,6 @@ const client = new discord_js_1.Client({
 client.once('ready', async () => {
     await (0, database_service_1.connectToDatabase)();
     console.log('Ye Among AOWLs - Server ready');
-    // load emojis into gamej
     client.commands = new discord_js_1.Collection();
     const commandsPath = node_path_1.default.join(__dirname, 'commands');
     const commandFiles = node_fs_1.default
@@ -42,7 +35,9 @@ client.once('ready', async () => {
     for (const file of commandFiles) {
         const filePath = node_path_1.default.join(commandsPath, file);
         const command = require(filePath);
-        client.commands.set(command.data.name, command);
+        if (command.enabled) {
+            client.commands.set(command.data.name, command);
+        }
     }
 });
 /*

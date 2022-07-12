@@ -36,7 +36,7 @@ export const downloadFile = async (
   try {
     const { assetUrl } = asset
     if (assetUrl) {
-      const url = normalizeLink(assetUrl)
+      const url = normalizeIpfsUrl(assetUrl) as string
       const path = `${directory}/${username}.jpg`
       const writer = fs.createWriteStream(path)
       const res = await axios.get(url, {
@@ -56,13 +56,13 @@ export const downloadFile = async (
   }
 }
 
-export const normalizeLink = (imageUrl: string) => {
-  if (imageUrl?.slice(0, 4) === 'ipfs') {
-    const ifpsHash = imageUrl.slice(7)
-    imageUrl = `${ipfsGateway}${ifpsHash}`
-  }
-  return imageUrl
-}
+// export const normalizeLink = (imageUrl: string): string => {
+//   if (imageUrl?.slice(0, 4) === 'ipfs') {
+//     const ifpsHash = imageUrl.slice(7)
+//     imageUrl = `${ipfsGateway}${ifpsHash}`
+//   }
+//   return imageUrl
+// }
 
 export const mapPlayersForEmbed = (
   playerArr: Player[],
@@ -81,7 +81,7 @@ export const mapPlayersForEmbed = (
     }
   })
 
-export const emptyDir = (dirPath: string) => {
+export const emptyDir = (dirPath: string): void => {
   try {
     const dirContents = fs.readdirSync(dirPath)
     dirContents.forEach((filePath) => {
@@ -101,7 +101,7 @@ export const addRole = async (
   interaction: Interaction,
   roleId: string,
   user: User
-) => {
+): Promise<void> => {
   try {
     const role = interaction.guild?.roles.cache.find(
       (role) => role.id === roleId
@@ -119,7 +119,7 @@ export const removeRole = async (
   interaction: Interaction,
   roleId: string,
   discordId: string
-) => {
+): Promise<void> => {
   const role = interaction.guild?.roles.cache.find((role) => role.id === roleId)
   const member = interaction.guild?.members.cache.find(
     (member) => member.id === discordId
@@ -131,7 +131,7 @@ export const confirmRole = async (
   roleId: string,
   interaction: Interaction,
   userId: string
-) => {
+): Promise<boolean | undefined> => {
   const member = interaction.guild?.members.cache.find(
     (member) => member.id === userId
   )
@@ -148,7 +148,7 @@ export const getNumberSuffix = (num: number): string => {
 export const getPlayerArray = (players: { [key: string]: Player }): Player[] =>
   Object.values(players)
 
-export const randomNumber = (min: number, max: number) =>
+export const randomNumber = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min) + min)
 
 export const getWinningPlayer = (
@@ -171,7 +171,7 @@ export const getWinningPlayer = (
     : { winningPlayer: undefined, winByTimeout: false }
 }
 
-export const randomSort = (arr: any[]) => {
+export const randomSort = (arr: any[]): any[] => {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * i)
     const k = arr[i]
@@ -209,7 +209,9 @@ export const doDamage = (
   }
 }
 
-export const getUsersFromPlayers = async (players: Player[]) => {
+export const getUsersFromPlayers = async (
+  players: Player[]
+): Promise<User[]> => {
   const users: User[] = []
   await asyncForEach(players, async (player: Player) => {
     const user = (await collections.users.findOne({
@@ -222,12 +224,7 @@ export const getUsersFromPlayers = async (players: Player[]) => {
 
 export const isIpfs = (url: string): boolean => url?.slice(0, 4) === 'ipfs'
 
-export const normalizeIpfsUrl = (
-  url: string | undefined
-): string | undefined => {
-  if (!url) {
-    return undefined
-  }
+export const normalizeIpfsUrl = (url: string): string => {
   if (isIpfs(url)) {
     const ifpsHash = url.slice(7)
     return `${ipfsGateway}${ifpsHash}`

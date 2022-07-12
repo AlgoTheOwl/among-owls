@@ -17,6 +17,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('profile')
     .setDescription('view your profile'),
+  enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 
@@ -24,9 +25,9 @@ module.exports = {
 
     const { user } = interaction
 
-    await interaction.deferReply()
+    await interaction.deferReply({ ephemeral: true })
 
-    const { assets, ...userData } = (await collections.users.findOne({
+    const { assets = {}, ...userData } = (await collections.users.findOne({
       discordId: user.id,
     })) as WithId<User>
 

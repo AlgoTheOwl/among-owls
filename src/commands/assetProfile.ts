@@ -10,6 +10,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('asset-profile')
     .setDescription('view an asset profile'),
+  enabled: true,
   async execute(interaction: SelectMenuInteraction) {
     if (!interaction.isSelectMenu()) return
 
@@ -33,7 +34,7 @@ module.exports = {
         { name: 'Asset ID', value: assetId.toString() },
         { name: 'Wins', value: winNumber.toString() },
       ]
-      interaction.editReply(
+      await interaction.editReply(
         doEmbed(embeds.assetProfile, {
           assetUrl,
           fields,
