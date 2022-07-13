@@ -18,6 +18,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('start')
     .setDescription('start When AOWLS Attack'),
+  enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
     const { maxCapacity, waitingRoomRefreshRate } = settings

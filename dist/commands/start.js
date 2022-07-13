@@ -15,6 +15,7 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('start')
         .setDescription('start When AOWLS Attack'),
+    enabled: true,
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
