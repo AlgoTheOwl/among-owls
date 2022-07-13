@@ -37,7 +37,15 @@ module.exports = {
         discordId: id,
       })) as WithId<User>
 
-      if (!Object.values(data?.assets).length) {
+      if (data === null) {
+        return interaction.editReply({
+          content: 'You are not registered. Use the /register command',
+        })
+      }
+
+      const assetData = data?.assets ? Object.values(data.assets) : []
+
+      if (!assetData.length) {
         return interaction.editReply({
           content: 'You have no AOWLs to select!',
         })
