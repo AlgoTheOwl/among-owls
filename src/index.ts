@@ -22,6 +22,7 @@ export let game: Game = new Game({}, false, false, coolDownInterval)
 export let emojis = {}
 
 const client: Client = new Client({
+  restRequestTimeout: 60000,
   intents: [
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,

@@ -64,5 +64,5 @@ const updateAsset = (winningUser: User) => {
   const winningAsset = game.players[winningUser.discordId].asset
   const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1
   const updatedAsset = { ...winningAsset, wins: winningAssetWins }
-  return { ...winnerAssets, updatedAsset }
+  return { ...winnerAssets, [updatedAsset.assetId]: updatedAsset }
 }
