@@ -53,5 +53,5 @@ const updateAsset = (winningUser) => {
     const winningAsset = __1.game.players[winningUser.discordId].asset;
     const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1;
     const updatedAsset = Object.assign(Object.assign({}, winningAsset), { wins: winningAssetWins });
-    return Object.assign(Object.assign({}, winnerAssets), { updatedAsset });
+    return Object.assign(Object.assign({}, winnerAssets), { [updatedAsset.assetId]: updatedAsset });
 };

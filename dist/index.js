@@ -17,6 +17,7 @@ const { coolDownInterval } = settings_1.default;
 exports.game = new game_1.default({}, false, false, coolDownInterval);
 exports.emojis = {};
 const client = new discord_js_1.Client({
+    restRequestTimeout: 60000,
     intents: [
         discord_js_1.Intents.FLAGS.GUILDS,
         discord_js_1.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,

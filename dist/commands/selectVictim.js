@@ -12,6 +12,13 @@ module.exports = {
         const { values: idArr, user } = interaction;
         const victimId = idArr[0];
         const player = __1.game.players[user.id];
+        if (victimId === 'random') {
+            player.victimId = undefined;
+            return interaction.reply({
+                ephemeral: true,
+                content: `You have chosen to attack a random player`,
+            });
+        }
         const victim = __1.game.players[victimId];
         if (!__1.game.active || __1.game.waitingRoom) {
             return interaction.reply({
@@ -20,13 +27,6 @@ module.exports = {
             });
         }
         if (player && victim) {
-            if (victimId === 'random') {
-                player.victimId = undefined;
-                return interaction.reply({
-                    ephemeral: true,
-                    content: `You have chosen to attack a random player`,
-                });
-            }
             if (victimId === user.id) {
                 return interaction.reply({
                     content: "You can't attack yourself, try again",
