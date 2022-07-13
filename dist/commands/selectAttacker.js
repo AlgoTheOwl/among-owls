@@ -27,7 +27,13 @@ module.exports = {
             const data = (await database_service_1.collections.users.findOne({
                 discordId: id,
             }));
-            if (!Object.values(data === null || data === void 0 ? void 0 : data.assets).length) {
+            if (data === null) {
+                return interaction.editReply({
+                    content: 'You are not registered. Use the /register command',
+                });
+            }
+            const assetData = (data === null || data === void 0 ? void 0 : data.assets) ? Object.values(data.assets) : [];
+            if (!assetData.length) {
                 return interaction.editReply({
                     content: 'You have no AOWLs to select!',
                 });
