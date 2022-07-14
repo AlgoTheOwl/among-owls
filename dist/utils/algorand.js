@@ -28,12 +28,14 @@ const determineOwnership = async function (address) {
         const { maxAssets } = settings_1.default;
         let walletOwned = false;
         const nftsOwned = [];
+        let hootOwned = 0;
         // Create array of unique assetIds
         const uniqueAssets = [];
         assets.forEach((asset) => {
             // Check if opt-in asset
             if (asset['asset-id'] === Number(optInAssetId)) {
                 walletOwned = true;
+                hootOwned = asset.amount;
             }
             // ensure no duplicate assets
             const result = uniqueAssets.findIndex((item) => asset['asset-id'] === item['asset-id']);
@@ -58,6 +60,7 @@ const determineOwnership = async function (address) {
         return {
             walletOwned,
             nftsOwned,
+            hootOwned,
         };
     }
     catch (error) {
@@ -65,6 +68,7 @@ const determineOwnership = async function (address) {
         return {
             walletOwned: false,
             nftsOwned: [],
+            hootOwned: 0,
         };
     }
 };

@@ -78,6 +78,7 @@ async function runGame(interaction) {
     catch (error) {
         console.log(error);
         interaction.editReply('something went wrong -> please resume the game again');
+        (0, helpers_1.resetGame)();
     }
 }
 exports.default = runGame;

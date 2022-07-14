@@ -4,6 +4,7 @@ import {
   doDamage,
   getWinningPlayer,
   mapPlayersForEmbed,
+  resetGame,
   wait,
 } from '../utils/helpers'
 import { handleWin } from './win'
@@ -22,7 +23,6 @@ export default async function runGame(interaction: Interaction) {
     const playerArr = Object.values(players)
 
     let isWin = false
-
     let handlingDeath = false
 
     // MAIN GAME LOOP
@@ -102,5 +102,6 @@ export default async function runGame(interaction: Interaction) {
     interaction.editReply(
       'something went wrong -> please resume the game again'
     )
+    resetGame()
   }
 }
