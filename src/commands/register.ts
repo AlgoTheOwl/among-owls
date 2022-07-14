@@ -85,7 +85,9 @@ export const processRegistration = async (
 
     // Check to see if wallet has opt-in asset
     // Retreive assetIds from specific collections
-    const { walletOwned, nftsOwned } = await determineOwnership(address)
+    const { walletOwned, nftsOwned, hootOwned } = await determineOwnership(
+      address
+    )
 
     const keyedNfts: { [key: string]: Asset } = {}
     nftsOwned.forEach((nft) => {
@@ -106,7 +108,13 @@ export const processRegistration = async (
 
     // If user doesn't exist, add to db and grab instance
     if (!user) {
-      const userEntry = new User(username, discordId, address, keyedNfts, 0)
+      const userEntry = new User(
+        username,
+        discordId,
+        address,
+        keyedNfts,
+        hootOwned
+      )
       const { acknowledged, insertedId } = await collections.users?.insertOne(
         userEntry
       )
@@ -120,7 +128,6 @@ export const processRegistration = async (
         }
       }
     } else {
-      console.log('user', user)
       await collections.users.findOneAndUpdate(
         { _id: user._id },
         { $set: { assets: keyedNfts, address: address } }

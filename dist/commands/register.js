@@ -67,7 +67,7 @@ const processRegistration = async (username, discordId, address) => {
         })));
         // Check to see if wallet has opt-in asset
         // Retreive assetIds from specific collections
-        const { walletOwned, nftsOwned } = await (0, algorand_1.determineOwnership)(address);
+        const { walletOwned, nftsOwned, hootOwned } = await (0, algorand_1.determineOwnership)(address);
         const keyedNfts = {};
         nftsOwned.forEach((nft) => {
             keyedNfts[nft.assetId] = nft;
@@ -84,7 +84,7 @@ const processRegistration = async (username, discordId, address) => {
         }
         // If user doesn't exist, add to db and grab instance
         if (!user) {
-            const userEntry = new user_1.default(username, discordId, address, keyedNfts, 0);
+            const userEntry = new user_1.default(username, discordId, address, keyedNfts, hootOwned);
             const { acknowledged, insertedId } = await ((_b = database_service_1.collections.users) === null || _b === void 0 ? void 0 : _b.insertOne(userEntry));
             if (acknowledged) {
                 user = (await ((_c = database_service_1.collections.users) === null || _c === void 0 ? void 0 : _c.findOne({
@@ -98,7 +98,6 @@ const processRegistration = async (username, discordId, address) => {
             }
         }
         else {
-            console.log('user', user);
             await database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: keyedNfts, address: address } });
         }
         return {

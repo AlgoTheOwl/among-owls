@@ -21,15 +21,18 @@ const port = ''
 const algodClient = new algosdk.Algodv2(token, server, port)
 const algoIndexer = new algosdk.Indexer(token, indexerServer, port)
 
-export const determineOwnership = async function (
-  address: string
-): Promise<{ walletOwned: boolean; nftsOwned: Asset[] | [] }> {
+export const determineOwnership = async function (address: string): Promise<{
+  walletOwned: boolean
+  nftsOwned: Asset[] | []
+  hootOwned: number
+}> {
   try {
     let { assets } = await algodClient.accountInformation(address).do()
     const { maxAssets } = settings
 
     let walletOwned = false
     const nftsOwned: Asset[] = []
+    let hootOwned = 0
 
     // Create array of unique assetIds
     const uniqueAssets: AlgoAsset[] = []
@@ -37,6 +40,7 @@ export const determineOwnership = async function (
       // Check if opt-in asset
       if (asset['asset-id'] === Number(optInAssetId)) {
         walletOwned = true
+        hootOwned = asset.amount
       }
       // ensure no duplicate assets
       const result = uniqueAssets.findIndex(
@@ -65,12 +69,14 @@ export const determineOwnership = async function (
     return {
       walletOwned,
       nftsOwned,
+      hootOwned,
     }
   } catch (error) {
     console.log(error)
     return {
       walletOwned: false,
       nftsOwned: [],
+      hootOwned: 0,
     }
   }
 }
