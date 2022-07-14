@@ -92,8 +92,6 @@ export const processRegistration = async (
       keyedNfts[nft.assetId] = nft
     })
 
-    console.log('keyedNfts', keyedNfts)
-
     if (!nftsOwned?.length) {
       return {
         status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
