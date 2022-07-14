@@ -10,7 +10,12 @@ module.exports = {
         if (!__1.game)
             return;
         const { values: idArr, user } = interaction;
-        const victimId = idArr[0];
+        const victimId = idArr[0] || null;
+        if (!victimId) {
+            return interaction.editReply({
+                content: 'Something went wrong, please try again',
+            });
+        }
         const player = __1.game.players[user.id];
         if (victimId === 'random') {
             player.victimId = undefined;

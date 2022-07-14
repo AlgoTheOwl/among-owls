@@ -92,6 +92,8 @@ export const processRegistration = async (
       keyedNfts[nft.assetId] = nft
     })
 
+    console.log('keyedNfts', keyedNfts)
+
     if (!nftsOwned?.length) {
       return {
         status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
@@ -120,9 +122,10 @@ export const processRegistration = async (
         }
       }
     } else {
-      collections.users.findOneAndUpdate(
+      console.log('user', user)
+      await collections.users.findOneAndUpdate(
         { _id: user._id },
-        { $set: { assets: keyedNfts, address } }
+        { $set: { assets: keyedNfts, address: address } }
       )
     }
 

@@ -72,6 +72,7 @@ const processRegistration = async (username, discordId, address) => {
         nftsOwned.forEach((nft) => {
             keyedNfts[nft.assetId] = nft;
         });
+        console.log('keyedNfts', keyedNfts);
         if (!(nftsOwned === null || nftsOwned === void 0 ? void 0 : nftsOwned.length)) {
             return {
                 status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
@@ -98,7 +99,8 @@ const processRegistration = async (username, discordId, address) => {
             }
         }
         else {
-            database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: keyedNfts, address } });
+            console.log('user', user);
+            await database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: keyedNfts, address: address } });
         }
         return {
             status: `Registration complete! Enjoy the game.`,
