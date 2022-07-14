@@ -72,7 +72,6 @@ const processRegistration = async (username, discordId, address) => {
         nftsOwned.forEach((nft) => {
             keyedNfts[nft.assetId] = nft;
         });
-        console.log('keyedNfts', keyedNfts);
         if (!(nftsOwned === null || nftsOwned === void 0 ? void 0 : nftsOwned.length)) {
             return {
                 status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
