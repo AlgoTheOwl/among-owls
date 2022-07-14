@@ -15,7 +15,7 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isSelectMenu())
             return;
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply();
         const { values, user } = interaction;
         const assetId = Number(values[0]);
         const discordId = user.id;
