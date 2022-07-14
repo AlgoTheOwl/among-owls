@@ -10,7 +10,13 @@ module.exports = {
     if (!game) return
     const { values: idArr, user } = interaction
 
-    const victimId = idArr[0]
+    const victimId = idArr[0] || null
+
+    if (!victimId) {
+      return interaction.editReply({
+        content: 'Something went wrong, please try again',
+      })
+    }
 
     const player = game.players[user.id]
 
