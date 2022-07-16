@@ -21,7 +21,7 @@ module.exports = {
     const player = game.players[user.id]
 
     if (victimId === 'random') {
-      player.victimId = undefined
+      if (player) player.victimId = undefined
       return interaction.reply({
         ephemeral: true,
         content: `You have chosen to attack a random player`,

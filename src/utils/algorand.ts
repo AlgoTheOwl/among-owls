@@ -27,7 +27,8 @@ export const determineOwnership = async function (address: string): Promise<{
   hootOwned: number
 }> {
   try {
-    let { assets } = await algodClient.accountInformation(address).do()
+    let { assets } = await algoIndexer.lookupAccountAssets(address).do()
+
     const { maxAssets } = settings
 
     let walletOwned = false
@@ -58,6 +59,8 @@ export const determineOwnership = async function (address: string): Promise<{
         if (assetData) {
           const { params } = assetData
 
+          console.log(params)
+
           if (params[`unit-name`]?.includes(unitPrefix)) {
             const { name, url } = params
             nftsOwned.push(new Asset(assetId, name, url, params['unit-name']))
@@ -85,7 +88,7 @@ export const findAsset = async (
   assetId: number
 ): Promise<AlgoAssetData | undefined> => {
   try {
-    const assetData = await algoIndexer.lookupAssetByID(assetId).do()
+    const assetData = await algoIndexer.searchForAssets().index(assetId).do()
     if (assetData?.asset) return assetData.asset
   } catch (error) {
     // console.log(error)
