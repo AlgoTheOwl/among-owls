@@ -54,8 +54,12 @@ module.exports = {
       const options = Object.values(data.assets)
         .map((asset: Asset, i: number) => {
           if (i < maxAssets) {
+            const label =
+              asset.assetName.length > 100
+                ? asset.assetName.slice(0, 100)
+                : asset.assetName
             return {
-              label: asset.assetName,
+              label,
               description: 'Select to play',
               value: asset?.assetId?.toString(),
             }

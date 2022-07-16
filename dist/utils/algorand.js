@@ -24,7 +24,7 @@ const algodClient = new algosdk_1.default.Algodv2(token, server, port);
 const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
 const determineOwnership = async function (address) {
     try {
-        let { assets } = await algodClient.accountInformation(address).do();
+        let { assets } = await algoIndexer.lookupAccountAssets(address).do();
         const { maxAssets } = settings_1.default;
         let walletOwned = false;
         const nftsOwned = [];
@@ -50,6 +50,7 @@ const determineOwnership = async function (address) {
                 const assetData = await (0, exports.findAsset)(assetId);
                 if (assetData) {
                     const { params } = assetData;
+                    console.log(params);
                     if ((_a = params[`unit-name`]) === null || _a === void 0 ? void 0 : _a.includes(unitPrefix)) {
                         const { name, url } = params;
                         nftsOwned.push(new asset_1.default(assetId, name, url, params['unit-name']));
@@ -75,7 +76,7 @@ const determineOwnership = async function (address) {
 exports.determineOwnership = determineOwnership;
 const findAsset = async (assetId) => {
     try {
-        const assetData = await algoIndexer.lookupAssetByID(assetId).do();
+        const assetData = await algoIndexer.searchForAssets().index(assetId).do();
         if (assetData === null || assetData === void 0 ? void 0 : assetData.asset)
             return assetData.asset;
     }
