@@ -11,4 +11,5 @@ exports.default = {
     stopped: 'stopped',
     profile: 'profile',
     assetProfile: 'assetProfile',
+    clear: 'clear',
 };

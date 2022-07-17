@@ -11,7 +11,7 @@ const defaultEmbedValues = {
     title: '🔥 Ye Among AOWLs 🔥',
     description: '💀 Who will survive? 💀',
     color: 'DARK_AQUA',
-    image: 'attachment://main.gif',
+    // image: 'attachment://main.gif',
     // thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
     footer: {
         text: 'A HootGang Production',
@@ -56,6 +56,7 @@ function doEmbed(type, options) {
             color: 'RANDOM',
             image: undefined,
             fields,
+            files: [],
             footer: {
                 text: 'A HootGang Production',
             },
@@ -63,13 +64,13 @@ function doEmbed(type, options) {
     }
     // Waiting Room Countdown
     if (type === embeds_1.default.countDown) {
-        const imagePath = `src/images/${options === null || options === void 0 ? void 0 : options.countDown}.png`;
-        const countDownImage = new discord_js_1.MessageAttachment(imagePath);
+        // const imagePath = `src/images/${options?.countDown}.png`
+        // const countDownImage = new MessageAttachment(imagePath)
         data = {
             title: 'Ready your AOWLS!',
-            description: `Game starting in ${options === null || options === void 0 ? void 0 : options.countDown}...`,
-            files: [countDownImage],
-            image: `attachment://${options === null || options === void 0 ? void 0 : options.countDown}.png`,
+            // files: [countDownImage],
+            description: `Game starts in ${options === null || options === void 0 ? void 0 : options.countDown} seconds...`,
+            // image: `attachment://${options?.countDown}.png`,
         };
     }
     // Players timed out
@@ -127,6 +128,14 @@ function doEmbed(type, options) {
             description: `Your lil' ripper`,
             thumbNail: (0, helpers_1.normalizeIpfsUrl)(assetUrl),
             fields,
+        };
+    }
+    if (type === embeds_1.default.clear) {
+        data = {
+            title: undefined,
+            description: 'Loading...',
+            thumbNail: undefined,
+            fields: [],
         };
     }
     let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);

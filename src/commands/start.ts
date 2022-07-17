@@ -39,8 +39,8 @@ module.exports = {
      * MEGATRON *
      ************
      */
-    const file = new MessageAttachment('src/images/main.gif')
-    await interaction.editReply({ files: [file] })
+    // const file = new MessageAttachment('src/images/main.gif')
+    // await interaction.editReply({ files: [file] })
 
     /*
      ****************
@@ -76,11 +76,12 @@ module.exports = {
      */
     let countDown = 5
     while (countDown > 0 && !game.stopped) {
+      await game.embed.edit(doEmbed(embedTypes.countDown, { countDown }))
       await wait(1000)
-      const imagePath = `src/images/${countDown}.png`
-      const countDownImage = new MessageAttachment(imagePath)
-      await interaction.editReply({ files: [countDownImage] })
       countDown--
+      // const imagePath = `src/images/${countDown}.png`
+      // const countDownImage = new MessageAttachment(imagePath)
+      // await interaction.editReply({ files: [countDownImage] })
     }
 
     /*
@@ -89,8 +90,7 @@ module.exports = {
      ***************
      */
     if (!game.stopped) {
-      interaction.editReply({ files: [file] })
-      game.embed.edit(doEmbed(embedTypes.activeGame))
+      await game.embed.edit(doEmbed(embedTypes.activeGame))
       game.active = true
 
       // Do Game

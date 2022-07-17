@@ -50,8 +50,9 @@ async function runGame(interaction) {
                             content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
                         });
                         setTimeout(async () => {
-                            const file = new discord_js_1.MessageAttachment('src/images/main.gif');
-                            await interaction.editReply({ files: [file] });
+                            // const file = new MessageAttachment('src/images/main.gif')
+                            // await interaction.editReply({ files: [file] })
+                            await interaction.deleteReply();
                             handlingDeath = false;
                         }, deathDeleteInterval);
                     }
@@ -59,7 +60,7 @@ async function runGame(interaction) {
                     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
                     isWin = !!winningPlayer;
                     if (isWin && winningPlayer && __1.game.active) {
-                        return (0, win_1.handleWin)(winningPlayer, winByTimeout);
+                        return (0, win_1.handleWin)(winningPlayer, winByTimeout, interaction);
                     }
                     // REFRESH EMBED
                     const attackField = {

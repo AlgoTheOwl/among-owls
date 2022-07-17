@@ -33,8 +33,8 @@ module.exports = {
          * MEGATRON *
          ************
          */
-        const file = new discord_js_1.MessageAttachment('src/images/main.gif');
-        await interaction.editReply({ files: [file] });
+        // const file = new MessageAttachment('src/images/main.gif')
+        // await interaction.editReply({ files: [file] })
         /*
          ****************
          * WAITING ROOM *
@@ -63,11 +63,12 @@ module.exports = {
          */
         let countDown = 5;
         while (countDown > 0 && !__1.game.stopped) {
+            await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.countDown, { countDown }));
             await (0, helpers_1.wait)(1000);
-            const imagePath = `src/images/${countDown}.png`;
-            const countDownImage = new discord_js_1.MessageAttachment(imagePath);
-            await interaction.editReply({ files: [countDownImage] });
             countDown--;
+            // const imagePath = `src/images/${countDown}.png`
+            // const countDownImage = new MessageAttachment(imagePath)
+            // await interaction.editReply({ files: [countDownImage] })
         }
         /*
          ***************
@@ -75,8 +76,7 @@ module.exports = {
          ***************
          */
         if (!__1.game.stopped) {
-            interaction.editReply({ files: [file] });
-            __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
+            await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
             __1.game.active = true;
             // Do Game
             (0, runGame_1.default)(interaction);

@@ -10,9 +10,10 @@ const settings_1 = __importDefault(require("../settings"));
 const embeds_1 = __importDefault(require("../embeds"));
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const __1 = require("..");
+const startNewGame_1 = require("./startNewGame");
 const { imageDir, hootSettings } = settings_1.default;
 const { hootOnWin } = hootSettings;
-const handleWin = async (player, winByTimeout) => {
+const handleWin = async (player, winByTimeout, interaction) => {
     __1.game.active = false;
     // Increment score and hoot of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
@@ -30,6 +31,9 @@ const handleWin = async (player, winByTimeout) => {
     (0, helpers_1.resetGame)();
     (0, helpers_1.emptyDir)(imageDir);
     setAssetTimeout(playerArr);
+    setTimeout(() => {
+        (0, startNewGame_1.startNewGame)(interaction);
+    }, 3000);
     return __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.win, { winByTimeout, player }));
 };
 exports.handleWin = handleWin;

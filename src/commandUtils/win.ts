@@ -7,11 +7,17 @@ import settings from '../settings'
 import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
 import { game } from '..'
+import { Interaction } from 'discord.js'
+import { startNewGame } from './startNewGame'
 
 const { imageDir, hootSettings } = settings
 const { hootOnWin } = hootSettings
 
-export const handleWin = async (player: Player, winByTimeout: boolean) => {
+export const handleWin = async (
+  player: Player,
+  winByTimeout: boolean,
+  interaction: Interaction
+) => {
   game.active = false
 
   // Increment score and hoot of winning player
@@ -37,6 +43,9 @@ export const handleWin = async (player: Player, winByTimeout: boolean) => {
   resetGame()
   emptyDir(imageDir)
   setAssetTimeout(playerArr)
+  setTimeout(() => {
+    startNewGame(interaction)
+  }, 3000)
   return game.embed.edit(doEmbed(embeds.win, { winByTimeout, player }))
 }
 

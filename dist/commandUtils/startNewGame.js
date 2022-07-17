@@ -15,21 +15,14 @@ async function startNewGame(interaction) {
     if (!interaction.isCommand())
         return;
     const { maxCapacity, waitingRoomRefreshRate } = settings_1.default;
-    if ((__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) || (__1.game === null || __1.game === void 0 ? void 0 : __1.game.waitingRoom)) {
-        return await interaction.reply({
-            content: 'A game is already running',
-            ephemeral: true,
-        });
-    }
     (0, helpers_1.resetGame)();
-    await interaction.deferReply();
     /*
      ************
      * MEGATRON *
      ************
      */
-    const file = new discord_js_1.MessageAttachment('src/images/main.gif');
-    await interaction.editReply({ files: [file] });
+    // const file = new MessageAttachment('src/images/main.gif')
+    // await interaction.editReply({ files: [file] })
     /*
      ****************
      * WAITING ROOM *
@@ -69,7 +62,7 @@ async function startNewGame(interaction) {
      ***************
      */
     if (!__1.game.stopped) {
-        interaction.editReply({ files: [file] });
+        // interaction.editReply({ files: [file] })
         __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame));
         __1.game.active = true;
         // Do Game

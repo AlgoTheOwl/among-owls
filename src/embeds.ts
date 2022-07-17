@@ -16,7 +16,7 @@ const defaultEmbedValues: EmbedData = {
   title: '🔥 Ye Among AOWLs 🔥',
   description: '💀 Who will survive? 💀',
   color: 'DARK_AQUA',
-  image: 'attachment://main.gif',
+  // image: 'attachment://main.gif',
   // thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   footer: {
     text: 'A HootGang Production',
@@ -74,6 +74,7 @@ export default function doEmbed(
       color: 'RANDOM',
       image: undefined,
       fields,
+      files: [],
       footer: {
         text: 'A HootGang Production',
       },
@@ -82,13 +83,13 @@ export default function doEmbed(
 
   // Waiting Room Countdown
   if (type === embeds.countDown) {
-    const imagePath = `src/images/${options?.countDown}.png`
-    const countDownImage = new MessageAttachment(imagePath)
+    // const imagePath = `src/images/${options?.countDown}.png`
+    // const countDownImage = new MessageAttachment(imagePath)
     data = {
       title: 'Ready your AOWLS!',
-      description: `Game starting in ${options?.countDown}...`,
-      files: [countDownImage],
-      image: `attachment://${options?.countDown}.png`,
+      // files: [countDownImage],
+      description: `Game starts in ${options?.countDown} seconds...`,
+      // image: `attachment://${options?.countDown}.png`,
     }
   }
 
@@ -158,6 +159,15 @@ export default function doEmbed(
       description: `Your lil' ripper`,
       thumbNail: normalizeIpfsUrl(assetUrl),
       fields,
+    }
+  }
+
+  if (type === embeds.clear) {
+    data = {
+      title: undefined,
+      description: 'Loading...',
+      thumbNail: undefined,
+      fields: [],
     }
   }
 

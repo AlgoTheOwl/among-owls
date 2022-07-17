@@ -64,8 +64,9 @@ export default async function runGame(interaction: Interaction) {
             })
 
             setTimeout(async () => {
-              const file = new MessageAttachment('src/images/main.gif')
-              await interaction.editReply({ files: [file] })
+              // const file = new MessageAttachment('src/images/main.gif')
+              // await interaction.editReply({ files: [file] })
+              await interaction.deleteReply()
               handlingDeath = false
             }, deathDeleteInterval)
           }
@@ -75,7 +76,7 @@ export default async function runGame(interaction: Interaction) {
           isWin = !!winningPlayer
 
           if (isWin && winningPlayer && game.active) {
-            return handleWin(winningPlayer, winByTimeout)
+            return handleWin(winningPlayer, winByTimeout, interaction)
           }
 
           // REFRESH EMBED
