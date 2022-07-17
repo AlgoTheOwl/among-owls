@@ -20,12 +20,6 @@ module.exports = {
         if (!interaction.isCommand())
             return;
         const { maxCapacity, waitingRoomRefreshRate } = settings_1.default;
-        if ((__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) || (__1.game === null || __1.game === void 0 ? void 0 : __1.game.waitingRoom)) {
-            return await interaction.reply({
-                content: 'A game is already running',
-                ephemeral: true,
-            });
-        }
         (0, helpers_1.resetGame)();
         await interaction.deferReply();
         /*
