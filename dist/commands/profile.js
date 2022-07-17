@@ -27,49 +27,65 @@ module.exports = {
     enabled: true,
     async execute(interaction) {
         var _a;
-        if (!interaction.isCommand())
-            return;
-        const { maxAssets } = settings_1.default;
-        const { user } = interaction;
-        await interaction.deferReply();
-        const _b = (await database_service_1.collections.users.findOne({
-            discordId: user.id,
-        })), { assets = {} } = _b, userData = __rest(_b, ["assets"]);
-        const selectMenu = new discord_js_1.MessageSelectMenu()
-            .setCustomId('asset-profile')
-            .setPlaceholder('See your AOWL stats');
-        const options = Object.values(assets)
-            .map((asset, i) => {
-            var _a;
-            if (i < maxAssets) {
-                return {
-                    label: asset.assetName,
-                    description: 'Select and AOWL to view',
-                    value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
-                };
+        try {
+            if (!interaction.isCommand())
+                return;
+            const { maxAssets } = settings_1.default;
+            const { user } = interaction;
+            await interaction.deferReply();
+            const _b = (await database_service_1.collections.users.findOne({
+                discordId: user.id,
+            })), { assets = {} } = _b, userData = __rest(_b, ["assets"]);
+            const selectMenu = new discord_js_1.MessageSelectMenu()
+                .setCustomId('asset-profile')
+                .setPlaceholder('See your AOWL stats');
+            const assetArray = Object.values(assets);
+            if (!assetArray.length) {
+                interaction.reply({
+                    ephemeral: true,
+                    content: 'You have no AOWLS to profile.',
+                });
             }
-        })
-            .filter(Boolean);
-        if (options.length) {
-            selectMenu.addOptions(options);
+            const options = assetArray
+                .map((asset, i) => {
+                var _a;
+                if (i < maxAssets) {
+                    return {
+                        label: asset.assetName,
+                        description: 'Select and AOWL to view',
+                        value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
+                    };
+                }
+            })
+                .filter(Boolean);
+            if (options.length) {
+                selectMenu.addOptions(options);
+            }
+            const fields = [];
+            let thumbNail;
+            // picture of first asset
+            const firstAsset = (_a = assets[0]) === null || _a === void 0 ? void 0 : _a.assetUrl;
+            if (firstAsset) {
+                thumbNail = firstAsset;
+            }
+            const hoot = userData.hoot ? userData.hoot.toString() : '0';
+            const yaoWins = userData.yaoWins ? userData.yaoWins.toString() : '0';
+            // discord username
+            fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot }, { name: 'Games won', value: yaoWins });
+            const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
+            const embed = (0, embeds_2.default)(embeds_1.default.profile, {
+                thumbNail,
+                fields,
+            });
+            await interaction.editReply({
+                content: 'Choose your AOWL',
+                components: [row],
+                embeds: [embed],
+            });
         }
-        const fields = [];
-        let thumbNail;
-        // picture of first asset
-        const firstAsset = (_a = assets[0]) === null || _a === void 0 ? void 0 : _a.assetUrl;
-        if (firstAsset) {
-            thumbNail = firstAsset;
+        catch (error) {
+            console.log('Error getting profile');
+            console.log(error);
         }
-        const hoot = userData.hoot ? userData.hoot.toString() : '0';
-        const yaoWins = userData.yaoWins ? userData.yaoWins.toString() : '0';
-        // discord username
-        fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot }, { name: 'Games won', value: yaoWins });
-        const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
-        const embed = (0, embeds_2.default)(embeds_1.default.profile, { thumbNail, fields });
-        await interaction.editReply({
-            content: 'Choose your AOWL',
-            components: [row],
-            embeds: [embed],
-        });
     },
 };
