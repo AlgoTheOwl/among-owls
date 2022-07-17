@@ -20,8 +20,8 @@ type Settings = {
 }
 
 export default {
-  hp: 10,
-  damageRange: 50,
+  hp: 420,
+  damageRange: 150,
   // Score modifier
   damagePerAowl: 5,
   // File where player assets are stored

@@ -89,7 +89,7 @@ export default function doEmbed(
       title: 'Ready your AOWLS!',
       // files: [countDownImage],
       description: `Game starts in ${options?.countDown} seconds...`,
-      // image: `attachment://${options?.countDown}.png`,
+      // thumbNail: `attachment://${options?.countDown}.png`,
     }
   }
 

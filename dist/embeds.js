@@ -70,7 +70,7 @@ function doEmbed(type, options) {
             title: 'Ready your AOWLS!',
             // files: [countDownImage],
             description: `Game starts in ${options === null || options === void 0 ? void 0 : options.countDown} seconds...`,
-            // image: `attachment://${options?.countDown}.png`,
+            // thumbNail: `attachment://${options?.countDown}.png`,
         };
     }
     // Players timed out
