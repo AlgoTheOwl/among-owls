@@ -47,6 +47,14 @@ client.once('ready', async () => {
 client.on('interactionCreate', async (interaction) => {
     let command;
     if (interaction.isCommand()) {
+        // ensure two games can't start simultaneously
+        if (((exports.game === null || exports.game === void 0 ? void 0 : exports.game.active) || (exports.game === null || exports.game === void 0 ? void 0 : exports.game.waitingRoom)) &&
+            interaction.commandName === 'start') {
+            return await interaction.reply({
+                content: 'A game is already running',
+                ephemeral: true,
+            });
+        }
         command = client.commands.get(interaction.commandName);
     }
     if (interaction.isSelectMenu() || interaction.isButton()) {

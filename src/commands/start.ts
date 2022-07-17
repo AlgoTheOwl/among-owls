@@ -23,13 +23,6 @@ module.exports = {
     if (!interaction.isCommand()) return
     const { maxCapacity, waitingRoomRefreshRate } = settings
 
-    if (game?.active || game?.waitingRoom) {
-      return await interaction.reply({
-        content: 'A game is already running',
-        ephemeral: true,
-      })
-    }
-
     resetGame()
 
     await interaction.deferReply()

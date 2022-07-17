@@ -63,6 +63,17 @@ client.on(
   ) => {
     let command
     if (interaction.isCommand()) {
+      // ensure two games can't start simultaneously
+      if (
+        (game?.active || game?.waitingRoom) &&
+        interaction.commandName === 'start'
+      ) {
+        return await interaction.reply({
+          content: 'A game is already running',
+          ephemeral: true,
+        })
+      }
+
       command = client.commands.get(interaction.commandName)
     }
     if (interaction.isSelectMenu() || interaction.isButton()) {
