@@ -50,7 +50,6 @@ const determineOwnership = async function (address) {
                 const assetData = await (0, exports.findAsset)(assetId);
                 if (assetData) {
                     const { params } = assetData;
-                    console.log(params);
                     if ((_a = params[`unit-name`]) === null || _a === void 0 ? void 0 : _a.includes(unitPrefix)) {
                         const { name, url } = params;
                         nftsOwned.push(new asset_1.default(assetId, name, url, params['unit-name']));
@@ -77,11 +76,11 @@ exports.determineOwnership = determineOwnership;
 const findAsset = async (assetId) => {
     try {
         const assetData = await algoIndexer.searchForAssets().index(assetId).do();
-        if (assetData === null || assetData === void 0 ? void 0 : assetData.asset)
-            return assetData.asset;
+        if (assetData === null || assetData === void 0 ? void 0 : assetData.assets)
+            return assetData.assets[0];
     }
     catch (error) {
-        // console.log(error)
+        console.log(error);
     }
 };
 exports.findAsset = findAsset;

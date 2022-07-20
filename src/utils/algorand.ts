@@ -1,5 +1,5 @@
 import Asset from '../models/asset'
-import { AlgoAsset, AlgoAssetData } from '../types/user'
+import { AlgoAsset, AlgoAssetData, AlgoAssetResponse } from '../types/user'
 import { asyncForEach } from './helpers'
 import algosdk from 'algosdk'
 import settings from '../settings'
@@ -59,8 +59,6 @@ export const determineOwnership = async function (address: string): Promise<{
         if (assetData) {
           const { params } = assetData
 
-          console.log(params)
-
           if (params[`unit-name`]?.includes(unitPrefix)) {
             const { name, url } = params
             nftsOwned.push(new Asset(assetId, name, url, params['unit-name']))
@@ -89,9 +87,9 @@ export const findAsset = async (
 ): Promise<AlgoAssetData | undefined> => {
   try {
     const assetData = await algoIndexer.searchForAssets().index(assetId).do()
-    if (assetData?.asset) return assetData.asset
+    if (assetData?.assets) return assetData.assets[0]
   } catch (error) {
-    // console.log(error)
+    console.log(error)
   }
 }
 

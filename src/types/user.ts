@@ -37,6 +37,10 @@ export interface AlgoAssetData {
   'current-round': number
 }
 
+export interface AlgoAssetResponse {
+  assets: AlgoAssetData[]
+}
+
 export interface RegistrationResult {
   status: string
   asset?: Asset
