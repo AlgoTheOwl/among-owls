@@ -1,11 +1,15 @@
+// Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
+import { InteractionReplyOptions } from 'discord.js'
+// Data
 import { collections } from '../database/database.service'
+// Schemas
 import { WithId } from 'mongodb'
 import User from '../models/user'
-import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
-import { InteractionReplyOptions } from 'discord.js'
+// Helpers
+import doEmbed from '../embeds'
 
 module.exports = {
   data: new SlashCommandBuilder()

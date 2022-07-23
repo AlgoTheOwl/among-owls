@@ -3,9 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Discord
 const discord_js_1 = require("discord.js");
 const builders_1 = require("@discordjs/builders");
+// Data
 const database_service_1 = require("../database/database.service");
+// Globals
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
 module.exports = {

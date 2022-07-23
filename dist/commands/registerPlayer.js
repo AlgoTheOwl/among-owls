@@ -4,12 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
-const index_1 = require("../index");
-const helpers_1 = require("../utils/helpers");
-const asset_1 = __importDefault(require("../models/asset"));
+// Data
 const database_service_1 = require("../database/database.service");
-const settings_1 = __importDefault(require("../settings"));
+// Schemas
+const asset_1 = __importDefault(require("../models/asset"));
 const player_1 = __importDefault(require("../models/player"));
+// Helpers
+const helpers_1 = require("../utils/helpers");
+// Globals
+const index_1 = require("../index");
+const settings_1 = __importDefault(require("../settings"));
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('register-player')

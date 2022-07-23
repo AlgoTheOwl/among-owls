@@ -36,15 +36,7 @@ async function connectToDatabase() {
     await client.connect();
     exports.db = db = client.db(process.env.DB_NAME);
     const usersCollection = db.collection(process.env.USERS_COLLECTION_NAME);
-    // const assetsCollection: mongoDB.Collection = db.collection(
-    //   process.env.ASSETS_COLLECTION_NAME
-    // )
-    // const yaoPlayersCollection: mongoDB.Collection = db.collection(
-    //   process.env.GAME_COLLECTION_NAME
-    // )
     exports.collections.users = usersCollection;
-    // collections.assets = assetsCollection
-    // collections.yaoPlayers = yaoPlayersCollection
     console.log(`Successfully connected to database: ${db.databaseName}`);
 }
 exports.connectToDatabase = connectToDatabase;

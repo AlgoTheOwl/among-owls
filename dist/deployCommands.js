@@ -3,8 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Discord
 const rest_1 = require("@discordjs/rest");
 const v9_1 = require("discord-api-types/v9");
+// Node
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const clientId = process.env.DISCORD_CLIENT_ID;

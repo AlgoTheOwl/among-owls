@@ -1,5 +1,7 @@
+// Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { SelectMenuInteraction } from 'discord.js'
+// Globals
 import { game } from '..'
 
 module.exports = {

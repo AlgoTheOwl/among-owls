@@ -3,9 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Discord
 const discord_js_1 = require("discord.js");
-const _1 = require(".");
 const embeds_1 = __importDefault(require("./constants/embeds"));
+// Game state
+const _1 = require(".");
+// Helpers
 const helpers_1 = require("./utils/helpers");
 const defaultEmbedValues = {
     title: '🔥 Ye Among AOWLs 🔥',
@@ -31,6 +34,7 @@ function doEmbed(type, options) {
         data = {
             title: '🦉 Waiting Room 🦉',
             description: `${playerCount} ${playerWord} ${hasWord} joined the game.`,
+            files: [],
             fields: playerArr.map((player) => {
                 return {
                     name: player.username,

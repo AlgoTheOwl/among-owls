@@ -4,12 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processRegistration = void 0;
-const algorand_1 = require("../utils/algorand");
-const user_1 = __importDefault(require("../models/user"));
-const database_service_1 = require("../database/database.service");
 const builders_1 = require("@discordjs/builders");
-const __1 = require("..");
+// Data
+const database_service_1 = require("../database/database.service");
+// Helpers
+const algorand_1 = require("../utils/algorand");
 const helpers_1 = require("../utils/helpers");
+// Schemas
+const user_1 = __importDefault(require("../models/user"));
+// Globals
+const __1 = require("..");
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
 const unitName = process.env.UNIT_NAME;
 module.exports = {
