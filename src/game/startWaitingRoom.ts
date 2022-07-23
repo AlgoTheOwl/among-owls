@@ -16,7 +16,7 @@ import { game, channel } from '..'
 import embeds from '../constants/embeds'
 import Player from '../models/player'
 
-export default async function startWaitingRoom() {
+export const startWaitingRoom = async () => {
   const { maxCapacity } = settings
   let capacity = maxCapacity
 
