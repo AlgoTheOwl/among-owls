@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -34,55 +25,53 @@ module.exports = {
         .setDescription('enter the your wallet address')
         .setRequired(true)),
     enabled: true,
-    execute(interaction) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!interaction.isCommand())
-                return;
-            const { user, options } = interaction;
-            if (__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) {
-                return interaction.reply({
-                    content: 'Please wait until after the game ends to register',
-                    ephemeral: true,
-                });
-            }
-            // TODO: add ability to register for different games here
-            const address = options.getString('address');
-            if (address && !/^[a-zA-Z0-9]{58}$/.test(address)) {
-                return interaction.reply({
-                    content: 'Please enter a valid Algorand wallet address',
-                    ephemeral: true,
-                });
-            }
-            const { username, id } = user;
-            yield interaction.deferReply({ ephemeral: true });
-            yield interaction.followUp({
-                content: 'Thanks for registering! This might take a while! Please check back in a few minutes',
+    async execute(interaction) {
+        if (!interaction.isCommand())
+            return;
+        const { user, options } = interaction;
+        if (__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) {
+            return interaction.reply({
+                content: 'Please wait until after the game ends to register',
                 ephemeral: true,
             });
-            if (address) {
-                const { status, registeredUser, asset } = yield (0, exports.processRegistration)(username, id, address);
-                // add permissions if succesful
-                if (registeredUser && asset) {
-                    (0, helpers_1.addRole)(interaction, process.env.REGISTERED_ID, registeredUser);
-                }
-                yield interaction.followUp({
-                    ephemeral: true,
-                    content: status,
-                });
-            }
+        }
+        // TODO: add ability to register for different games here
+        const address = options.getString('address');
+        if (address && !/^[a-zA-Z0-9]{58}$/.test(address)) {
+            return interaction.reply({
+                content: 'Please enter a valid Algorand wallet address',
+                ephemeral: true,
+            });
+        }
+        const { username, id } = user;
+        await interaction.deferReply({ ephemeral: true });
+        await interaction.followUp({
+            content: 'Thanks for registering! This might take a while! Please check back in a few minutes',
+            ephemeral: true,
         });
+        if (address) {
+            const { status, registeredUser, asset } = await (0, exports.processRegistration)(username, id, address);
+            // add permissions if succesful
+            if (registeredUser && asset) {
+                (0, helpers_1.addRole)(interaction, process.env.REGISTERED_ID, registeredUser);
+            }
+            await interaction.followUp({
+                ephemeral: true,
+                content: status,
+            });
+        }
     },
 };
-const processRegistration = (username, discordId, address) => __awaiter(void 0, void 0, void 0, function* () {
+const processRegistration = async (username, discordId, address) => {
     var _a, _b, _c;
     try {
         // Attempt to find user in db
-        let user = (yield ((_a = database_service_1.collections.users) === null || _a === void 0 ? void 0 : _a.findOne({
+        let user = (await ((_a = database_service_1.collections.users) === null || _a === void 0 ? void 0 : _a.findOne({
             discordId,
         })));
         // Check to see if wallet has opt-in asset
         // Retreive assetIds from specific collections
-        const { walletOwned, nftsOwned, hootOwned } = yield (0, algorand_1.determineOwnership)(address);
+        const { walletOwned, nftsOwned, hootOwned } = await (0, algorand_1.determineOwnership)(address);
         const keyedNfts = {};
         nftsOwned.forEach((nft) => {
             keyedNfts[nft.assetId] = nft;
@@ -100,9 +89,9 @@ const processRegistration = (username, discordId, address) => __awaiter(void 0, 
         // If user doesn't exist, add to db and grab instance
         if (!user) {
             const userEntry = new user_1.default(username, discordId, address, keyedNfts, hootOwned);
-            const { acknowledged, insertedId } = yield ((_b = database_service_1.collections.users) === null || _b === void 0 ? void 0 : _b.insertOne(userEntry));
+            const { acknowledged, insertedId } = await ((_b = database_service_1.collections.users) === null || _b === void 0 ? void 0 : _b.insertOne(userEntry));
             if (acknowledged) {
-                user = (yield ((_c = database_service_1.collections.users) === null || _c === void 0 ? void 0 : _c.findOne({
+                user = (await ((_c = database_service_1.collections.users) === null || _c === void 0 ? void 0 : _c.findOne({
                     _id: insertedId,
                 })));
             }
@@ -113,7 +102,7 @@ const processRegistration = (username, discordId, address) => __awaiter(void 0, 
             }
         }
         else {
-            yield database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: keyedNfts, address: address } });
+            await database_service_1.collections.users.findOneAndUpdate({ _id: user._id }, { $set: { assets: keyedNfts, address: address } });
         }
         return {
             status: `Registration complete! Enjoy the game.`,
@@ -126,5 +115,5 @@ const processRegistration = (username, discordId, address) => __awaiter(void 0, 
             status: 'Something went wrong during registration, please try again',
         };
     }
-});
+};
 exports.processRegistration = processRegistration;
