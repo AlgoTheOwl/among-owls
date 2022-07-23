@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -22,27 +13,27 @@ const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const database_service_1 = require("../database/database.service");
 const { damagePerAowl, hp, damageRange } = settings_1.default;
-const wait = (duration) => __awaiter(void 0, void 0, void 0, function* () {
-    yield new Promise((res) => {
+const wait = async (duration) => {
+    await new Promise((res) => {
         setTimeout(res, duration);
     });
-});
+};
 exports.wait = wait;
-const asyncForEach = (array, callback) => __awaiter(void 0, void 0, void 0, function* () {
+const asyncForEach = async (array, callback) => {
     for (let index = 0; index < array.length; index++) {
-        yield callback(array[index], index, array);
+        await callback(array[index], index, array);
     }
-});
+};
 exports.asyncForEach = asyncForEach;
 const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/';
-const downloadFile = (asset, directory, username) => __awaiter(void 0, void 0, void 0, function* () {
+const downloadFile = async (asset, directory, username) => {
     try {
         const { assetUrl } = asset;
         if (assetUrl) {
             const url = (0, exports.normalizeIpfsUrl)(assetUrl);
             const path = `${directory}/${username}.jpg`;
             const writer = fs_1.default.createWriteStream(path);
-            const res = yield axios_1.default.get(url, {
+            const res = await axios_1.default.get(url, {
                 responseType: 'stream',
             });
             res.data.pipe(writer);
@@ -57,7 +48,7 @@ const downloadFile = (asset, directory, username) => __awaiter(void 0, void 0, v
     catch (error) {
         console.log('ERROR:', error);
     }
-});
+};
 exports.downloadFile = downloadFile;
 // export const normalizeLink = (imageUrl: string): string => {
 //   if (imageUrl?.slice(0, 4) === 'ipfs') {
@@ -100,30 +91,30 @@ const emptyDir = (dirPath) => {
     }
 };
 exports.emptyDir = emptyDir;
-const addRole = (interaction, roleId, user) => __awaiter(void 0, void 0, void 0, function* () {
+const addRole = async (interaction, roleId, user) => {
     var _a, _b;
     try {
         const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.id === roleId);
         const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === user.discordId);
-        role && (yield (member === null || member === void 0 ? void 0 : member.roles.add(role.id)));
+        role && (await (member === null || member === void 0 ? void 0 : member.roles.add(role.id)));
     }
     catch (error) {
         console.log('Error adding role', error);
     }
-});
+};
 exports.addRole = addRole;
-const removeRole = (interaction, roleId, discordId) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
-    const role = (_c = interaction.guild) === null || _c === void 0 ? void 0 : _c.roles.cache.find((role) => role.id === roleId);
-    const member = (_d = interaction.guild) === null || _d === void 0 ? void 0 : _d.members.cache.find((member) => member.id === discordId);
-    role && (yield (member === null || member === void 0 ? void 0 : member.roles.remove(role.id)));
-});
+const removeRole = async (interaction, roleId, discordId) => {
+    var _a, _b;
+    const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.id === roleId);
+    const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === discordId);
+    role && (await (member === null || member === void 0 ? void 0 : member.roles.remove(role.id)));
+};
 exports.removeRole = removeRole;
-const confirmRole = (roleId, interaction, userId) => __awaiter(void 0, void 0, void 0, function* () {
-    var _e;
-    const member = (_e = interaction.guild) === null || _e === void 0 ? void 0 : _e.members.cache.find((member) => member.id === userId);
+const confirmRole = async (roleId, interaction, userId) => {
+    var _a;
+    const member = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.members.cache.find((member) => member.id === userId);
     return member === null || member === void 0 ? void 0 : member.roles.cache.has(roleId);
-});
+};
 exports.confirmRole = confirmRole;
 const getNumberSuffix = (num) => {
     if (num === 1)
@@ -187,16 +178,16 @@ const doDamage = (player, withMultiplier = false) => {
     }
 };
 exports.doDamage = doDamage;
-const getUsersFromPlayers = (players) => __awaiter(void 0, void 0, void 0, function* () {
+const getUsersFromPlayers = async (players) => {
     const users = [];
-    yield (0, exports.asyncForEach)(players, (player) => __awaiter(void 0, void 0, void 0, function* () {
-        const user = (yield database_service_1.collections.users.findOne({
+    await (0, exports.asyncForEach)(players, async (player) => {
+        const user = (await database_service_1.collections.users.findOne({
             discordId: player.discordId,
         }));
         users.push(user);
-    }));
+    });
     return users;
-});
+};
 exports.getUsersFromPlayers = getUsersFromPlayers;
 const isIpfs = (url) => (url === null || url === void 0 ? void 0 : url.slice(0, 4)) === 'ipfs';
 exports.isIpfs = isIpfs;

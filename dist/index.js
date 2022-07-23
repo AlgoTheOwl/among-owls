@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -40,8 +31,8 @@ exports.client = new discord_js_1.Client({
         discord_js_1.Intents.FLAGS.GUILD_MESSAGES,
     ],
 });
-exports.client.once('ready', () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, database_service_1.connectToDatabase)();
+exports.client.once('ready', async () => {
+    await (0, database_service_1.connectToDatabase)();
     console.log('Ye Among AOWLs - Server ready');
     exports.channel = exports.client.channels.cache.get(channelId);
     exports.client.commands = new discord_js_1.Collection();
@@ -55,19 +46,19 @@ exports.client.once('ready', () => __awaiter(void 0, void 0, void 0, function* (
         exports.client.commands.set(command.data.name, command);
     }
     (0, game_2.startWaitingRoom)();
-}));
+});
 /*
  *****************
  * COMMAND SERVER *
  *****************
  */
-exports.client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0, function* () {
+exports.client.on('interactionCreate', async (interaction) => {
     let command;
     if (interaction.isCommand()) {
         // ensure two games can't start simultaneously
         if (((exports.game === null || exports.game === void 0 ? void 0 : exports.game.active) || (exports.game === null || exports.game === void 0 ? void 0 : exports.game.waitingRoom)) &&
             interaction.commandName === 'start') {
-            return yield interaction.reply({
+            return await interaction.reply({
                 content: 'A game is already running',
                 ephemeral: true,
             });
@@ -80,10 +71,10 @@ exports.client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0
     if (!command)
         return;
     try {
-        yield command.execute(interaction);
+        await command.execute(interaction);
     }
     catch (error) {
         console.error(error);
     }
-}));
+});
 exports.client.login(token);
