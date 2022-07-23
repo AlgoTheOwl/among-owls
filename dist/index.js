@@ -28,6 +28,9 @@ const client = new discord_js_1.Client({
 client.once('ready', async () => {
     await (0, database_service_1.connectToDatabase)();
     console.log('Ye Among AOWLs - Server ready');
+    // loop through configs
+    // for each config
+    // message channel with embed
     client.commands = new discord_js_1.Collection();
     const commandsPath = node_path_1.default.join(__dirname, 'commands');
     const commandFiles = node_fs_1.default
@@ -69,4 +72,5 @@ client.on('interactionCreate', async (interaction) => {
         console.error(error);
     }
 });
+client.on('message', async () => { });
 client.login(token);
