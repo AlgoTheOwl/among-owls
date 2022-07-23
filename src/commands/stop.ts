@@ -1,6 +1,9 @@
+// Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
+// Helpers
 import { confirmRole, resetGame } from '../utils/helpers'
+// Globals
 import { game } from '..'
 
 const roleId: string = process.env.ADMIN_ID

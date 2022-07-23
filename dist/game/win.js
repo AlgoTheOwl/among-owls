@@ -4,14 +4,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleWin = void 0;
+const embeds_1 = __importDefault(require("../constants/embeds"));
+// Data
 const database_service_1 = require("../database/database.service");
+// Helpers
 const helpers_1 = require("../utils/helpers");
-const settings_1 = __importDefault(require("../settings"));
-const embeds_1 = __importDefault(require("../embeds"));
-const embeds_2 = __importDefault(require("../constants/embeds"));
+const embeds_2 = __importDefault(require("../embeds"));
+const startWaitingRoom_1 = __importDefault(require("./startWaitingRoom"));
+// Globals
 const __1 = require("..");
-const _1 = __importDefault(require("."));
-const { imageDir, hootSettings, channelId } = settings_1.default;
+const settings_1 = __importDefault(require("../settings"));
+const { imageDir, hootSettings } = settings_1.default;
 const { hootOnWin } = hootSettings;
 const handleWin = async (player, winByTimeout) => {
     __1.game.active = false;
@@ -31,9 +34,9 @@ const handleWin = async (player, winByTimeout) => {
     (0, helpers_1.resetGame)();
     (0, helpers_1.emptyDir)(imageDir);
     setAssetTimeout(playerArr);
-    await __1.game.arena.edit((0, embeds_1.default)(embeds_2.default.win, { winByTimeout, player }));
-    // run game again
-    (0, _1.default)();
+    await __1.game.arena.edit((0, embeds_2.default)(embeds_1.default.win, { winByTimeout, player }));
+    // Add new waiting room
+    (0, startWaitingRoom_1.default)();
 };
 exports.handleWin = handleWin;
 const setAssetTimeout = async (players) => {

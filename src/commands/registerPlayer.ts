@@ -1,13 +1,18 @@
+// Discord
 import { SelectMenuInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { game } from '../index'
-import { downloadFile, wait } from '../utils/helpers'
-import Asset from '../models/asset'
+// Data
 import { collections } from '../database/database.service'
+// Schemas
+import Asset from '../models/asset'
 import { WithId } from 'mongodb'
 import User from '../models/user'
-import settings from '../settings'
 import Player from '../models/player'
+// Helpers
+import { downloadFile, wait } from '../utils/helpers'
+// Globals
+import { game } from '../index'
+import settings from '../settings'
 
 module.exports = {
   data: new SlashCommandBuilder()

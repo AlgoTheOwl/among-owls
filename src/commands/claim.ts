@@ -1,8 +1,12 @@
+// Discrod
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
+// Schemas
 import { WithId } from 'mongodb'
-import { collections } from '../database/database.service'
 import User from '../models/user'
+// Data
+import { collections } from '../database/database.service'
+// Helpers
 import { claimHoot } from '../utils/algorand'
 
 module.exports = {

@@ -1,17 +1,20 @@
+// Discord
 import {
   MessageAttachment,
   MessageSelectMenu,
   MessageActionRow,
   MessageOptions,
 } from 'discord.js'
+// Helpers
 import { resetGame, wait } from '../utils/helpers'
-import { game } from '..'
 import doEmbed from '../embeds'
-import embeds from '../constants/embeds'
-import settings from '../settings'
 import runGame from './runGame'
+// Globals
+import settings from '../settings'
+import { game, channel } from '..'
+// Schemas
+import embeds from '../constants/embeds'
 import Player from '../models/player'
-import { channel } from '..'
 
 export default async function startWaitingRoom() {
   const { maxCapacity } = settings

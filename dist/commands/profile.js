@@ -3,12 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Discord
 const builders_1 = require("@discordjs/builders");
 const discord_js_1 = require("discord.js");
+// Data
 const database_service_1 = require("../database/database.service");
-const settings_1 = __importDefault(require("../settings"));
 const embeds_1 = __importDefault(require("../constants/embeds"));
+// Helpers
 const embeds_2 = __importDefault(require("../embeds"));
+// Globals
+const settings_1 = __importDefault(require("../settings"));
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('profile')

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// Discord
 const builders_1 = require("@discordjs/builders");
+// Globals
 const __1 = require("..");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()

@@ -4,13 +4,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.client = exports.channel = exports.emojis = exports.game = void 0;
-// Library
+// Discord
 const discord_js_1 = require("discord.js");
+// Node
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
+// Helpers
 const database_service_1 = require("./database/database.service");
+// Globals
 const settings_1 = __importDefault(require("./settings"));
+// Schema
 const game_1 = __importDefault(require("./models/game"));
+// Helpers
 const startWaitingRoom_1 = __importDefault(require("./game/startWaitingRoom"));
 const token = process.env.DISCORD_TOKEN;
 const { coolDownInterval, channelId } = settings_1.default;

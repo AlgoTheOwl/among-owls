@@ -3,19 +3,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Discord
 const discord_js_1 = require("discord.js");
+// Helpers
 const helpers_1 = require("../utils/helpers");
-const __1 = require("..");
 const embeds_1 = __importDefault(require("../embeds"));
-const embeds_2 = __importDefault(require("../constants/embeds"));
-const settings_1 = __importDefault(require("../settings"));
 const runGame_1 = __importDefault(require("./runGame"));
-const __2 = require("..");
+// Globals
+const settings_1 = __importDefault(require("../settings"));
+const __1 = require("..");
+// Schemas
+const embeds_2 = __importDefault(require("../constants/embeds"));
 async function startWaitingRoom() {
     const { maxCapacity } = settings_1.default;
     let capacity = maxCapacity;
     (0, helpers_1.resetGame)();
-    __1.game.megatron = await __2.channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom));
+    __1.game.megatron = await __1.channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom));
     // Do waiting room
     __1.game.waitingRoom = true;
     let playerCount = 0;
@@ -29,7 +32,7 @@ async function startWaitingRoom() {
     // Do countdown
     let countDown = 5;
     while (countDown >= 1) {
-        await sendCountdown(countDown, __2.channel);
+        await sendCountdown(countDown, __1.channel);
         countDown--;
         await (0, helpers_1.wait)(1000);
     }
@@ -37,7 +40,7 @@ async function startWaitingRoom() {
     await __1.game.megatron.edit({ files: [file], embeds: [], components: [] });
     // start game
     __1.game.active = true;
-    __1.game.arena = await __2.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));
+    __1.game.arena = await __1.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));
     await sendVictimSelectMenu();
     (0, runGame_1.default)();
 }
@@ -74,7 +77,7 @@ const sendVictimSelectMenu = async () => {
         },
         ...victims,
     ]));
-    await __2.channel.send({
+    await __1.channel.send({
         components: [victimSelectMenu],
     });
 };
