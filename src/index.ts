@@ -35,6 +35,10 @@ client.once('ready', async () => {
   await connectToDatabase()
   console.log('Ye Among AOWLs - Server ready')
 
+  // loop through configs
+  // for each config
+  // message channel with embed
+
   client.commands = new Collection()
 
   const commandsPath = path.join(__dirname, 'commands')
@@ -88,5 +92,7 @@ client.on(
     }
   }
 )
+
+client.on('message', async () => {})
 
 client.login(token)
