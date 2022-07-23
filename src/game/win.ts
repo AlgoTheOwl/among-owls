@@ -7,8 +7,9 @@ import settings from '../settings'
 import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
 import { game } from '..'
+import begin from '.'
 
-const { imageDir, hootSettings } = settings
+const { imageDir, hootSettings, channelId } = settings
 const { hootOnWin } = hootSettings
 
 export const handleWin = async (player: Player, winByTimeout: boolean) => {
@@ -37,7 +38,9 @@ export const handleWin = async (player: Player, winByTimeout: boolean) => {
   resetGame()
   emptyDir(imageDir)
   setAssetTimeout(playerArr)
-  return game.embed.edit(doEmbed(embeds.win, { winByTimeout, player }))
+  await game.arena.edit(doEmbed(embeds.win, { winByTimeout, player }))
+  // run game again
+  begin()
 }
 
 const setAssetTimeout = async (players: Player[]) => {
