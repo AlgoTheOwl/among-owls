@@ -28,18 +28,26 @@ module.exports = {
 
       await interaction.deferReply()
 
-      const { assets = {}, ...userData } = (await collections.users.findOne({
-        discordId: user.id,
-      })) as WithId<User>
+      const userData =
+        ((await collections.users.findOne({
+          discordId: user.id,
+        })) as WithId<User>) || null
+
+      if (!userData) {
+        return interaction.reply({
+          ephemeral: true,
+          content: 'You need to register to use this command',
+        })
+      }
 
       const selectMenu = new MessageSelectMenu()
         .setCustomId('asset-profile')
         .setPlaceholder('See your AOWL stats')
 
-      const assetArray = Object.values(assets)
+      const assetArray = Object.values(userData.assets)
 
       if (!assetArray.length) {
-        interaction.reply({
+        return interaction.reply({
           ephemeral: true,
           content: 'You have no AOWLS to profile.',
         })
@@ -68,7 +76,7 @@ module.exports = {
       const fields = []
       let thumbNail
       // picture of first asset
-      const firstAsset = assets[0]?.assetUrl
+      const firstAsset = userData.assets[0]?.assetUrl
       if (firstAsset) {
         thumbNail = firstAsset
       }
