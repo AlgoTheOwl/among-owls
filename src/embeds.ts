@@ -6,6 +6,7 @@ import {
   MessageAttachment,
   MessagePayload,
   InteractionReplyOptions,
+  MessageOptions,
 } from 'discord.js'
 import { EmbedData } from './types/game'
 import { game } from '.'
@@ -28,7 +29,12 @@ const defaultEmbedValues: EmbedData = {
 export default function doEmbed(
   type: string,
   options?: any
-): string | MessagePayload | InteractionReplyOptions | MessageEmbed {
+):
+  | string
+  | MessagePayload
+  | InteractionReplyOptions
+  | MessageEmbed
+  | MessageOptions {
   let data: EmbedData = {}
   let components = []
   const playerArr = Object.values(game.players)

@@ -9,6 +9,9 @@ const win_1 = require("./win");
 const attack_1 = require("../utils/attack");
 const embeds_1 = __importDefault(require("../embeds"));
 const embeds_2 = __importDefault(require("../constants/embeds"));
+const discord_js_1 = require("discord.js");
+const settings_1 = __importDefault(require("../settings"));
+const { deathDeleteInterval } = settings_1.default;
 async function runGame() {
     try {
         const { players } = __1.game;
@@ -38,6 +41,17 @@ async function runGame() {
                     // HANDLE DEATH
                     if (victim.hp <= 0 && attacker && !handlingDeath) {
                         victim.dead = true;
+                        handlingDeath = true;
+                        const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
+                        __1.game.megatron.edit({
+                            files: [attachment],
+                            content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
+                        });
+                        setTimeout(async () => {
+                            const file = new discord_js_1.MessageAttachment('src/images/main.gif');
+                            await __1.game.megatron.edit({ files: [file] });
+                            handlingDeath = false;
+                        }, deathDeleteInterval);
                     }
                     // HANDLE WIN
                     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
