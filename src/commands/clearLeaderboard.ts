@@ -1,6 +1,9 @@
+// Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
+// Data
 import { collections } from '../database/database.service'
+// Helpers
 import { confirmRole } from '../utils/helpers'
 
 const roleId = process.env.ADMIN_ID

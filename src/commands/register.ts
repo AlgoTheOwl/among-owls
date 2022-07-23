@@ -1,13 +1,18 @@
+// Discord
 import { RegistrationResult } from '../types/user'
-import { determineOwnership } from '../utils/algorand'
-import User from '../models/user'
-import { collections } from '../database/database.service'
-import { WithId } from 'mongodb'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { Interaction } from 'discord.js'
-import { game } from '..'
+// Data
+import { collections } from '../database/database.service'
+// Helpers
+import { determineOwnership } from '../utils/algorand'
 import { addRole } from '../utils/helpers'
+// Schemas
+import User from '../models/user'
+import { WithId } from 'mongodb'
+import { Interaction } from 'discord.js'
 import Asset from '../models/asset'
+// Globals
+import { game } from '..'
 
 const optInAssetId: number = Number(process.env.OPT_IN_ASSET_ID)
 const unitName: string = process.env.UNIT_NAME

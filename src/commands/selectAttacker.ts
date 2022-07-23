@@ -1,13 +1,17 @@
+// Discord
 import {
   ButtonInteraction,
   MessageActionRow,
   MessageSelectMenu,
 } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
+// Data
 import { collections } from '../database/database.service'
+// Schemas
 import User from '../models/user'
 import { WithId } from 'mongodb'
 import Asset from '../models/asset'
+// Globals
 import { game } from '..'
 import settings from '../settings'
 

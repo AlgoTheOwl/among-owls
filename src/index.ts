@@ -1,4 +1,4 @@
-// Library
+// Discord
 import {
   Client,
   Intents,
@@ -8,11 +8,16 @@ import {
   ButtonInteraction,
   TextChannel,
 } from 'discord.js'
+// Node
 import fs from 'node:fs'
 import path from 'node:path'
+// Helpers
 import { connectToDatabase } from './database/database.service'
+// Globals
 import settings from './settings'
+// Schema
 import Game from './models/game'
+// Helpers
 import startWaitingRoom from './game/startWaitingRoom'
 
 const token: string = process.env.DISCORD_TOKEN
