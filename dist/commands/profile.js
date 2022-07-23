@@ -1,15 +1,4 @@
 "use strict";
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -33,15 +22,21 @@ module.exports = {
             const { maxAssets } = settings_1.default;
             const { user } = interaction;
             await interaction.deferReply();
-            const _b = (await database_service_1.collections.users.findOne({
+            const userData = (await database_service_1.collections.users.findOne({
                 discordId: user.id,
-            })), { assets = {} } = _b, userData = __rest(_b, ["assets"]);
+            })) || null;
+            if (!userData) {
+                return interaction.reply({
+                    ephemeral: true,
+                    content: 'You need to register to use this command',
+                });
+            }
             const selectMenu = new discord_js_1.MessageSelectMenu()
                 .setCustomId('asset-profile')
                 .setPlaceholder('See your AOWL stats');
-            const assetArray = Object.values(assets);
+            const assetArray = Object.values(userData.assets);
             if (!assetArray.length) {
-                interaction.reply({
+                return interaction.reply({
                     ephemeral: true,
                     content: 'You have no AOWLS to profile.',
                 });
@@ -64,7 +59,7 @@ module.exports = {
             const fields = [];
             let thumbNail;
             // picture of first asset
-            const firstAsset = (_a = assets[0]) === null || _a === void 0 ? void 0 : _a.assetUrl;
+            const firstAsset = (_a = userData.assets[0]) === null || _a === void 0 ? void 0 : _a.assetUrl;
             if (firstAsset) {
                 thumbNail = firstAsset;
             }
