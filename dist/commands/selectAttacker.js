@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,64 +24,66 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('select-attacker')
         .setDescription(`Pick which AOWL you'd like to compete`),
-    async execute(interaction) {
+    execute(interaction) {
         var _a, _b;
-        try {
-            const { user: { id }, } = interaction;
-            const { maxAssets } = settings_1.default;
-            if (!__1.game.waitingRoom) {
-                return interaction.reply({
-                    content: 'Game is not currently active. Use the /start command to start the game',
-                    ephemeral: true,
-                });
-            }
-            await interaction.deferReply({ ephemeral: true });
-            const data = (await database_service_1.collections.users.findOne({
-                discordId: id,
-            }));
-            if (data === null) {
-                return interaction.editReply({
-                    content: 'You are not registered. Use the /register command',
-                });
-            }
-            const assetData = (data === null || data === void 0 ? void 0 : data.assets) ? Object.values(data.assets) : [];
-            if (!assetData.length) {
-                return interaction.editReply({
-                    content: 'You have no AOWLs to select!',
-                });
-            }
-            const options = Object.values(data.assets)
-                .map((asset, i) => {
-                var _a;
-                if (i < maxAssets) {
-                    const label = asset.assetName.length > 100
-                        ? asset.assetName.slice(0, 100)
-                        : asset.assetName;
-                    return {
-                        label,
-                        description: 'Select to play',
-                        value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
-                    };
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { user: { id }, } = interaction;
+                const { maxAssets } = settings_1.default;
+                if (!__1.game.waitingRoom) {
+                    return interaction.reply({
+                        content: 'Game is not currently active. Use the /start command to start the game',
+                        ephemeral: true,
+                    });
                 }
-            })
-                .filter(Boolean);
-            const selectMenu = new discord_js_1.MessageSelectMenu()
-                .setCustomId('register-player')
-                .setPlaceholder('Select an AOWL to attack');
-            if (options.length) {
-                selectMenu.addOptions(options);
+                yield interaction.deferReply({ ephemeral: true });
+                const data = (yield database_service_1.collections.users.findOne({
+                    discordId: id,
+                }));
+                if (data === null) {
+                    return interaction.editReply({
+                        content: 'You are not registered. Use the /register command',
+                    });
+                }
+                const assetData = (data === null || data === void 0 ? void 0 : data.assets) ? Object.values(data.assets) : [];
+                if (!assetData.length) {
+                    return interaction.editReply({
+                        content: 'You have no AOWLs to select!',
+                    });
+                }
+                const options = Object.values(data.assets)
+                    .map((asset, i) => {
+                    var _a;
+                    if (i < maxAssets) {
+                        const label = asset.assetName.length > 100
+                            ? asset.assetName.slice(0, 100)
+                            : asset.assetName;
+                        return {
+                            label,
+                            description: 'Select to play',
+                            value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
+                        };
+                    }
+                })
+                    .filter(Boolean);
+                const selectMenu = new discord_js_1.MessageSelectMenu()
+                    .setCustomId('register-player')
+                    .setPlaceholder('Select an AOWL to attack');
+                if (options.length) {
+                    selectMenu.addOptions(options);
+                }
+                const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
+                yield interaction.editReply({
+                    content: 'Choose your AOWL',
+                    components: [row],
+                });
             }
-            const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
-            await interaction.editReply({
-                content: 'Choose your AOWL',
-                components: [row],
-            });
-        }
-        catch (error) {
-            console.log('ERROR SELECTING');
-            console.log(error);
-            //@ts-ignore
-            console.log((_b = (_a = error === null || error === void 0 ? void 0 : error.requestData) === null || _a === void 0 ? void 0 : _a.json) === null || _b === void 0 ? void 0 : _b.components);
-        }
+            catch (error) {
+                console.log('ERROR SELECTING');
+                console.log(error);
+                //@ts-ignore
+                console.log((_b = (_a = error === null || error === void 0 ? void 0 : error.requestData) === null || _a === void 0 ? void 0 : _a.json) === null || _b === void 0 ? void 0 : _b.components);
+            }
+        });
     },
 };

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -14,49 +23,49 @@ const settings_1 = __importDefault(require("../settings"));
 const __1 = require("..");
 // Schemas
 const embeds_2 = __importDefault(require("../constants/embeds"));
-const startWaitingRoom = async () => {
+const startWaitingRoom = () => __awaiter(void 0, void 0, void 0, function* () {
     const { maxCapacity } = settings_1.default;
     let capacity = maxCapacity;
     (0, helpers_1.resetGame)();
-    __1.game.megatron = await __1.channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom));
+    __1.game.megatron = yield __1.channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom));
     // Do waiting room
     __1.game.waitingRoom = true;
     let playerCount = 0;
     while (playerCount < capacity && __1.game.waitingRoom) {
-        await (0, helpers_1.wait)(2000);
+        yield (0, helpers_1.wait)(2000);
         playerCount = Object.values(__1.game.players).length;
-        await __1.game.megatron.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
+        yield __1.game.megatron.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
     }
     if (__1.game.waitingRoom)
         __1.game.waitingRoom = false;
     // Do countdown
     let countDown = 5;
     while (countDown >= 1) {
-        await sendCountdown(countDown, __1.channel);
+        yield sendCountdown(countDown, __1.channel);
         countDown--;
-        await (0, helpers_1.wait)(1000);
+        yield (0, helpers_1.wait)(1000);
     }
     const file = new discord_js_1.MessageAttachment('src/images/main.gif');
-    await __1.game.megatron.edit({ files: [file], embeds: [], components: [] });
+    yield __1.game.megatron.edit({ files: [file], embeds: [], components: [] });
     // start game
     __1.game.active = true;
-    __1.game.arena = await __1.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));
-    await sendVictimSelectMenu();
+    __1.game.arena = yield __1.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));
+    yield sendVictimSelectMenu();
     (0, runGame_1.default)();
-};
-const sendCountdown = async (countDown, channel) => {
+});
+const sendCountdown = (countDown, channel) => __awaiter(void 0, void 0, void 0, function* () {
     const imagePath = `src/images/${countDown}.png`;
     const countDownImage = new discord_js_1.MessageAttachment(imagePath);
     if (!__1.game.megatron) {
-        __1.game.megatron = await channel.send({
+        __1.game.megatron = yield channel.send({
             files: [countDownImage],
         });
     }
     else {
         __1.game.megatron.edit({ files: [countDownImage] });
     }
-};
-const sendVictimSelectMenu = async () => {
+});
+const sendVictimSelectMenu = () => __awaiter(void 0, void 0, void 0, function* () {
     const playerArr = Object.values(__1.game.players);
     const victims = playerArr
         .filter((player) => !player.timedOut && !player.dead)
@@ -76,8 +85,8 @@ const sendVictimSelectMenu = async () => {
         },
         ...victims,
     ]));
-    await __1.channel.send({
+    yield __1.channel.send({
         components: [victimSelectMenu],
     });
-};
+});
 exports.default = startWaitingRoom;
