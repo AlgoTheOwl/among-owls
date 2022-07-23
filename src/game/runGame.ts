@@ -7,19 +7,15 @@ import {
   resetGame,
   wait,
 } from '../utils/helpers'
-import { handleWin } from '../game/win'
+import { handleWin } from './win'
 import { getRandomVictimId, getAttackString } from '../utils/attack'
-import settings from '../settings'
 import Player from '../models/player'
 import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
-import { Interaction, MessageAttachment } from 'discord.js'
 
-export default async function runGame(interaction: Interaction) {
-  if (!interaction.isCommand()) return
+export default async function runGame() {
   try {
     const { players } = game
-    const { deathDeleteInterval } = settings
     const playerArr = Object.values(players)
 
     let isWin = false
@@ -51,23 +47,6 @@ export default async function runGame(interaction: Interaction) {
           // HANDLE DEATH
           if (victim.hp <= 0 && attacker && !handlingDeath) {
             victim.dead = true
-            handlingDeath = true
-
-            const attachment = new MessageAttachment(
-              'src/images/death.gif',
-              'death.gif'
-            )
-
-            await interaction.editReply({
-              files: [attachment],
-              content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
-            })
-
-            setTimeout(async () => {
-              const file = new MessageAttachment('src/images/main.gif')
-              await interaction.editReply({ files: [file] })
-              handlingDeath = false
-            }, deathDeleteInterval)
           }
 
           // HANDLE WIN
@@ -93,15 +72,12 @@ export default async function runGame(interaction: Interaction) {
             attackField,
           ].filter(Boolean)
 
-          await game.embed.edit(doEmbed(embeds.activeGame, { fields }))
+          await game.arena.edit(doEmbed(embeds.activeGame, { fields }))
         }
       })
     }
   } catch (error) {
     console.log(error)
-    interaction.editReply(
-      'something went wrong -> please resume the game again'
-    )
     resetGame()
   }
 }

@@ -17,6 +17,7 @@ type Settings = {
   hootSettings: {
     hootOnWin: number
   }
+  channelId: string
 }
 
 export default {
@@ -52,4 +53,5 @@ export default {
   hootSettings: {
     hootOnWin: 5,
   },
+  channelId: '984079278683598928',
 } as Settings

@@ -12,16 +12,18 @@ import path from 'node:path'
 import { connectToDatabase } from './database/database.service'
 import settings from './settings'
 import Game from './models/game'
+import startWaitingRoom from './game/startWaitingRoom'
 
 const token: string = process.env.DISCORD_TOKEN
 
-const { coolDownInterval } = settings
+const { coolDownInterval, channelId } = settings
 
 // Gloval vars
 export let game: Game = new Game({}, false, false, coolDownInterval)
 export let emojis = {}
+export let channel: any
 
-const client: Client = new Client({
+export const client: Client = new Client({
   restRequestTimeout: 60000,
   intents: [
     Intents.FLAGS.GUILDS,
@@ -35,9 +37,7 @@ client.once('ready', async () => {
   await connectToDatabase()
   console.log('Ye Among AOWLs - Server ready')
 
-  // loop through configs
-  // for each config
-  // message channel with embed
+  channel = client.channels.cache.get(channelId)
 
   client.commands = new Collection()
 
@@ -52,6 +52,8 @@ client.once('ready', async () => {
 
     client.commands.set(command.data.name, command)
   }
+
+  startWaitingRoom()
 })
 
 /*
@@ -92,7 +94,5 @@ client.on(
     }
   }
 )
-
-client.on('message', async () => {})
 
 client.login(token)
