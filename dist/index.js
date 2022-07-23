@@ -25,7 +25,7 @@ const settings_1 = __importDefault(require("./settings"));
 // Schema
 const game_1 = __importDefault(require("./models/game"));
 // Helpers
-const startWaitingRoom_1 = require("./game/startWaitingRoom");
+const game_2 = require("./game");
 const token = process.env.DISCORD_TOKEN;
 const { coolDownInterval, channelId } = settings_1.default;
 // Gloval vars
@@ -54,7 +54,7 @@ exports.client.once('ready', () => __awaiter(void 0, void 0, void 0, function* (
         const command = require(filePath);
         exports.client.commands.set(command.data.name, command);
     }
-    (0, startWaitingRoom_1.startWaitingRoom)();
+    (0, game_2.startWaitingRoom)();
 }));
 /*
  *****************
