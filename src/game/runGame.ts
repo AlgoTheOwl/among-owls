@@ -1,4 +1,4 @@
-import { game } from '..'
+import { channel, game } from '..'
 import {
   asyncForEach,
   doDamage,
@@ -12,6 +12,10 @@ import { getRandomVictimId, getAttackString } from '../utils/attack'
 import Player from '../models/player'
 import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
+import { MessageAttachment } from 'discord.js'
+import settings from '../settings'
+
+const { deathDeleteInterval } = settings
 
 export default async function runGame() {
   try {
@@ -47,6 +51,23 @@ export default async function runGame() {
           // HANDLE DEATH
           if (victim.hp <= 0 && attacker && !handlingDeath) {
             victim.dead = true
+            handlingDeath = true
+
+            const attachment = new MessageAttachment(
+              'src/images/death.gif',
+              'death.gif'
+            )
+
+            game.megatron.edit({
+              files: [attachment],
+              content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
+            })
+
+            setTimeout(async () => {
+              const file = new MessageAttachment('src/images/main.gif')
+              await game.megatron.edit({ files: [file] })
+              handlingDeath = false
+            }, deathDeleteInterval)
           }
 
           // HANDLE WIN

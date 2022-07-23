@@ -6,6 +6,7 @@ import {
   Collection,
   SelectMenuInteraction,
   ButtonInteraction,
+  TextChannel,
 } from 'discord.js'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -21,7 +22,7 @@ const { coolDownInterval, channelId } = settings
 // Gloval vars
 export let game: Game = new Game({}, false, false, coolDownInterval)
 export let emojis = {}
-export let channel: any
+export let channel: TextChannel
 
 export const client: Client = new Client({
   restRequestTimeout: 60000,
@@ -37,7 +38,7 @@ client.once('ready', async () => {
   await connectToDatabase()
   console.log('Ye Among AOWLs - Server ready')
 
-  channel = client.channels.cache.get(channelId)
+  channel = client.channels.cache.get(channelId) as TextChannel
 
   client.commands = new Collection()
 

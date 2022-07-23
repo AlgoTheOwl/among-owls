@@ -2,6 +2,7 @@ import {
   MessageAttachment,
   MessageSelectMenu,
   MessageActionRow,
+  MessageOptions,
 } from 'discord.js'
 import { resetGame, wait } from '../utils/helpers'
 import { game } from '..'
@@ -18,7 +19,9 @@ export default async function startWaitingRoom() {
 
   resetGame()
 
-  game.megatron = await channel.send(doEmbed(embeds.waitingRoom))
+  game.megatron = await channel.send(
+    doEmbed(embeds.waitingRoom) as MessageOptions
+  )
   // Do waiting room
   game.waitingRoom = true
   let playerCount = 0
@@ -44,7 +47,7 @@ export default async function startWaitingRoom() {
 
   // start game
   game.active = true
-  game.arena = await channel.send(doEmbed(embeds.activeGame))
+  game.arena = await channel.send(doEmbed(embeds.activeGame) as MessageOptions)
 
   await sendVictimSelectMenu()
 
