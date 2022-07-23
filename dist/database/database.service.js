@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = exports.connectToDatabase = exports.collections = void 0;
 // External Dependencies
@@ -31,12 +40,14 @@ exports.collections = {};
 let db;
 exports.db = db;
 // Initialize Connection
-async function connectToDatabase() {
-    const client = new mongoDB.MongoClient(process.env.DB_CONN_STRING);
-    await client.connect();
-    exports.db = db = client.db(process.env.DB_NAME);
-    const usersCollection = db.collection(process.env.USERS_COLLECTION_NAME);
-    exports.collections.users = usersCollection;
-    console.log(`Successfully connected to database: ${db.databaseName}`);
+function connectToDatabase() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const client = new mongoDB.MongoClient(process.env.DB_CONN_STRING);
+        yield client.connect();
+        exports.db = db = client.db(process.env.DB_NAME);
+        const usersCollection = db.collection(process.env.USERS_COLLECTION_NAME);
+        exports.collections.users = usersCollection;
+        console.log(`Successfully connected to database: ${db.databaseName}`);
+    });
 }
 exports.connectToDatabase = connectToDatabase;
