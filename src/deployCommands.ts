@@ -1,5 +1,7 @@
+// Discord
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
+// Node
 import fs from 'node:fs'
 import path from 'node:path'
 

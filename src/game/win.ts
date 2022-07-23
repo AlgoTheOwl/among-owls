@@ -1,12 +1,17 @@
+// Schemas
 import Player from '../models/player'
-import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
 import User from '../models/user'
-import { resetGame, emptyDir, asyncForEach } from '../utils/helpers'
-import settings from '../settings'
-import doEmbed from '../embeds'
 import embeds from '../constants/embeds'
+// Data
+import { collections } from '../database/database.service'
+// Helpers
+import { resetGame, emptyDir, asyncForEach } from '../utils/helpers'
+import doEmbed from '../embeds'
+import startWaitingRoom from './startWaitingRoom'
+// Globals
 import { game } from '..'
+import settings from '../settings'
 
 const { imageDir, hootSettings } = settings
 const { hootOnWin } = hootSettings
@@ -37,7 +42,9 @@ export const handleWin = async (player: Player, winByTimeout: boolean) => {
   resetGame()
   emptyDir(imageDir)
   setAssetTimeout(playerArr)
-  return game.embed.edit(doEmbed(embeds.win, { winByTimeout, player }))
+  await game.arena.edit(doEmbed(embeds.win, { winByTimeout, player }))
+  // Add new waiting room
+  startWaitingRoom()
 }
 
 const setAssetTimeout = async (players: Player[]) => {

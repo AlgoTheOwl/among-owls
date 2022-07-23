@@ -3,20 +3,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const __1 = require("..");
+// Helpers
 const helpers_1 = require("../utils/helpers");
-const win_1 = require("../game/win");
 const attack_1 = require("../utils/attack");
-const settings_1 = __importDefault(require("../settings"));
+const win_1 = require("./win");
 const embeds_1 = __importDefault(require("../embeds"));
+// Globals
+const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
-const discord_js_1 = require("discord.js");
-async function runGame(interaction) {
-    if (!interaction.isCommand())
-        return;
+async function runGame() {
     try {
         const { players } = __1.game;
-        const { deathDeleteInterval } = settings_1.default;
         const playerArr = Object.values(players);
         let isWin = false;
         let handlingDeath = false;
@@ -43,17 +40,20 @@ async function runGame(interaction) {
                     // HANDLE DEATH
                     if (victim.hp <= 0 && attacker && !handlingDeath) {
                         victim.dead = true;
-                        handlingDeath = true;
-                        const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
-                        await interaction.editReply({
-                            files: [attachment],
-                            content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
-                        });
-                        setTimeout(async () => {
-                            const file = new discord_js_1.MessageAttachment('src/images/main.gif');
-                            await interaction.editReply({ files: [file] });
-                            handlingDeath = false;
-                        }, deathDeleteInterval);
+                        // handlingDeath = true
+                        // const attachment = new MessageAttachment(
+                        //   'src/images/death.gif',
+                        //   'death.gif'
+                        // )
+                        // await game.megatron.edit({
+                        //   files: [attachment],
+                        //   content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
+                        // })
+                        // setTimeout(async () => {
+                        //   const file = new MessageAttachment('src/images/main.gif')
+                        //   await game.megatron.edit({ files: [file] })
+                        //   handlingDeath = false
+                        // }, deathDeleteInterval)
                     }
                     // HANDLE WIN
                     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
@@ -70,14 +70,13 @@ async function runGame(interaction) {
                         ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
                         attackField,
                     ].filter(Boolean);
-                    await __1.game.embed.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
+                    await __1.game.arena.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
                 }
             });
         }
     }
     catch (error) {
         console.log(error);
-        interaction.editReply('something went wrong -> please resume the game again');
         (0, helpers_1.resetGame)();
     }
 }

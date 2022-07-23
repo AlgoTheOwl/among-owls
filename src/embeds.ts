@@ -1,3 +1,4 @@
+// Discord
 import {
   MessageEmbed,
   MessageActionRow,
@@ -6,11 +7,15 @@ import {
   MessageAttachment,
   MessagePayload,
   InteractionReplyOptions,
+  MessageOptions,
 } from 'discord.js'
+// Types/Constants
 import { EmbedData } from './types/game'
-import { game } from '.'
 import embeds from './constants/embeds'
-import { isIpfs, mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
+// Game state
+import { game } from '.'
+// Helpers
+import { mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
 
 const defaultEmbedValues: EmbedData = {
   title: '🔥 Ye Among AOWLs 🔥',
@@ -28,7 +33,12 @@ const defaultEmbedValues: EmbedData = {
 export default function doEmbed(
   type: string,
   options?: any
-): string | MessagePayload | InteractionReplyOptions | MessageEmbed {
+):
+  | string
+  | MessagePayload
+  | InteractionReplyOptions
+  | MessageEmbed
+  | MessageOptions {
   let data: EmbedData = {}
   let components = []
   const playerArr = Object.values(game.players)
@@ -42,6 +52,7 @@ export default function doEmbed(
     data = {
       title: '🦉 Waiting Room 🦉',
       description: `${playerCount} ${playerWord} ${hasWord} joined the game.`,
+      files: [],
       fields: playerArr.map((player) => {
         return {
           name: player.username,

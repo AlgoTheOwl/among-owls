@@ -1,5 +1,7 @@
+// Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { ButtonInteraction } from 'discord.js'
+// Globals
 import { game } from '..'
 import settings from '../settings'
 

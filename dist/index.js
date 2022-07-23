@@ -3,20 +3,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emojis = exports.game = void 0;
-// Library
+exports.client = exports.channel = exports.emojis = exports.game = void 0;
+// Discord
 const discord_js_1 = require("discord.js");
+// Node
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
+// Helpers
 const database_service_1 = require("./database/database.service");
+// Globals
 const settings_1 = __importDefault(require("./settings"));
+// Schema
 const game_1 = __importDefault(require("./models/game"));
+// Helpers
+const startWaitingRoom_1 = __importDefault(require("./game/startWaitingRoom"));
 const token = process.env.DISCORD_TOKEN;
-const { coolDownInterval } = settings_1.default;
+const { coolDownInterval, channelId } = settings_1.default;
 // Gloval vars
 exports.game = new game_1.default({}, false, false, coolDownInterval);
 exports.emojis = {};
-const client = new discord_js_1.Client({
+exports.client = new discord_js_1.Client({
     restRequestTimeout: 60000,
     intents: [
         discord_js_1.Intents.FLAGS.GUILDS,
@@ -25,13 +31,11 @@ const client = new discord_js_1.Client({
         discord_js_1.Intents.FLAGS.GUILD_MESSAGES,
     ],
 });
-client.once('ready', async () => {
+exports.client.once('ready', async () => {
     await (0, database_service_1.connectToDatabase)();
     console.log('Ye Among AOWLs - Server ready');
-    // loop through configs
-    // for each config
-    // message channel with embed
-    client.commands = new discord_js_1.Collection();
+    exports.channel = exports.client.channels.cache.get(channelId);
+    exports.client.commands = new discord_js_1.Collection();
     const commandsPath = node_path_1.default.join(__dirname, 'commands');
     const commandFiles = node_fs_1.default
         .readdirSync(commandsPath)
@@ -39,15 +43,16 @@ client.once('ready', async () => {
     for (const file of commandFiles) {
         const filePath = node_path_1.default.join(commandsPath, file);
         const command = require(filePath);
-        client.commands.set(command.data.name, command);
+        exports.client.commands.set(command.data.name, command);
     }
+    (0, startWaitingRoom_1.default)();
 });
 /*
  *****************
  * COMMAND SERVER *
  *****************
  */
-client.on('interactionCreate', async (interaction) => {
+exports.client.on('interactionCreate', async (interaction) => {
     let command;
     if (interaction.isCommand()) {
         // ensure two games can't start simultaneously
@@ -58,10 +63,10 @@ client.on('interactionCreate', async (interaction) => {
                 ephemeral: true,
             });
         }
-        command = client.commands.get(interaction.commandName);
+        command = exports.client.commands.get(interaction.commandName);
     }
     if (interaction.isSelectMenu() || interaction.isButton()) {
-        command = client.commands.get(interaction.customId);
+        command = exports.client.commands.get(interaction.customId);
     }
     if (!command)
         return;
@@ -72,5 +77,4 @@ client.on('interactionCreate', async (interaction) => {
         console.error(error);
     }
 });
-client.on('message', async () => { });
-client.login(token);
+exports.client.login(token);

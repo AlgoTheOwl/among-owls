@@ -1,3 +1,4 @@
+// Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 import {
   MessageSelectMenu,
@@ -5,13 +6,17 @@ import {
   MessageActionRow,
   MessageEmbed,
 } from 'discord.js'
-import { WithId } from 'mongodb'
+// Data
 import { collections } from '../database/database.service'
 import Asset from '../models/asset'
-import settings from '../settings'
+// Shcemas
+import { WithId } from 'mongodb'
 import User from '../models/user'
 import embeds from '../constants/embeds'
+// Helpers
 import doEmbed from '../embeds'
+// Globals
+import settings from '../settings'
 
 module.exports = {
   data: new SlashCommandBuilder()

@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// Discrod
 const builders_1 = require("@discordjs/builders");
+// Data
 const database_service_1 = require("../database/database.service");
+// Helpers
 const algorand_1 = require("../utils/algorand");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()

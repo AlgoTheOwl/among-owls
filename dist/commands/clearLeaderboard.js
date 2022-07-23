@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// Discord
 const builders_1 = require("@discordjs/builders");
+// Data
 const database_service_1 = require("../database/database.service");
+// Helpers
 const helpers_1 = require("../utils/helpers");
 const roleId = process.env.ADMIN_ID;
 module.exports = {
