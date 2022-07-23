@@ -19,7 +19,7 @@ const database_service_1 = require("../database/database.service");
 // Helpers
 const helpers_1 = require("../utils/helpers");
 const embeds_2 = __importDefault(require("../embeds"));
-const startWaitingRoom_1 = __importDefault(require("./startWaitingRoom"));
+const startWaitingRoom_1 = require("./startWaitingRoom");
 // Globals
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
@@ -45,7 +45,7 @@ const handleWin = (player, winByTimeout) => __awaiter(void 0, void 0, void 0, fu
     setAssetTimeout(playerArr);
     yield __1.game.arena.edit((0, embeds_2.default)(embeds_1.default.win, { winByTimeout, player }));
     // Add new waiting room
-    (0, startWaitingRoom_1.default)();
+    (0, startWaitingRoom_1.startWaitingRoom)();
 });
 exports.handleWin = handleWin;
 const setAssetTimeout = (players) => __awaiter(void 0, void 0, void 0, function* () {
