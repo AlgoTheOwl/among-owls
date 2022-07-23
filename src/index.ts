@@ -18,7 +18,7 @@ import settings from './settings'
 // Schema
 import Game from './models/game'
 // Helpers
-import startWaitingRoom from './game/startWaitingRoom'
+import { startWaitingRoom } from './game/startWaitingRoom'
 
 const token: string = process.env.DISCORD_TOKEN
 
