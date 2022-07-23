@@ -14,7 +14,7 @@ const settings_1 = __importDefault(require("../settings"));
 const __1 = require("..");
 // Schemas
 const embeds_2 = __importDefault(require("../constants/embeds"));
-async function startWaitingRoom() {
+const startWaitingRoom = async () => {
     const { maxCapacity } = settings_1.default;
     let capacity = maxCapacity;
     (0, helpers_1.resetGame)();
@@ -43,8 +43,7 @@ async function startWaitingRoom() {
     __1.game.arena = await __1.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));
     await sendVictimSelectMenu();
     (0, runGame_1.default)();
-}
-exports.default = startWaitingRoom;
+};
 const sendCountdown = async (countDown, channel) => {
     const imagePath = `src/images/${countDown}.png`;
     const countDownImage = new discord_js_1.MessageAttachment(imagePath);
@@ -81,3 +80,4 @@ const sendVictimSelectMenu = async () => {
         components: [victimSelectMenu],
     });
 };
+exports.default = startWaitingRoom;
