@@ -8,7 +8,7 @@ import { collections } from '../database/database.service'
 // Helpers
 import { resetGame, emptyDir, asyncForEach } from '../utils/helpers'
 import doEmbed from '../embeds'
-import { startWaitingRoom } from './startWaitingRoom'
+import { startWaitingRoom } from '.'
 // Globals
 import { game } from '..'
 import settings from '../settings'
