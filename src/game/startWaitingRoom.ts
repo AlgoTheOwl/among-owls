@@ -16,7 +16,7 @@ import { game, channel } from '..'
 import embeds from '../constants/embeds'
 import Player from '../models/player'
 
-const startWaitingRoom = async () => {
+export default async function startWaitingRoom() {
   const { maxCapacity } = settings
   let capacity = maxCapacity
 
@@ -99,5 +99,3 @@ const sendVictimSelectMenu = async () => {
     components: [victimSelectMenu],
   })
 }
-
-export default startWaitingRoom
