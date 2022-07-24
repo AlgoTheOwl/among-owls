@@ -22,7 +22,6 @@ const startWaitingRoom = async () => {
     __1.game.megatron = await __1.channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom));
     // Do waiting room
     __1.game.waitingRoom = true;
-    let lastPlayerCount = 0;
     let playerCount = 0;
     const getPlayerCount = () => Object.values(__1.game.players).length;
     while (playerCount < capacity && __1.game.waitingRoom) {
