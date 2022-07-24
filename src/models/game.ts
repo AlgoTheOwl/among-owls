@@ -11,7 +11,8 @@ export default class Game {
     public waitingRoom?: boolean,
     public stopped?: boolean,
     public megatron?: any,
-    public arena?: any
+    public arena?: any,
+    public update?: boolean
   ) {
     this.players = players
     this.active = false
@@ -23,5 +24,6 @@ export default class Game {
     this.waitingRoom = false
     this.arena = arena
     this.stopped = false
+    this.update = false
   }
 }

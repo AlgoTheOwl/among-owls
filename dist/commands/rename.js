@@ -23,5 +23,10 @@ module.exports = {
             content: `Your AOWL is now named ${name}`,
             ephemeral: true,
         });
+        // Ensure game knows to update
+        __1.game.update = true;
+        setTimeout(() => {
+            __1.game.update = false;
+        }, 3000);
     },
 };

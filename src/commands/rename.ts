@@ -24,5 +24,10 @@ module.exports = {
       content: `Your AOWL is now named ${name}`,
       ephemeral: true,
     })
+    // Ensure game knows to update
+    game.update = true
+    setTimeout(() => {
+      game.update = false
+    }, 3000)
   },
 }

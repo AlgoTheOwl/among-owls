@@ -83,7 +83,10 @@ module.exports = {
         0
       )
       await interaction.editReply(`${asset.assetName} has entered the game`)
-      await wait(messageDeleteInterval)
+      game.update = true
+      setTimeout(() => {
+        game.update = false
+      }, 3000)
     } catch (error) {
       console.log(error)
     }

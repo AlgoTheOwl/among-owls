@@ -26,12 +26,10 @@ const startWaitingRoom = async () => {
     let playerCount = 0;
     const getPlayerCount = () => Object.values(__1.game.players).length;
     while (playerCount < capacity && __1.game.waitingRoom) {
-        if (playerCount > lastPlayerCount) {
+        if (__1.game.update) {
             await __1.game.megatron.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
         }
-        lastPlayerCount = getPlayerCount();
-        await (0, helpers_1.wait)(2000);
-        playerCount = getPlayerCount();
+        await (0, helpers_1.wait)(1000);
     }
     if (__1.game.waitingRoom)
         __1.game.waitingRoom = false;

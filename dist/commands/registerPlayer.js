@@ -57,7 +57,10 @@ module.exports = {
             const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath);
             index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, Object.values(assets).length, 0);
             await interaction.editReply(`${asset.assetName} has entered the game`);
-            await (0, helpers_1.wait)(messageDeleteInterval);
+            index_1.game.update = true;
+            setTimeout(() => {
+                index_1.game.update = false;
+            }, 3000);
         }
         catch (error) {
             console.log(error);
