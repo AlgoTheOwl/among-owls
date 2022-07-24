@@ -22,10 +22,16 @@ module.exports = {
         const { values, user } = interaction;
         const assetId = Number(values[0]);
         const discordId = user.id;
-        const { assets } = (await database_service_1.collections.users.findOne({
+        const userData = (await database_service_1.collections.users.findOne({
             discordId,
         }));
-        const asset = assets[assetId];
+        if (!userData) {
+            return interaction.reply({
+                ephemeral: true,
+                content: 'Please register before trying to view assets',
+            });
+        }
+        const asset = userData.assets[assetId];
         if (asset) {
             const { assetUrl, assetName, unitName, assetId, wins } = asset;
             const winNumber = wins ? wins : 0;

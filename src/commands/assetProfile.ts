@@ -23,11 +23,18 @@ module.exports = {
     const assetId = Number(values[0])
     const discordId = user.id
 
-    const { assets } = (await collections.users.findOne({
+    const userData = (await collections.users.findOne({
       discordId,
     })) as WithId<User>
 
-    const asset = assets[assetId]
+    if (!userData) {
+      return interaction.reply({
+        ephemeral: true,
+        content: 'Please register before trying to view assets',
+      })
+    }
+
+    const asset = userData.assets[assetId]
     if (asset) {
       const { assetUrl, assetName, unitName, assetId, wins } = asset
 

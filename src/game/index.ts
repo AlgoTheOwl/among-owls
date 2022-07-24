@@ -27,12 +27,18 @@ export const startWaitingRoom = async (): Promise<void> => {
   )
   // Do waiting room
   game.waitingRoom = true
+  let lastPlayerCount = 0
   let playerCount = 0
+  const getPlayerCount = () => Object.values(game.players).length
 
   while (playerCount < capacity && game.waitingRoom) {
+    lastPlayerCount = getPlayerCount()
     await wait(2000)
-    playerCount = Object.values(game.players).length
-    await game.megatron.edit(doEmbed(embeds.waitingRoom))
+    playerCount = getPlayerCount()
+    // Only edit if new player has joined
+    if (playerCount > lastPlayerCount) {
+      await game.megatron.edit(doEmbed(embeds.waitingRoom))
+    }
   }
 
   if (game.waitingRoom) game.waitingRoom = false
