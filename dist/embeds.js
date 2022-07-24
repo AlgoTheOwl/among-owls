@@ -91,7 +91,7 @@ function doEmbed(type, options) {
             title: 'WINNER!!!',
             description: `${player === null || player === void 0 ? void 0 : player.username}'s ${player === null || player === void 0 ? void 0 : player.asset.assetName} ${winByTimeout
                 ? 'won by default - all other players timed out!'
-                : `destroyed the competition`}`,
+                : `destroyed the competition and won 5 hoot!`}`,
             color: 'DARK_AQUA',
             image: (0, helpers_1.normalizeIpfsUrl)(asserUrl),
         };

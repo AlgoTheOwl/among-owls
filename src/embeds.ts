@@ -122,7 +122,7 @@ export default function doEmbed(
       description: `${player?.username}'s ${player?.asset.assetName} ${
         winByTimeout
           ? 'won by default - all other players timed out!'
-          : `destroyed the competition`
+          : `destroyed the competition and won 5 hoot!`
       }`,
       color: 'DARK_AQUA',
       image: normalizeIpfsUrl(asserUrl),
