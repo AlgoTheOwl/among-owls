@@ -22,11 +22,17 @@ const startWaitingRoom = async () => {
     __1.game.megatron = await __1.channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom));
     // Do waiting room
     __1.game.waitingRoom = true;
+    let lastPlayerCount = 0;
     let playerCount = 0;
+    const getPlayerCount = () => Object.values(__1.game.players).length;
     while (playerCount < capacity && __1.game.waitingRoom) {
+        lastPlayerCount = getPlayerCount();
         await (0, helpers_1.wait)(2000);
-        playerCount = Object.values(__1.game.players).length;
-        await __1.game.megatron.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
+        playerCount = getPlayerCount();
+        // Only edit if new player has joined
+        if (playerCount > lastPlayerCount) {
+            await __1.game.megatron.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
+        }
     }
     if (__1.game.waitingRoom)
         __1.game.waitingRoom = false;
