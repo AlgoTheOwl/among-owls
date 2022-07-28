@@ -69,8 +69,6 @@ export const determineOwnership = async function (address: string): Promise<{
       }
     })
 
-    console.log(assetIdsOwned)
-
     await asyncForEach(assetIdsOwned, async (assetId: number) => {
       const assetData = await findAsset(assetId)
       console.log(assetData)
