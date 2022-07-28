@@ -49,6 +49,7 @@ const determineOwnership = async function (address) {
             }
         });
         const assetIdArr = (0, exports.getAssetIdArray)();
+        // Determine which assets are part of bot collection
         uniqueAssets.forEach((asset) => {
             if (assetIdsOwned.length < maxAssets) {
                 const assetId = asset['asset-id'];
@@ -57,6 +58,7 @@ const determineOwnership = async function (address) {
                 }
             }
         });
+        // fetch data for each asset but not too quickly
         await (0, helpers_1.asyncForEach)(assetIdsOwned, async (assetId) => {
             var _a;
             const assetData = await (0, exports.findAsset)(assetId);
