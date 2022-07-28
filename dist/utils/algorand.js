@@ -57,7 +57,6 @@ const determineOwnership = async function (address) {
                 }
             }
         });
-        console.log(assetIdsOwned);
         await (0, helpers_1.asyncForEach)(assetIdsOwned, async (assetId) => {
             var _a;
             const assetData = await (0, exports.findAsset)(assetId);
