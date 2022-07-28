@@ -19,6 +19,7 @@ import settings from './settings'
 import Game from './models/game'
 // Helpers
 import { startWaitingRoom } from './game'
+import { updateTransactions } from './utils/algorand'
 
 const token: string = process.env.DISCORD_TOKEN
 
@@ -60,6 +61,7 @@ client.once('ready', async () => {
   }
 
   startWaitingRoom()
+  // updateTransactions()
 })
 
 /*
