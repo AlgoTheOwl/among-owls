@@ -46,6 +46,7 @@ exports.client.once('ready', async () => {
         exports.client.commands.set(command.data.name, command);
     }
     (0, game_2.startWaitingRoom)();
+    // updateTransactions()
 });
 /*
  *****************

@@ -13,6 +13,7 @@ import { downloadFile, wait } from '../utils/helpers'
 // Globals
 import { game } from '../index'
 import settings from '../settings'
+import { updateTransactions } from '../utils/algorand'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -22,11 +23,12 @@ module.exports = {
     try {
       if (!interaction.isSelectMenu()) return
       if (!game.waitingRoom) return
+      await updateTransactions()
 
       const { values, user } = interaction
       const assetId = values[0]
       const { username, id } = user
-      const { imageDir, hp, messageDeleteInterval } = settings
+      const { imageDir, hp } = settings
 
       await interaction.deferReply({ ephemeral: true })
 

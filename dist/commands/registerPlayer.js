@@ -14,6 +14,7 @@ const helpers_1 = require("../utils/helpers");
 // Globals
 const index_1 = require("../index");
 const settings_1 = __importDefault(require("../settings"));
+const algorand_1 = require("../utils/algorand");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('register-player')
@@ -24,10 +25,11 @@ module.exports = {
                 return;
             if (!index_1.game.waitingRoom)
                 return;
+            await (0, algorand_1.updateTransactions)();
             const { values, user } = interaction;
             const assetId = values[0];
             const { username, id } = user;
-            const { imageDir, hp, messageDeleteInterval } = settings_1.default;
+            const { imageDir, hp } = settings_1.default;
             await interaction.deferReply({ ephemeral: true });
             const { assets, address, _id, coolDowns } = (await database_service_1.collections.users.findOne({
                 discordId: user.id,
