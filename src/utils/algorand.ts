@@ -60,6 +60,7 @@ export const determineOwnership = async function (address: string): Promise<{
 
     const assetIdArr = getAssetIdArray()
 
+    // Determine which assets are part of bot collection
     uniqueAssets.forEach((asset) => {
       if (assetIdsOwned.length < maxAssets) {
         const assetId = asset['asset-id']
@@ -69,6 +70,7 @@ export const determineOwnership = async function (address: string): Promise<{
       }
     })
 
+    // fetch data for each asset but not too quickly
     await asyncForEach(assetIdsOwned, async (assetId: number) => {
       const assetData = await findAsset(assetId)
       console.log(assetData)
