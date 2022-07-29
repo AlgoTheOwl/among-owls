@@ -19,9 +19,16 @@ import settings from './settings'
 import Game from './models/game'
 // Helpers
 import { startWaitingRoom } from './game'
-import { updateTransactions } from './utils/algorand'
+import {
+  convergeTxnData,
+  searchForTransactions,
+  updateTransactions,
+} from './utils/algorand'
 
 const token: string = process.env.DISCORD_TOKEN
+const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE
+const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO
+const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE
 
 const { coolDownInterval, channelId } = settings
 
@@ -29,6 +36,12 @@ const { coolDownInterval, channelId } = settings
 export let game: Game = new Game({}, false, false, coolDownInterval)
 export let emojis = {}
 export let channel: TextChannel
+
+export const creatorAddressArr = [
+  creatorAddressOne,
+  creatorAddressTwo,
+  creatorAddressThree,
+]
 
 export const client: Client = new Client({
   restRequestTimeout: 60000,
@@ -43,6 +56,10 @@ export const client: Client = new Client({
 client.once('ready', async () => {
   await connectToDatabase()
   console.log('Ye Among AOWLs - Server ready')
+
+  const txnData = await convergeTxnData(creatorAddressArr, false)
+
+  fs.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData))
 
   channel = client.channels.cache.get(channelId) as TextChannel
 

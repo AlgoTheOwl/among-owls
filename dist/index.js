@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = exports.channel = exports.emojis = exports.game = void 0;
+exports.client = exports.creatorAddressArr = exports.channel = exports.emojis = exports.game = void 0;
 // Discord
 const discord_js_1 = require("discord.js");
 // Node
@@ -17,11 +17,20 @@ const settings_1 = __importDefault(require("./settings"));
 const game_1 = __importDefault(require("./models/game"));
 // Helpers
 const game_2 = require("./game");
+const algorand_1 = require("./utils/algorand");
 const token = process.env.DISCORD_TOKEN;
+const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
+const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO;
+const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE;
 const { coolDownInterval, channelId } = settings_1.default;
 // Gloval vars
 exports.game = new game_1.default({}, false, false, coolDownInterval);
 exports.emojis = {};
+exports.creatorAddressArr = [
+    creatorAddressOne,
+    creatorAddressTwo,
+    creatorAddressThree,
+];
 exports.client = new discord_js_1.Client({
     restRequestTimeout: 60000,
     intents: [
@@ -34,6 +43,8 @@ exports.client = new discord_js_1.Client({
 exports.client.once('ready', async () => {
     await (0, database_service_1.connectToDatabase)();
     console.log('Ye Among AOWLs - Server ready');
+    const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, false);
+    node_fs_1.default.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData));
     exports.channel = exports.client.channels.cache.get(channelId);
     exports.client.commands = new discord_js_1.Collection();
     const commandsPath = node_path_1.default.join(__dirname, 'commands');

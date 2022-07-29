@@ -20,7 +20,9 @@ declare global {
       HOOT_WALLET_ADDRESS: string
       HOOT_CLAWBACK_ADDRESS: string
       HOOT_SOURCE_MNEMONIC: string
-      CREATOR_ADDRESS: string
+      CREATOR_ADDRESS_ONE: string
+      CREATOR_ADDRESS_TWO: string
+      CREATOR_ADDRESS_THREE: string
     }
   }
 }

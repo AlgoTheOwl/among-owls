@@ -14,7 +14,6 @@ const helpers_1 = require("../utils/helpers");
 // Globals
 const index_1 = require("../index");
 const settings_1 = __importDefault(require("../settings"));
-const algorand_1 = require("../utils/algorand");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('register-player')
@@ -25,7 +24,7 @@ module.exports = {
                 return;
             if (!index_1.game.waitingRoom)
                 return;
-            await (0, algorand_1.updateTransactions)();
+            // await updateTransactions()
             const { values, user } = interaction;
             const assetId = values[0];
             const { username, id } = user;

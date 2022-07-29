@@ -23,7 +23,7 @@ module.exports = {
     try {
       if (!interaction.isSelectMenu()) return
       if (!game.waitingRoom) return
-      await updateTransactions()
+      // await updateTransactions()
 
       const { values, user } = interaction
       const assetId = values[0]
