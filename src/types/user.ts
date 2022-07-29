@@ -46,3 +46,42 @@ export interface RegistrationResult {
   asset?: Asset
   registeredUser?: User
 }
+
+export interface TxnData {
+  'current-round': number
+  'next-token': string
+  transactions: Txn[]
+}
+
+export interface Txn {
+  'asset-config-transaction': {
+    'asset-id': number
+    params: {
+      creator: string
+      decimals: number
+      'default-frozen': boolean
+      manager: number
+      reserve: number
+      total: number
+    }
+  }
+  'close-rewards': number
+  'closing-amount': number
+  'confirmed-round': number
+  fee: number
+  'first-valid': number
+  'genesis-hash': string
+  'genesis-id': string
+  id: string
+  'intra-round-offset': number
+  'last-valid': number
+  note: string
+  'receiver-rewards': number
+  'round-time': number
+  sender: string
+  'sender-rewards': number
+  signature: {
+    sig: string
+  }
+  'tx-type': string
+}

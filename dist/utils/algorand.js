@@ -3,20 +3,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateTransactions = exports.searchForTransactions = exports.claimHoot = exports.findAsset = exports.isAssetCollectionAsset = exports.getAssetIdArray = exports.determineOwnership = void 0;
+exports.convergeTxnData = exports.updateTransactions = exports.searchForTransactions = exports.claimHoot = exports.findAsset = exports.isAssetCollectionAsset = exports.getAssetIdArray = exports.determineOwnership = void 0;
 const asset_1 = __importDefault(require("../models/asset"));
 const helpers_1 = require("./helpers");
 const algosdk_1 = __importDefault(require("algosdk"));
 const settings_1 = __importDefault(require("../settings"));
 const fs_1 = __importDefault(require("fs"));
-const txt_json_1 = __importDefault(require("../txnData/txt.json"));
+const txnData_json_1 = __importDefault(require("../txnData/txnData.json"));
+const __1 = require("..");
 const algoNode = process.env.ALGO_NODE;
 const pureStakeApi = process.env.PURESTAKE_API;
 const algoIndexerNode = process.env.ALGO_INDEXER_NODE;
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
 const unitPrefix = process.env.UNIT_NAME;
 const hootAccountMnemonic = process.env.HOOT_SOURCE_MNEMONIC;
-const creatorAddress = process.env.CREATOR_ADDRESS;
 const token = {
     'X-API-Key': pureStakeApi,
 };
@@ -25,9 +25,12 @@ const indexerServer = algoIndexerNode;
 const port = '';
 const algodClient = new algosdk_1.default.Algodv2(token, server, port);
 const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
-const txData = JSON.parse(JSON.stringify(txt_json_1.default));
+const txnData = JSON.parse(JSON.stringify(txnData_json_1.default));
 const determineOwnership = async function (address) {
     try {
+        // update transactions
+        const txnData = await (0, exports.convergeTxnData)(__1.creatorAddressArr, true);
+        fs_1.default.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData));
         let { assets } = await algoIndexer.lookupAccountAssets(address).do();
         const { maxAssets } = settings_1.default;
         let walletOwned = false;
@@ -48,7 +51,7 @@ const determineOwnership = async function (address) {
                 uniqueAssets.push(asset);
             }
         });
-        const assetIdArr = (0, exports.getAssetIdArray)();
+        const assetIdArr = await (0, exports.getAssetIdArray)();
         // Determine which assets are part of bot collection
         uniqueAssets.forEach((asset) => {
             if (assetIdsOwned.length < maxAssets) {
@@ -58,6 +61,7 @@ const determineOwnership = async function (address) {
                 }
             }
         });
+        console.log(assetIdsOwned);
         // fetch data for each asset but not too quickly
         await (0, helpers_1.asyncForEach)(assetIdsOwned, async (assetId) => {
             var _a;
@@ -90,7 +94,7 @@ const determineOwnership = async function (address) {
 exports.determineOwnership = determineOwnership;
 const getAssetIdArray = () => {
     const assetIdArr = [];
-    txt_json_1.default.transactions.forEach((txn) => {
+    txnData.transactions.forEach((txn) => {
         const assetId = txn['asset-config-transaction']['asset-id'];
         const result = assetIdArr.findIndex((item) => item === assetId);
         result <= -1 && assetIdArr.push(assetId);
@@ -129,27 +133,49 @@ const claimHoot = async (amount, receiverAddress) => {
     }
 };
 exports.claimHoot = claimHoot;
-const searchForTransactions = async () => {
+// Finds all transactions from address
+const searchForTransactions = async (address) => {
     const type = 'acfg';
-    const txns = await algoIndexer
+    const txns = (await algoIndexer
         .searchForTransactions()
-        .address(creatorAddress)
+        .address(address)
         .txType(type)
-        .do();
-    fs_1.default.writeFileSync('dist/data/txt.json', JSON.stringify(txns));
+        .do());
+    return txns;
 };
 exports.searchForTransactions = searchForTransactions;
-const updateTransactions = async () => {
-    const currentRound = txt_json_1.default['current-round'];
+const updateTransactions = async (accountAddress) => {
+    const currentRound = txnData['current-round'];
     const type = 'acfg';
-    const account = 'AOWLLUX3BBLDV6KUZYQ7FBZTIWGWRRJO6B5XL2DFQ6WLITHUK26OO7IGMI';
     const newTxns = await algoIndexer
         .searchForTransactions()
-        .address(account)
+        .address(accountAddress)
         .txType(type)
         .minRound(currentRound)
         .do();
-    const newTxnData = Object.assign(Object.assign({}, txt_json_1.default), { trasactions: [txData.transactions, ...newTxns.transactions] });
-    fs_1.default.writeFileSync('dist/data/txt.json', JSON.stringify(newTxnData));
+    return Object.assign(Object.assign({}, txnData), { transactions: [txnData.transactions, ...newTxns.transactions] });
 };
 exports.updateTransactions = updateTransactions;
+// Fetches all data and reduces it to one object
+const convergeTxnData = async (creatorAddresses, update) => {
+    const updateCalls = [];
+    creatorAddresses.forEach((address) => {
+        updateCalls.push(update ? (0, exports.updateTransactions)(address) : (0, exports.searchForTransactions)(address));
+    });
+    const txnDataArr = await Promise.all(updateCalls);
+    return reduceTxnData(txnDataArr);
+};
+exports.convergeTxnData = convergeTxnData;
+const reduceTxnData = (txnDataArray) => {
+    const reducedData = txnDataArray.reduce((prevTxnData, txnData) => {
+        // select the most recent round
+        return {
+            ['current-round']: prevTxnData['current-round'] > txnData['current-round']
+                ? prevTxnData['current-round']
+                : txnData['current-round'],
+            ['next-token']: prevTxnData['next-token'],
+            transactions: [...prevTxnData.transactions, ...txnData.transactions],
+        };
+    });
+    return reducedData;
+};
