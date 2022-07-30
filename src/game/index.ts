@@ -51,7 +51,12 @@ export const startWaitingRoom = async (): Promise<void> => {
   // }
 
   const file = new MessageAttachment('src/images/main.gif')
-  await game.megatron.edit({ files: [file], embeds: [], components: [] })
+  await game.megatron.edit({
+    files: [file],
+    embeds: [],
+    components: [],
+    fetchReply: true,
+  })
 
   // start game
   game.active = true
@@ -64,15 +69,16 @@ export const startWaitingRoom = async (): Promise<void> => {
 
 const sendCountdown = async (countDown: number, channel: any) => {
   try {
-    // const imagePath = `src/images/${countDown}.png`
-    // const countDownImage = new MessageAttachment(imagePath)
-    // if (!game.megatron) {
-    //   game.megatron = await channel.send({
-    //     files: [countDownImage],
-    //   })
-    // } else {
-    //   await game.megatron.edit({ files: [countDownImage] })
-    // }
+    const imagePath = `src/images/${countDown}.png`
+    const countDownImage = new MessageAttachment(imagePath)
+    if (!game.megatron) {
+      game.megatron = await channel.send({
+        files: [countDownImage],
+        fetchReply: true,
+      })
+    } else {
+      await game.megatron.edit({ files: [countDownImage] })
+    }
   } catch (error) {
     console.log('ERROR WITH COUNTDOWN')
     console.log(error)

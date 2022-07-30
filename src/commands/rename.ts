@@ -17,7 +17,7 @@ module.exports = {
   enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
-    if (game?.players?.length) {
+    if (Object.values(game?.players?.length)) {
       const { user } = interaction
       const name = interaction.options.getString('name') as string
       game.players[user.id].asset.assetName = name
