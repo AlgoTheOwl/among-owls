@@ -50,15 +50,21 @@ const startWaitingRoom = async () => {
 };
 exports.startWaitingRoom = startWaitingRoom;
 const sendCountdown = async (countDown, channel) => {
-    const imagePath = `src/images/${countDown}.png`;
-    const countDownImage = new discord_js_1.MessageAttachment(imagePath);
-    if (!__1.game.megatron) {
-        __1.game.megatron = await channel.send({
-            files: [countDownImage],
-        });
+    try {
+        const imagePath = `src/images/${countDown}.png`;
+        const countDownImage = new discord_js_1.MessageAttachment(imagePath);
+        if (!__1.game.megatron) {
+            __1.game.megatron = await channel.send({
+                files: [countDownImage],
+            });
+        }
+        else {
+            await __1.game.megatron.edit({ files: [countDownImage] });
+        }
     }
-    else {
-        await __1.game.megatron.edit({ files: [countDownImage] });
+    catch (error) {
+        console.log('ERROR WITH COUNTDOWN');
+        console.log(error);
     }
 };
 const sendVictimSelectMenu = async () => {
