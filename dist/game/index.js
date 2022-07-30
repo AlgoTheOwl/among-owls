@@ -34,12 +34,12 @@ const startWaitingRoom = async () => {
     if (__1.game.waitingRoom)
         __1.game.waitingRoom = false;
     // Do countdown
-    let countDown = 5;
-    while (countDown >= 1) {
-        await sendCountdown(countDown, __1.channel);
-        countDown--;
-        await (0, helpers_1.wait)(1500);
-    }
+    // let countDown = 5
+    // while (countDown >= 1) {
+    //   await sendCountdown(countDown, channel)
+    //   countDown--
+    //   await wait(1500)
+    // }
     const file = new discord_js_1.MessageAttachment('src/images/main.gif');
     await __1.game.megatron.edit({ files: [file], embeds: [], components: [] });
     // start game
