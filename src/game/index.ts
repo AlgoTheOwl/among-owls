@@ -40,6 +40,8 @@ export const startWaitingRoom = async (): Promise<void> => {
 
   if (game.waitingRoom) game.waitingRoom = false
 
+  await wait(2000)
+
   // Do countdown
   // let countDown = 5
   // while (countDown >= 1) {
