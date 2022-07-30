@@ -64,7 +64,7 @@ exports.client.once('ready', async () => {
         (0, game_2.startWaitingRoom)();
     }
     catch (error) {
-        console.log(error);
+        console.log('CLIENT ERROR', error);
     }
 });
 /*
