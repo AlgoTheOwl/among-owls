@@ -10,8 +10,10 @@ import { asyncForEach, wait } from './helpers'
 import algosdk from 'algosdk'
 import settings from '../settings'
 import fs from 'fs'
-import txnDataJson from '../txnData/txnData.json'
+
+// import txnDataJson from '../txnData/txnData.json'
 import { creatorAddressArr } from '..'
+import util from 'util'
 
 const algoNode = process.env.ALGO_NODE
 const pureStakeApi = process.env.PURESTAKE_API
@@ -30,7 +32,8 @@ const port = ''
 const algodClient = new algosdk.Algodv2(token, server, port)
 const algoIndexer = new algosdk.Indexer(token, indexerServer, port)
 
-const txnData = JSON.parse(JSON.stringify(txnDataJson)) as TxnData
+const getTxnData = () =>
+  JSON.parse(fs.readFileSync('src/txnData/txnData.json', 'utf-8'))
 
 export const determineOwnership = async function (address: string): Promise<{
   walletOwned: boolean
@@ -38,8 +41,12 @@ export const determineOwnership = async function (address: string): Promise<{
   hootOwned: number
 }> {
   try {
+    if (!fs.existsSync('src/txnData/txnData.json')) {
+      fs.writeFileSync('src/txnData/txnData.json', '')
+    }
     // update transactions
     const txnData = await convergeTxnData(creatorAddressArr, true)
+
     fs.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData))
 
     let { assets } = await algoIndexer.lookupAccountAssets(address).do()
@@ -68,7 +75,7 @@ export const determineOwnership = async function (address: string): Promise<{
       }
     })
 
-    const assetIdArr = await getAssetIdArray()
+    const assetIdArr = getAssetIdArray()
     // Determine which assets are part of bot collection
     uniqueAssets.forEach((asset) => {
       if (assetIdsOwned.length < maxAssets) {
@@ -79,12 +86,9 @@ export const determineOwnership = async function (address: string): Promise<{
       }
     })
 
-    console.log(assetIdsOwned)
-
     // fetch data for each asset but not too quickly
     await asyncForEach(assetIdsOwned, async (assetId: number) => {
       const assetData = await findAsset(assetId)
-      console.log(assetData)
       if (assetData) {
         const { params } = assetData
 
@@ -113,6 +117,8 @@ export const determineOwnership = async function (address: string): Promise<{
 
 export const getAssetIdArray = () => {
   const assetIdArr: number[] = []
+  const txnData = getTxnData()
+  // console.log(util.inspect(txnData, { depth: 1 }))
   txnData.transactions.forEach((txn: Txn) => {
     const assetId = txn['asset-config-transaction']['asset-id']
     const result = assetIdArr.findIndex((item) => item === assetId)
@@ -182,19 +188,15 @@ export const searchForTransactions = async (
 export const updateTransactions = async (
   accountAddress: string
 ): Promise<TxnData> => {
+  const txnData = getTxnData()
   const currentRound = txnData['current-round']
   const type = 'acfg'
-  const newTxns = await algoIndexer
+  return (await algoIndexer
     .searchForTransactions()
     .address(accountAddress)
     .txType(type)
     .minRound(currentRound)
-    .do()
-
-  return {
-    ...txnData,
-    transactions: [txnData.transactions, ...newTxns.transactions],
-  }
+    .do()) as TxnData
 }
 
 // Fetches all data and reduces it to one object
@@ -209,7 +211,8 @@ export const convergeTxnData = async (
     )
   })
   const txnDataArr = await Promise.all(updateCalls)
-  return reduceTxnData(txnDataArr)
+  const currentTxnData = getTxnData()
+  return reduceTxnData([currentTxnData, ...txnDataArr])
 }
 
 const reduceTxnData = (txnDataArray: TxnData[]) => {
@@ -226,5 +229,6 @@ const reduceTxnData = (txnDataArray: TxnData[]) => {
       }
     }
   )
+  // console.log(util.inspect(reducedData, { depth: 1 }))
   return reducedData
 }

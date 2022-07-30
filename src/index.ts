@@ -24,6 +24,7 @@ import {
   searchForTransactions,
   updateTransactions,
 } from './utils/algorand'
+import util from 'util'
 
 const token: string = process.env.DISCORD_TOKEN
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE
@@ -56,6 +57,11 @@ export const client: Client = new Client({
 client.once('ready', async () => {
   await connectToDatabase()
   console.log('Ye Among AOWLs - Server ready')
+
+  if (!fs.existsSync(__dirname + '/txnData/txnData.json')) {
+    console.log('does not exist')
+    fs.writeFileSync(__dirname + '/txnData/txnData.json', '')
+  }
 
   const txnData = await convergeTxnData(creatorAddressArr, false)
 
