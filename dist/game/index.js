@@ -33,6 +33,7 @@ const startWaitingRoom = async () => {
     }
     if (__1.game.waitingRoom)
         __1.game.waitingRoom = false;
+    await (0, helpers_1.wait)(2000);
     // Do countdown
     // let countDown = 5
     // while (countDown >= 1) {
