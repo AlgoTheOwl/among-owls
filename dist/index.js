@@ -97,4 +97,8 @@ exports.client.on('interactionCreate', async (interaction) => {
         console.error(error);
     }
 });
+process.on('uncaughtException', (err) => {
+    console.log('uncaught exception error');
+    console.log(err);
+});
 exports.client.login(token);

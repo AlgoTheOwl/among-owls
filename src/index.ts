@@ -124,4 +124,9 @@ client.on(
   }
 )
 
+process.on('uncaughtException', (err) => {
+  console.log('uncaught exception error')
+  console.log(err)
+})
+
 client.login(token)
