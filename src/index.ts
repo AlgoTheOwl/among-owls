@@ -81,7 +81,7 @@ client.once('ready', async () => {
 
     startWaitingRoom()
   } catch (error) {
-    console.log(error)
+    console.log('CLIENT ERROR', error)
   }
 })
 
