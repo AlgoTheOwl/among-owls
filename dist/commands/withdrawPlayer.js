@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
-// Globals
 const index_1 = require("../index");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
@@ -9,7 +8,7 @@ module.exports = {
         .setDescription('Withdraw an active player'),
     async execute(interaction) {
         try {
-            if (!interaction.isSelectMenu())
+            if (!interaction.isButton())
                 return;
             if (!index_1.game.waitingRoom)
                 return;
