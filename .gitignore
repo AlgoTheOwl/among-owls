@@ -1,3 +1,5 @@
 .env
 node_modules
 dist/nftAssets
+dist/txnData
+src/txnData
