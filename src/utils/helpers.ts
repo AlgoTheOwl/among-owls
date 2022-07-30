@@ -188,6 +188,7 @@ export const resetGame = (stopped: boolean = false): void => {
   game.waitingRoom = false
   game.attackEngaged = false
   game.stopped = false
+  game.megatron = undefined
 
   if (stopped) {
     game.stopped = true
