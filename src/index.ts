@@ -19,12 +19,7 @@ import settings from './settings'
 import Game from './models/game'
 // Helpers
 import { startWaitingRoom } from './game'
-import {
-  convergeTxnData,
-  searchForTransactions,
-  updateTransactions,
-} from './utils/algorand'
-import util from 'util'
+import { convergeTxnData } from './utils/algorand'
 
 const token: string = process.env.DISCORD_TOKEN
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE

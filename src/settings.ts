@@ -53,5 +53,5 @@ export default {
   hootSettings: {
     hootOnWin: 5,
   },
-  channelId: '976577468653797406',
+  channelId: '984079278683598928',
 } as Settings
