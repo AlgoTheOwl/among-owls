@@ -48,7 +48,10 @@ function doEmbed(type, options) {
             .setStyle('PRIMARY'), new discord_js_1.MessageButton()
             .setCustomId('begin-game')
             .setLabel('Start game')
-            .setStyle('SECONDARY')));
+            .setStyle('SECONDARY'), new discord_js_1.MessageButton()
+            .setCustomId('withdraw-player')
+            .setLabel('Withdraw player')
+            .setStyle('DANGER')));
     }
     if (type === embeds_1.default.activeGame) {
         const fields = (options === null || options === void 0 ? void 0 : options.hasOwnProperty('fields'))
