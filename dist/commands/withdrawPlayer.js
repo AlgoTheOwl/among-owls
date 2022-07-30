@@ -14,11 +14,12 @@ module.exports = {
                 return;
             const { user } = interaction;
             const { id } = user;
-            if (index_1.game === null || index_1.game === void 0 ? void 0 : index_1.game.players[id]) {
+            const player = index_1.game === null || index_1.game === void 0 ? void 0 : index_1.game.players[id];
+            if (player) {
                 delete index_1.game.players[id];
                 interaction.reply({
                     ephemeral: true,
-                    content: 'AOWL removed',
+                    content: `${player.asset.assetName} removed`,
                 });
             }
             else {

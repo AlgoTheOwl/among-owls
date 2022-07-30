@@ -16,12 +16,14 @@ module.exports = {
       const { user } = interaction
       const { id } = user
 
-      if (game?.players[id]) {
+      const player = game?.players[id]
+
+      if (player) {
         delete game.players[id]
 
         interaction.reply({
           ephemeral: true,
-          content: 'AOWL removed',
+          content: `${player.asset.assetName} removed`,
         })
       } else {
         interaction.reply({
