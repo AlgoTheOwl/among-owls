@@ -1,25 +1,16 @@
 // Discord
-import { Interaction, SelectMenuInteraction } from 'discord.js'
+import { ButtonInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-// Data
-import { collections } from '../database/database.service'
-// Schemas
-import Asset from '../models/asset'
-import { WithId } from 'mongodb'
-import User from '../models/user'
-import Player from '../models/player'
-// Helpers
-import { downloadFile, wait } from '../utils/helpers'
-// Globals
+
 import { game } from '../index'
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('withdraw-player')
     .setDescription('Withdraw an active player'),
-  async execute(interaction: Interaction) {
+  async execute(interaction: ButtonInteraction) {
     try {
-      if (!interaction.isSelectMenu()) return
+      if (!interaction.isButton()) return
       if (!game.waitingRoom) return
 
       const { user } = interaction
