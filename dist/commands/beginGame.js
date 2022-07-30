@@ -24,12 +24,12 @@ module.exports = {
         }
         if (playerArr.length >= minCapacity) {
             __1.game.waitingRoom = false;
-            // interaction.reply({
-            //   content: `${user.username} has started the game`,
-            // })
-            // setTimeout(() => {
-            //   interaction.deleteReply()
-            // }, 5000)
+            interaction.reply({
+                content: `${user.username} has started the game`,
+            });
+            setTimeout(() => {
+                interaction.deleteReply();
+            }, 10000);
         }
         else {
             interaction.reply({
