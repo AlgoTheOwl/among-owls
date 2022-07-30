@@ -41,12 +41,12 @@ export const startWaitingRoom = async (): Promise<void> => {
   if (game.waitingRoom) game.waitingRoom = false
 
   // Do countdown
-  let countDown = 5
-  while (countDown >= 1) {
-    await sendCountdown(countDown, channel)
-    countDown--
-    await wait(1500)
-  }
+  // let countDown = 5
+  // while (countDown >= 1) {
+  //   await sendCountdown(countDown, channel)
+  //   countDown--
+  //   await wait(1500)
+  // }
 
   const file = new MessageAttachment('src/images/main.gif')
   await game.megatron.edit({ files: [file], embeds: [], components: [] })

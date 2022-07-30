@@ -6,6 +6,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('rules')
     .setDescription('see game rules'),
+  enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 
