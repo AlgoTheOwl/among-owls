@@ -50,36 +50,39 @@ export const client: Client = new Client({
 })
 
 client.once('ready', async () => {
-  await connectToDatabase()
-  console.log('Ye Among AOWLs - Server ready')
+  try {
+    await connectToDatabase()
+    console.log('Ye Among AOWLs - Server ready')
 
-  if (!fs.existsSync(__dirname + '/txnData/txnData.json')) {
-    console.log('does not exist')
-    fs.writeFileSync(__dirname + '/txnData/txnData.json', '')
+    if (!fs.existsSync(__dirname + '/txnData/txnData.json')) {
+      console.log('does not exist')
+      fs.writeFileSync(__dirname + '/txnData/txnData.json', '')
+    }
+
+    const txnData = await convergeTxnData(creatorAddressArr, false)
+
+    fs.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData))
+
+    channel = client.channels.cache.get(channelId) as TextChannel
+
+    client.commands = new Collection()
+
+    const commandsPath = path.join(__dirname, 'commands')
+    const commandFiles = fs
+      .readdirSync(commandsPath)
+      .filter((file) => file.endsWith('.js'))
+
+    for (const file of commandFiles) {
+      const filePath = path.join(commandsPath, file)
+      const command = require(filePath)
+
+      client.commands.set(command.data.name, command)
+    }
+
+    startWaitingRoom()
+  } catch (error) {
+    console.log(error)
   }
-
-  const txnData = await convergeTxnData(creatorAddressArr, false)
-
-  fs.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData))
-
-  channel = client.channels.cache.get(channelId) as TextChannel
-
-  client.commands = new Collection()
-
-  const commandsPath = path.join(__dirname, 'commands')
-  const commandFiles = fs
-    .readdirSync(commandsPath)
-    .filter((file) => file.endsWith('.js'))
-
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file)
-    const command = require(filePath)
-
-    client.commands.set(command.data.name, command)
-  }
-
-  startWaitingRoom()
-  // updateTransactions()
 })
 
 /*

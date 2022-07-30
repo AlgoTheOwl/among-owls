@@ -41,27 +41,31 @@ exports.client = new discord_js_1.Client({
     ],
 });
 exports.client.once('ready', async () => {
-    await (0, database_service_1.connectToDatabase)();
-    console.log('Ye Among AOWLs - Server ready');
-    if (!node_fs_1.default.existsSync(__dirname + '/txnData/txnData.json')) {
-        console.log('does not exist');
-        node_fs_1.default.writeFileSync(__dirname + '/txnData/txnData.json', '');
+    try {
+        await (0, database_service_1.connectToDatabase)();
+        console.log('Ye Among AOWLs - Server ready');
+        if (!node_fs_1.default.existsSync(__dirname + '/txnData/txnData.json')) {
+            console.log('does not exist');
+            node_fs_1.default.writeFileSync(__dirname + '/txnData/txnData.json', '');
+        }
+        const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, false);
+        node_fs_1.default.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData));
+        exports.channel = exports.client.channels.cache.get(channelId);
+        exports.client.commands = new discord_js_1.Collection();
+        const commandsPath = node_path_1.default.join(__dirname, 'commands');
+        const commandFiles = node_fs_1.default
+            .readdirSync(commandsPath)
+            .filter((file) => file.endsWith('.js'));
+        for (const file of commandFiles) {
+            const filePath = node_path_1.default.join(commandsPath, file);
+            const command = require(filePath);
+            exports.client.commands.set(command.data.name, command);
+        }
+        (0, game_2.startWaitingRoom)();
     }
-    const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, false);
-    node_fs_1.default.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData));
-    exports.channel = exports.client.channels.cache.get(channelId);
-    exports.client.commands = new discord_js_1.Collection();
-    const commandsPath = node_path_1.default.join(__dirname, 'commands');
-    const commandFiles = node_fs_1.default
-        .readdirSync(commandsPath)
-        .filter((file) => file.endsWith('.js'));
-    for (const file of commandFiles) {
-        const filePath = node_path_1.default.join(commandsPath, file);
-        const command = require(filePath);
-        exports.client.commands.set(command.data.name, command);
+    catch (error) {
+        console.log(error);
     }
-    (0, game_2.startWaitingRoom)();
-    // updateTransactions()
 });
 /*
  *****************
