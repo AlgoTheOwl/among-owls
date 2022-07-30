@@ -17,17 +17,25 @@ module.exports = {
   enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
-    const { user } = interaction
-    const name = interaction.options.getString('name') as string
-    game.players[user.id].asset.assetName = name
-    interaction.reply({
-      content: `Your AOWL is now named ${name}`,
-      ephemeral: true,
-    })
-    // Ensure game knows to update
-    game.update = true
-    setTimeout(() => {
-      game.update = false
-    }, 3000)
+    if (game?.players?.length) {
+      const { user } = interaction
+      const name = interaction.options.getString('name') as string
+      game.players[user.id].asset.assetName = name
+
+      interaction.reply({
+        content: `Your AOWL is now named ${name}`,
+        ephemeral: true,
+      })
+      // Ensure game knows to update
+      game.update = true
+      setTimeout(() => {
+        game.update = false
+      }, 3000)
+    } else {
+      interaction.reply({
+        content: `Please enter the waiting room to rename your AOWL`,
+        ephemeral: true,
+      })
+    }
   },
 }

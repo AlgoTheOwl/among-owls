@@ -9,7 +9,7 @@ const helpers_1 = require("./helpers");
 const algosdk_1 = __importDefault(require("algosdk"));
 const settings_1 = __importDefault(require("../settings"));
 const fs_1 = __importDefault(require("fs"));
-const txnData_json_1 = __importDefault(require("../txnData/txnData.json"));
+// import txnDataJson from '../txnData/txnData.json'
 const __1 = require("..");
 const algoNode = process.env.ALGO_NODE;
 const pureStakeApi = process.env.PURESTAKE_API;
@@ -25,9 +25,12 @@ const indexerServer = algoIndexerNode;
 const port = '';
 const algodClient = new algosdk_1.default.Algodv2(token, server, port);
 const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
-const txnData = JSON.parse(JSON.stringify(txnData_json_1.default));
+const getTxnData = () => JSON.parse(fs_1.default.readFileSync('src/txnData/txnData.json', 'utf-8'));
 const determineOwnership = async function (address) {
     try {
+        if (!fs_1.default.existsSync('src/txnData/txnData.json')) {
+            fs_1.default.writeFileSync('src/txnData/txnData.json', '');
+        }
         // update transactions
         const txnData = await (0, exports.convergeTxnData)(__1.creatorAddressArr, true);
         fs_1.default.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData));
@@ -51,7 +54,7 @@ const determineOwnership = async function (address) {
                 uniqueAssets.push(asset);
             }
         });
-        const assetIdArr = await (0, exports.getAssetIdArray)();
+        const assetIdArr = (0, exports.getAssetIdArray)();
         // Determine which assets are part of bot collection
         uniqueAssets.forEach((asset) => {
             if (assetIdsOwned.length < maxAssets) {
@@ -61,12 +64,10 @@ const determineOwnership = async function (address) {
                 }
             }
         });
-        console.log(assetIdsOwned);
         // fetch data for each asset but not too quickly
         await (0, helpers_1.asyncForEach)(assetIdsOwned, async (assetId) => {
             var _a;
             const assetData = await (0, exports.findAsset)(assetId);
-            console.log(assetData);
             if (assetData) {
                 const { params } = assetData;
                 if ((_a = params[`unit-name`]) === null || _a === void 0 ? void 0 : _a.includes(unitPrefix)) {
@@ -94,6 +95,8 @@ const determineOwnership = async function (address) {
 exports.determineOwnership = determineOwnership;
 const getAssetIdArray = () => {
     const assetIdArr = [];
+    const txnData = getTxnData();
+    // console.log(util.inspect(txnData, { depth: 1 }))
     txnData.transactions.forEach((txn) => {
         const assetId = txn['asset-config-transaction']['asset-id'];
         const result = assetIdArr.findIndex((item) => item === assetId);
@@ -145,15 +148,15 @@ const searchForTransactions = async (address) => {
 };
 exports.searchForTransactions = searchForTransactions;
 const updateTransactions = async (accountAddress) => {
+    const txnData = getTxnData();
     const currentRound = txnData['current-round'];
     const type = 'acfg';
-    const newTxns = await algoIndexer
+    return (await algoIndexer
         .searchForTransactions()
         .address(accountAddress)
         .txType(type)
         .minRound(currentRound)
-        .do();
-    return Object.assign(Object.assign({}, txnData), { transactions: [txnData.transactions, ...newTxns.transactions] });
+        .do());
 };
 exports.updateTransactions = updateTransactions;
 // Fetches all data and reduces it to one object
@@ -163,7 +166,8 @@ const convergeTxnData = async (creatorAddresses, update) => {
         updateCalls.push(update ? (0, exports.updateTransactions)(address) : (0, exports.searchForTransactions)(address));
     });
     const txnDataArr = await Promise.all(updateCalls);
-    return reduceTxnData(txnDataArr);
+    const currentTxnData = getTxnData();
+    return reduceTxnData([currentTxnData, ...txnDataArr]);
 };
 exports.convergeTxnData = convergeTxnData;
 const reduceTxnData = (txnDataArray) => {
@@ -177,5 +181,6 @@ const reduceTxnData = (txnDataArray) => {
             transactions: [...prevTxnData.transactions, ...txnData.transactions],
         };
     });
+    // console.log(util.inspect(reducedData, { depth: 1 }))
     return reducedData;
 };
