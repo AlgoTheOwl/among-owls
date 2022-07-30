@@ -27,6 +27,7 @@ const startWaitingRoom = async () => {
     while (playerCount < capacity && __1.game.waitingRoom) {
         if (__1.game.update) {
             await __1.game.megatron.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
+            playerCount = getPlayerCount();
         }
         await (0, helpers_1.wait)(1000);
     }
@@ -37,7 +38,7 @@ const startWaitingRoom = async () => {
     while (countDown >= 1) {
         await sendCountdown(countDown, __1.channel);
         countDown--;
-        await (0, helpers_1.wait)(1000);
+        await (0, helpers_1.wait)(1500);
     }
     const file = new discord_js_1.MessageAttachment('src/images/main.gif');
     await __1.game.megatron.edit({ files: [file], embeds: [], components: [] });
@@ -57,7 +58,7 @@ const sendCountdown = async (countDown, channel) => {
         });
     }
     else {
-        __1.game.megatron.edit({ files: [countDownImage] });
+        await __1.game.megatron.edit({ files: [countDownImage] });
     }
 };
 const sendVictimSelectMenu = async () => {
