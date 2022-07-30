@@ -33,6 +33,7 @@ export const startWaitingRoom = async (): Promise<void> => {
   while (playerCount < capacity && game.waitingRoom) {
     if (game.update) {
       await game.megatron.edit(doEmbed(embeds.waitingRoom))
+      playerCount = getPlayerCount()
     }
     await wait(1000)
   }
@@ -44,7 +45,7 @@ export const startWaitingRoom = async (): Promise<void> => {
   while (countDown >= 1) {
     await sendCountdown(countDown, channel)
     countDown--
-    await wait(1000)
+    await wait(1500)
   }
 
   const file = new MessageAttachment('src/images/main.gif')
@@ -68,7 +69,7 @@ const sendCountdown = async (countDown: number, channel: any) => {
       files: [countDownImage],
     })
   } else {
-    game.megatron.edit({ files: [countDownImage] })
+    await game.megatron.edit({ files: [countDownImage] })
   }
 }
 
