@@ -161,6 +161,7 @@ const resetGame = (stopped = false) => {
     __1.game.waitingRoom = false;
     __1.game.attackEngaged = false;
     __1.game.stopped = false;
+    __1.game.megatron = undefined;
     if (stopped) {
         __1.game.stopped = true;
         stopped && ((_a = __1.game === null || __1.game === void 0 ? void 0 : __1.game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped)));
