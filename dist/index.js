@@ -61,7 +61,7 @@ exports.client.once('ready', async () => {
             const command = require(filePath);
             exports.client.commands.set(command.data.name, command);
         }
-        (0, game_2.startWaitingRoom)();
+        await (0, game_2.startWaitingRoom)();
     }
     catch (error) {
         console.log('CLIENT ERROR', error);
@@ -97,8 +97,8 @@ exports.client.on('interactionCreate', async (interaction) => {
         console.error(error);
     }
 });
-process.on('uncaughtException', (err) => {
-    console.log('uncaught exception error');
-    console.log(err);
-});
+// process.on('uncaughtException', (err) => {
+//   console.log('uncaught exception error')
+//   console.log(err)
+// })
 exports.client.login(token);

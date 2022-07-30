@@ -79,7 +79,7 @@ client.once('ready', async () => {
       client.commands.set(command.data.name, command)
     }
 
-    startWaitingRoom()
+    await startWaitingRoom()
   } catch (error) {
     console.log('CLIENT ERROR', error)
   }
@@ -124,9 +124,9 @@ client.on(
   }
 )
 
-process.on('uncaughtException', (err) => {
-  console.log('uncaught exception error')
-  console.log(err)
-})
+// process.on('uncaughtException', (err) => {
+//   console.log('uncaught exception error')
+//   console.log(err)
+// })
 
 client.login(token)
