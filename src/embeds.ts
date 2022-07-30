@@ -70,7 +70,11 @@ export default function doEmbed(
         new MessageButton()
           .setCustomId('begin-game')
           .setLabel('Start game')
-          .setStyle('SECONDARY')
+          .setStyle('SECONDARY'),
+        new MessageButton()
+          .setCustomId('withdraw-player')
+          .setLabel('Withdraw player')
+          .setStyle('DANGER')
       )
     )
   }
