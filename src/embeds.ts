@@ -73,7 +73,7 @@ export default function doEmbed(
           .setStyle('SECONDARY'),
         new MessageButton()
           .setCustomId('withdraw-player')
-          .setLabel('Withdraw player')
+          .setLabel('Withdraw AOWL')
           .setStyle('DANGER')
       )
     )
