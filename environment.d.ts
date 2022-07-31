@@ -23,6 +23,7 @@ declare global {
       CREATOR_ADDRESS_ONE: string
       CREATOR_ADDRESS_TWO: string
       CREATOR_ADDRESS_THREE: string
+      CHANNEL_ID: string
     }
   }
 }

@@ -3,6 +3,11 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
 // Globals
 import { game } from '..'
+import { collections } from '../database/database.service'
+import User from '../models/user'
+import { WithId } from 'mongodb'
+import { updateGame } from '../utils/helpers'
+import Asset from '../models/asset'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -17,25 +22,58 @@ module.exports = {
   enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
-    if (Object.values(game?.players).length) {
-      const { user } = interaction
-      const name = interaction.options.getString('name') as string
-      game.players[user.id].asset.assetName = name
+    const { user } = interaction
+    const name = interaction.options.getString('name') as string
+
+    const player = game?.players[user.id] || null
+    let assetId: number | undefined
+
+    const userData = (await collections.users.findOne({
+      discordId: user.id,
+    })) as WithId<User>
+
+    // Grab assetId
+    if (player) {
+      // update local state
+      player.asset.alias = name
+      // grab assetId from registered player
+      assetId = player.asset.assetId
+    } else {
+      // grab assetID from db
+      assetId = userData?.selectedAssetId
+    }
+
+    // Player has no assetId
+    if (!assetId) {
+      interaction.reply({
+        content: `Please select an asset in your user profile (/profile) or enter the waiting room to register`,
+        ephemeral: true,
+      })
+    } else {
+      // Update assets in db
+      const { assets } = userData
+
+      const updatedAsset: Asset = {
+        ...userData.assets[assetId],
+        alias: name,
+      }
+
+      const updatedAssets = { ...assets, [assetId]: updatedAsset }
+
+      await collections.users.findOneAndUpdate(
+        { _id: userData._id },
+        {
+          $set: {
+            assets: updatedAssets,
+          },
+        }
+      )
 
       interaction.reply({
         content: `Your AOWL is now named ${name}`,
         ephemeral: true,
       })
-      // Ensure game knows to update
-      game.update = true
-      setTimeout(() => {
-        game.update = false
-      }, 3000)
-    } else {
-      interaction.reply({
-        content: `Please enter the waiting room to rename your AOWL`,
-        ephemeral: true,
-      })
+      updateGame()
     }
   },
 }

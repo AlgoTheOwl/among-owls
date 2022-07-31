@@ -50,20 +50,16 @@ const downloadFile = async (asset, directory, username) => {
     }
 };
 exports.downloadFile = downloadFile;
-// export const normalizeLink = (imageUrl: string): string => {
-//   if (imageUrl?.slice(0, 4) === 'ipfs') {
-//     const ifpsHash = imageUrl.slice(7)
-//     imageUrl = `${ipfsGateway}${ifpsHash}`
-//   }
-//   return imageUrl
-// }
 const mapPlayersForEmbed = (playerArr, type) => playerArr.map((player) => {
     let value;
     if (player.dead || player.hp <= 0) {
         value = '💀';
     }
     else {
-        value = type === 'game' ? `HP: ${player.hp}` : `${player.asset.assetName}`;
+        value =
+            type === 'game'
+                ? `HP: ${player.hp}`
+                : `${player.asset.alias || player.asset.assetName}`;
     }
     return {
         name: player.username,

@@ -10,7 +10,8 @@ export default class User {
     public hoot: number,
     public _id?: ObjectId,
     public yaoWins?: number,
-    public coolDowns?: { [key: string]: number } // timestamp
+    public coolDowns?: { [key: string]: number }, // timestamp
+    public selectedAssetId?: number
   ) {
     this.yaoWins = 0
     this.coolDowns = {}

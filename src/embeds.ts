@@ -56,7 +56,7 @@ export default function doEmbed(
       fields: playerArr.map((player) => {
         return {
           name: player.username,
-          value: player.asset.assetName,
+          value: player.asset.alias || player.asset.assetName,
         }
       }),
     }
@@ -170,7 +170,7 @@ export default function doEmbed(
 
     data = {
       title: assetName,
-      description: `Your lil' ripper`,
+      description: `Use /rename to rename this asset`,
       thumbNail: normalizeIpfsUrl(assetUrl),
       fields,
     }

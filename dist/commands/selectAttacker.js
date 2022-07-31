@@ -45,11 +45,10 @@ module.exports = {
                 .map((asset, i) => {
                 var _a;
                 if (i < maxAssets) {
-                    const label = asset.assetName.length > 100
-                        ? asset.assetName.slice(0, 100)
-                        : asset.assetName;
+                    const label = asset.alias || asset.assetName;
+                    const normalizedLabel = label.slice(0, 100);
                     return {
-                        label,
+                        label: normalizedLabel,
                         description: 'Select to play',
                         value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
                     };
