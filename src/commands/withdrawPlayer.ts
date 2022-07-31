@@ -3,6 +3,7 @@ import { ButtonInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 import { game } from '../index'
+import { updateGame } from '../utils/helpers'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -25,6 +26,7 @@ module.exports = {
           ephemeral: true,
           content: `${player.asset.assetName} removed`,
         })
+        updateGame()
       } else {
         interaction.reply({
           ephemeral: true,
