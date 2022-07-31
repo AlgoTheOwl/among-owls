@@ -50,7 +50,7 @@ function doEmbed(type, options) {
             .setLabel('Start game')
             .setStyle('SECONDARY'), new discord_js_1.MessageButton()
             .setCustomId('withdraw-player')
-            .setLabel('Withdraw player')
+            .setLabel('Withdraw AOWL')
             .setStyle('DANGER')));
     }
     if (type === embeds_1.default.activeGame) {
