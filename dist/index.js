@@ -22,7 +22,8 @@ const token = process.env.DISCORD_TOKEN;
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO;
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE;
-const { coolDownInterval, channelId } = settings_1.default;
+const channelId = process.env.CHANNEL_ID;
+const { coolDownInterval } = settings_1.default;
 // Gloval vars
 exports.game = new game_1.default({}, false, false, coolDownInterval);
 exports.emojis = {};
@@ -97,8 +98,4 @@ exports.client.on('interactionCreate', async (interaction) => {
         console.error(error);
     }
 });
-// process.on('uncaughtException', (err) => {
-//   console.log('uncaught exception error')
-//   console.log(err)
-// })
 exports.client.login(token);

@@ -4,7 +4,6 @@ import { MessagePayload, SelectMenuInteraction } from 'discord.js'
 //Data
 import { collections } from '../database/database.service'
 // Schemas
-import { WithId } from 'mongodb'
 import embeds from '../constants/embeds'
 import User from '../models/user'
 // Embeds
@@ -23,9 +22,16 @@ module.exports = {
     const assetId = Number(values[0])
     const discordId = user.id
 
-    const userData = (await collections.users.findOne({
-      discordId,
-    })) as WithId<User>
+    const { value: userData } = (await collections.users.findOneAndUpdate(
+      {
+        discordId,
+      },
+      {
+        $set: { selectedAssetId: assetId },
+      },
+      { returnDocument: 'after' }
+      // Why won't it let me user the User model?
+    )) as any | User
 
     if (!userData) {
       return interaction.reply({
@@ -36,12 +42,13 @@ module.exports = {
 
     const asset = userData.assets[assetId]
     if (asset) {
-      const { assetUrl, assetName, unitName, assetId, wins } = asset
+      const { assetUrl, assetName, unitName, assetId, wins, alias } = asset
 
       const winNumber = wins ? wins : 0
 
       const fields = [
         { name: 'Unit name', value: unitName },
+        { name: 'Asset name', value: alias || assetName },
         { name: 'Asset ID', value: assetId.toString() },
         { name: 'Wins', value: winNumber.toString() },
       ]

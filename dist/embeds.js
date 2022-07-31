@@ -38,7 +38,7 @@ function doEmbed(type, options) {
             fields: playerArr.map((player) => {
                 return {
                     name: player.username,
-                    value: player.asset.assetName,
+                    value: player.asset.alias || player.asset.assetName,
                 };
             }),
         };
@@ -131,7 +131,7 @@ function doEmbed(type, options) {
         const { assetUrl, fields, assetName } = options;
         data = {
             title: assetName,
-            description: `Your lil' ripper`,
+            description: `Use /rename to rename this asset`,
             thumbNail: (0, helpers_1.normalizeIpfsUrl)(assetUrl),
             fields,
         };
