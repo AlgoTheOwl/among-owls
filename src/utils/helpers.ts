@@ -233,3 +233,10 @@ export const normalizeIpfsUrl = (url: string): string => {
     return url
   }
 }
+
+export const updateGame = () => {
+  game.update = true
+  setTimeout(() => {
+    game.update = false
+  }, 3000)
+}
