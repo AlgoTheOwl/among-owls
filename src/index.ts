@@ -65,7 +65,7 @@ client.once('ready', async () => {
 
     fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 
-    channel = client.channels.cache.get(process.env.CHANNEL_ID) as TextChannel
+    channel = client.channels.cache.get(channelId) as TextChannel
 
     client.commands = new Collection()
 

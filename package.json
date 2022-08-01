@@ -27,7 +27,6 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "src/txnData/*",
       "dist/txnData/*"
     ]
   }
