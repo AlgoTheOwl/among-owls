@@ -56,7 +56,7 @@ export default function doEmbed(
       fields: playerArr.map((player) => {
         return {
           name: player.username,
-          value: player.asset.assetName,
+          value: player.asset.alias || player.asset.assetName,
         }
       }),
     }
@@ -120,10 +120,12 @@ export default function doEmbed(
   if (options && type === embeds.win) {
     const { player, winByTimeout } = options
     const asserUrl = player.asset.assetUrl
+    const { asset, username } = player
+    const { alias, assetName } = asset
 
     data = {
       title: 'WINNER!!!',
-      description: `${player?.username}'s ${player?.asset.assetName} ${
+      description: `${username}'s ${alias || assetName} ${
         winByTimeout
           ? 'won by default - all other players timed out!'
           : `destroyed the competition and won 5 hoot!`
@@ -173,6 +175,9 @@ export default function doEmbed(
       description: `Your lil' ripper`,
       thumbNail: normalizeIpfsUrl(assetUrl),
       fields,
+      footer: {
+        text: '*** Hint: Use /rename here to rename this asset ***',
+      },
     }
   }
 

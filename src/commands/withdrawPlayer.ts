@@ -24,7 +24,7 @@ module.exports = {
 
         interaction.reply({
           ephemeral: true,
-          content: `${player.asset.assetName} removed`,
+          content: `${player.asset.alias || player.asset.assetName} removed`,
         })
         updateGame()
       } else {

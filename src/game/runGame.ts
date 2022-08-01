@@ -81,7 +81,7 @@ export default async function runGame() {
           const attackField = {
             name: 'ATTACK',
             value: getAttackString(
-              attacker.asset.assetName,
+              attacker.asset.alias || attacker.asset.assetName,
               victim.username,
               damage
             ),

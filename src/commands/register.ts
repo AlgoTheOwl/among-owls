@@ -123,6 +123,7 @@ export const processRegistration = async (
       const { acknowledged, insertedId } = await collections.users?.insertOne(
         userEntry
       )
+
       if (acknowledged) {
         user = (await collections.users?.findOne({
           _id: insertedId,

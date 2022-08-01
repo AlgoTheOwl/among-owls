@@ -51,12 +51,15 @@ export const startWaitingRoom = async (): Promise<void> => {
   // }
 
   const file = new MessageAttachment('src/images/main.gif')
-  await game.megatron.edit({
-    files: [file],
-    embeds: [],
-    components: [],
-    fetchReply: true,
-  })
+
+  if (game.megatron) {
+    await game.megatron.edit({
+      files: [file],
+      embeds: [],
+      components: [],
+      fetchReply: true,
+    })
+  }
 
   // start game
   game.active = true

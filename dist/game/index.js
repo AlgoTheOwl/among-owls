@@ -42,12 +42,14 @@ const startWaitingRoom = async () => {
     //   await wait(1500)
     // }
     const file = new discord_js_1.MessageAttachment('src/images/main.gif');
-    await __1.game.megatron.edit({
-        files: [file],
-        embeds: [],
-        components: [],
-        fetchReply: true,
-    });
+    if (__1.game.megatron) {
+        await __1.game.megatron.edit({
+            files: [file],
+            embeds: [],
+            components: [],
+            fetchReply: true,
+        });
+    }
     // start game
     __1.game.active = true;
     __1.game.arena = await __1.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));

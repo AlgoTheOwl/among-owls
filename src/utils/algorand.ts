@@ -107,7 +107,9 @@ export const determineOwnership = async function (address: string): Promise<{
 
 export const getAssetIdArray = () => {
   const assetIdArr: number[] = []
+
   const txnData = getTxnData() as TxnData
+
   txnData.transactions.forEach((txn: Txn) => {
     const assetId = txn['asset-config-transaction']['asset-id']
     const result = assetIdArr.findIndex((item) => item === assetId)

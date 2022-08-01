@@ -24,6 +24,7 @@ declare global {
       CREATOR_ADDRESS_TWO: string
       CREATOR_ADDRESS_THREE: string
       CHANNEL_ID: string
+      CLEAR_TIMEOUT_ENABLED: boolean
     }
   }
 }

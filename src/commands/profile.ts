@@ -62,7 +62,7 @@ module.exports = {
         .map((asset: Asset, i: number) => {
           if (i < maxAssets) {
             return {
-              label: asset.assetName,
+              label: asset.alias || asset.assetName,
               description: 'Select and AOWL to view',
               value: asset?.assetId?.toString(),
             }

@@ -38,7 +38,7 @@ function doEmbed(type, options) {
             fields: playerArr.map((player) => {
                 return {
                     name: player.username,
-                    value: player.asset.assetName,
+                    value: player.asset.alias || player.asset.assetName,
                 };
             }),
         };
@@ -90,9 +90,11 @@ function doEmbed(type, options) {
     if (options && type === embeds_1.default.win) {
         const { player, winByTimeout } = options;
         const asserUrl = player.asset.assetUrl;
+        const { asset, username } = player;
+        const { alias, assetName } = asset;
         data = {
             title: 'WINNER!!!',
-            description: `${player === null || player === void 0 ? void 0 : player.username}'s ${player === null || player === void 0 ? void 0 : player.asset.assetName} ${winByTimeout
+            description: `${username}'s ${alias || assetName} ${winByTimeout
                 ? 'won by default - all other players timed out!'
                 : `destroyed the competition and won 5 hoot!`}`,
             color: 'DARK_AQUA',
@@ -134,6 +136,9 @@ function doEmbed(type, options) {
             description: `Your lil' ripper`,
             thumbNail: (0, helpers_1.normalizeIpfsUrl)(assetUrl),
             fields,
+            footer: {
+                text: '*** Hint: Use /rename here to rename this asset ***',
+            },
         };
     }
     let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);

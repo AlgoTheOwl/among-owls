@@ -20,7 +20,7 @@ module.exports = {
                 delete index_1.game.players[id];
                 interaction.reply({
                     ephemeral: true,
-                    content: `${player.asset.assetName} removed`,
+                    content: `${player.asset.alias || player.asset.assetName} removed`,
                 });
                 (0, helpers_1.updateGame)();
             }

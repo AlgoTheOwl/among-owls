@@ -9,7 +9,7 @@ import { WithId } from 'mongodb'
 import User from '../models/user'
 import Player from '../models/player'
 // Helpers
-import { downloadFile, wait } from '../utils/helpers'
+import { downloadFile, resetGame, updateGame, wait } from '../utils/helpers'
 // Globals
 import { game } from '../index'
 import settings from '../settings'
@@ -23,7 +23,6 @@ module.exports = {
     try {
       if (!interaction.isSelectMenu()) return
       if (!game.waitingRoom) return
-      // await updateTransactions()
 
       const { values, user } = interaction
       const assetId = values[0]
@@ -71,7 +70,9 @@ module.exports = {
         asset.assetUrl,
         asset.unitName,
         _id,
-        localPath
+        localPath,
+        undefined,
+        asset.alias
       )
 
       game.players[id] = new Player(
@@ -84,11 +85,10 @@ module.exports = {
         Object.values(assets).length,
         0
       )
-      await interaction.editReply(`${asset.assetName} has entered the game`)
-      game.update = true
-      setTimeout(() => {
-        game.update = false
-      }, 3000)
+      await interaction.editReply(
+        `${asset.alias || asset.assetName} has entered the game`
+      )
+      updateGame()
     } catch (error) {
       console.log(error)
     }
