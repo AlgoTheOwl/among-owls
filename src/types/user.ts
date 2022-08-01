@@ -75,6 +75,7 @@ export interface Txn {
   id: string
   'intra-round-offset': number
   'last-valid': number
+  'created-asset-index': number
   note: string
   'receiver-rewards': number
   'round-time': number

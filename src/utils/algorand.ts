@@ -111,7 +111,8 @@ export const getAssetIdArray = () => {
   const txnData = getTxnData() as TxnData
 
   txnData.transactions.forEach((txn: Txn) => {
-    const assetId = txn['asset-config-transaction']['asset-id']
+    if (!txn['created-asset-index']) return
+    const assetId = txn['created-asset-index']
     const result = assetIdArr.findIndex((item) => item === assetId)
     result <= -1 && assetIdArr.push(assetId)
   })
