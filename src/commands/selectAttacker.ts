@@ -59,7 +59,7 @@ module.exports = {
         .map((asset: Asset, i: number) => {
           if (i < maxAssets) {
             const label = asset.alias || asset.assetName
-            const normalizedLabel = label.slice(0, 100)
+            const normalizedLabel = label.slice(0, 20)
             return {
               label: normalizedLabel,
               description: 'Select to play',
@@ -91,7 +91,6 @@ module.exports = {
       console.log('ERROR SELECTING')
       console.log(error)
       //@ts-ignore
-      console.log(error?.requestData?.json?.components)
     }
   },
 }

@@ -96,7 +96,6 @@ exports.determineOwnership = determineOwnership;
 const getAssetIdArray = () => {
     const assetIdArr = [];
     const txnData = getTxnData();
-    // console.log(util.inspect(txnData, { depth: 1 }))
     txnData.transactions.forEach((txn) => {
         const assetId = txn['asset-config-transaction']['asset-id'];
         const result = assetIdArr.findIndex((item) => item === assetId);

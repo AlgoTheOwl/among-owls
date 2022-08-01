@@ -51,6 +51,7 @@ module.exports = {
             await database_service_1.collections.users.findOneAndUpdate({ _id: userData._id }, {
                 $set: {
                     assets: updatedAssets,
+                    selectedAssetId: undefined,
                 },
             });
             interaction.reply({

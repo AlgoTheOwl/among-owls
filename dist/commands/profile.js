@@ -50,7 +50,7 @@ module.exports = {
                 var _a;
                 if (i < maxAssets) {
                     return {
-                        label: asset.assetName,
+                        label: asset.alias || asset.assetName,
                         description: 'Select and AOWL to view',
                         value: (_a = asset === null || asset === void 0 ? void 0 : asset.assetId) === null || _a === void 0 ? void 0 : _a.toString(),
                     };

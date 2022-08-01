@@ -16,7 +16,6 @@ module.exports = {
         .setName('select-attacker')
         .setDescription(`Pick which AOWL you'd like to compete`),
     async execute(interaction) {
-        var _a, _b;
         try {
             const { user: { id }, } = interaction;
             const { maxAssets } = settings_1.default;
@@ -46,7 +45,7 @@ module.exports = {
                 var _a;
                 if (i < maxAssets) {
                     const label = asset.alias || asset.assetName;
-                    const normalizedLabel = label.slice(0, 100);
+                    const normalizedLabel = label.slice(0, 20);
                     return {
                         label: normalizedLabel,
                         description: 'Select to play',
@@ -71,7 +70,6 @@ module.exports = {
             console.log('ERROR SELECTING');
             console.log(error);
             //@ts-ignore
-            console.log((_b = (_a = error === null || error === void 0 ? void 0 : error.requestData) === null || _a === void 0 ? void 0 : _a.json) === null || _b === void 0 ? void 0 : _b.components);
         }
     },
 };

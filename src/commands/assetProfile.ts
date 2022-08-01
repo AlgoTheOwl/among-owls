@@ -1,19 +1,20 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { MessagePayload, SelectMenuInteraction } from 'discord.js'
-//Data
+// Data
 import { collections } from '../database/database.service'
 // Schemas
 import embeds from '../constants/embeds'
 import User from '../models/user'
 // Embeds
 import doEmbed from '../embeds'
+// MongoDb
+import { WithId } from 'mongodb'
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('asset-profile')
     .setDescription('view an asset profile'),
-  enabled: true,
   async execute(interaction: SelectMenuInteraction) {
     if (!interaction.isSelectMenu()) return
 
@@ -21,6 +22,16 @@ module.exports = {
     const { values, user } = interaction
     const assetId = Number(values[0])
     const discordId = user.id
+
+    const initialUserData = (await collections.users.findOne({
+      discordId,
+    })) as WithId<User>
+
+    if (!initialUserData.assets[assetId]) {
+      return interaction.editReply({
+        content: `You can't see another users asset profile`,
+      })
+    }
 
     const { value: userData } = (await collections.users.findOneAndUpdate(
       {
@@ -34,8 +45,7 @@ module.exports = {
     )) as any | User
 
     if (!userData) {
-      return interaction.reply({
-        ephemeral: true,
+      return interaction.editReply({
         content: 'Please register before trying to view assets',
       })
     }
@@ -48,10 +58,15 @@ module.exports = {
 
       const fields = [
         { name: 'Unit name', value: unitName },
-        { name: 'Asset name', value: alias || assetName },
+        { name: 'Asset name', value: assetName.slice(0, 100) },
         { name: 'Asset ID', value: assetId.toString() },
         { name: 'Wins', value: winNumber.toString() },
       ]
+
+      if (alias) {
+        fields.splice(1, 0, { name: 'Custom name', value: alias.slice(0, 100) })
+      }
+
       await interaction.editReply(
         doEmbed(embeds.assetProfile, {
           assetUrl,

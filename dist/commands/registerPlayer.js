@@ -24,7 +24,6 @@ module.exports = {
                 return;
             if (!index_1.game.waitingRoom)
                 return;
-            // await updateTransactions()
             const { values, user } = interaction;
             const assetId = values[0];
             const { username, id } = user;
@@ -55,13 +54,10 @@ module.exports = {
             if (!localPath) {
                 return;
             }
-            const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath);
+            const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath, undefined, asset.alias);
             index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, Object.values(assets).length, 0);
-            await interaction.editReply(`${asset.assetName} has entered the game`);
-            index_1.game.update = true;
-            setTimeout(() => {
-                index_1.game.update = false;
-            }, 3000);
+            await interaction.editReply(`${asset.alias || asset.assetName} has entered the game`);
+            (0, helpers_1.updateGame)();
         }
         catch (error) {
             console.log(error);

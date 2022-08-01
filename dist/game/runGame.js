@@ -64,7 +64,7 @@ async function runGame() {
                     // REFRESH EMBED
                     const attackField = {
                         name: 'ATTACK',
-                        value: (0, attack_1.getAttackString)(attacker.asset.assetName, victim.username, damage),
+                        value: (0, attack_1.getAttackString)(attacker.asset.alias || attacker.asset.assetName, victim.username, damage),
                     };
                     const fields = [
                         ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),

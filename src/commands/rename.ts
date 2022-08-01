@@ -65,6 +65,7 @@ module.exports = {
         {
           $set: {
             assets: updatedAssets,
+            selectedAssetId: undefined,
           },
         }
       )
