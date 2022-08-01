@@ -54,12 +54,13 @@ client.once('ready', async () => {
     await connectToDatabase()
     console.log('Ye Among AOWLs - Server ready')
 
+    let update = true
     if (!fs.existsSync(__dirname + '/txnData/txnData.json')) {
-      console.log('does not exist')
+      update = false
       fs.writeFileSync(__dirname + '/txnData/txnData.json', '')
     }
 
-    const txnData = await convergeTxnData(creatorAddressArr, false)
+    const txnData = await convergeTxnData(creatorAddressArr, update)
 
     fs.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData))
 

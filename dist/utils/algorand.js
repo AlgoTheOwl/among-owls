@@ -25,15 +25,14 @@ const indexerServer = algoIndexerNode;
 const port = '';
 const algodClient = new algosdk_1.default.Algodv2(token, server, port);
 const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
-const getTxnData = () => JSON.parse(fs_1.default.readFileSync('src/txnData/txnData.json', 'utf-8'));
 const determineOwnership = async function (address) {
     try {
-        if (!fs_1.default.existsSync('src/txnData/txnData.json')) {
-            fs_1.default.writeFileSync('src/txnData/txnData.json', '');
+        if (!fs_1.default.existsSync('dist/txnData/txnData.json')) {
+            fs_1.default.writeFileSync('dist/txnData/txnData.json', '');
         }
         // update transactions
         const txnData = await (0, exports.convergeTxnData)(__1.creatorAddressArr, true);
-        fs_1.default.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData));
+        fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
         let { assets } = await algoIndexer.lookupAccountAssets(address).do();
         const { maxAssets } = settings_1.default;
         let walletOwned = false;
@@ -96,7 +95,6 @@ exports.determineOwnership = determineOwnership;
 const getAssetIdArray = () => {
     const assetIdArr = [];
     const txnData = getTxnData();
-    // console.log(util.inspect(txnData, { depth: 1 }))
     txnData.transactions.forEach((txn) => {
         const assetId = txn['asset-config-transaction']['asset-id'];
         const result = assetIdArr.findIndex((item) => item === assetId);
@@ -147,9 +145,7 @@ const searchForTransactions = async (address) => {
     return txns;
 };
 exports.searchForTransactions = searchForTransactions;
-const updateTransactions = async (accountAddress) => {
-    const txnData = getTxnData();
-    const currentRound = txnData['current-round'];
+const updateTransactions = async (accountAddress, currentRound) => {
     const type = 'acfg';
     return (await algoIndexer
         .searchForTransactions()
@@ -162,12 +158,23 @@ exports.updateTransactions = updateTransactions;
 // Fetches all data and reduces it to one object
 const convergeTxnData = async (creatorAddresses, update) => {
     const updateCalls = [];
+    const txnData = getTxnData();
     creatorAddresses.forEach((address) => {
-        updateCalls.push(update ? (0, exports.updateTransactions)(address) : (0, exports.searchForTransactions)(address));
+        if (update) {
+            const currentRound = txnData['current-round'];
+            updateCalls.push((0, exports.updateTransactions)(address, currentRound));
+        }
+        else {
+            updateCalls.push((0, exports.searchForTransactions)(address));
+        }
     });
     const txnDataArr = await Promise.all(updateCalls);
-    const currentTxnData = getTxnData();
-    return reduceTxnData([currentTxnData, ...txnDataArr]);
+    const reduceArr = [...txnDataArr];
+    if (update) {
+        const currentTxnData = getTxnData();
+        reduceArr.push(currentTxnData);
+    }
+    return reduceTxnData(reduceArr);
 };
 exports.convergeTxnData = convergeTxnData;
 const reduceTxnData = (txnDataArray) => {
@@ -183,4 +190,12 @@ const reduceTxnData = (txnDataArray) => {
     });
     // console.log(util.inspect(reducedData, { depth: 1 }))
     return reducedData;
+};
+const getTxnData = () => {
+    try {
+        return JSON.parse(fs_1.default.readFileSync('dist/txnData/txnData.json', 'utf-8'));
+    }
+    catch (e) {
+        ///
+    }
 };

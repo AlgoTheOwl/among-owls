@@ -44,11 +44,12 @@ exports.client.once('ready', async () => {
     try {
         await (0, database_service_1.connectToDatabase)();
         console.log('Ye Among AOWLs - Server ready');
+        let update = true;
         if (!node_fs_1.default.existsSync(__dirname + '/txnData/txnData.json')) {
-            console.log('does not exist');
+            update = false;
             node_fs_1.default.writeFileSync(__dirname + '/txnData/txnData.json', '');
         }
-        const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, false);
+        const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, update);
         node_fs_1.default.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData));
         exports.channel = exports.client.channels.cache.get(channelId);
         exports.client.commands = new discord_js_1.Collection();
