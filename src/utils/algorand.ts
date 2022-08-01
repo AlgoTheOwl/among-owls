@@ -221,7 +221,7 @@ const reduceTxnData = (txnDataArray: TxnData[]) => {
       // select the most recent round
       return {
         ['current-round']:
-          prevTxnData['current-round'] > txnData['current-round']
+          prevTxnData['current-round'] < txnData['current-round']
             ? prevTxnData['current-round']
             : txnData['current-round'],
         ['next-token']: prevTxnData['next-token'],
