@@ -26,7 +26,7 @@ const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE
 
-const { coolDownInterval, channelId } = settings
+const { coolDownInterval } = settings
 
 // Gloval vars
 export let game: Game = new Game({}, false, false, coolDownInterval)
@@ -55,16 +55,16 @@ client.once('ready', async () => {
     console.log('Ye Among AOWLs - Server ready')
 
     let update = true
-    if (!fs.existsSync(__dirname + '/txnData/txnData.json')) {
+    if (!fs.existsSync('dist/txnData/txnData.json')) {
       update = false
-      fs.writeFileSync(__dirname + '/txnData/txnData.json', '')
+      fs.writeFileSync('dist/txnData/txnData.json', '')
     }
 
     const txnData = await convergeTxnData(creatorAddressArr, update)
 
-    fs.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData))
+    fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 
-    channel = client.channels.cache.get(channelId) as TextChannel
+    channel = client.channels.cache.get(process.env.CHANNEL_ID) as TextChannel
 
     client.commands = new Collection()
 
