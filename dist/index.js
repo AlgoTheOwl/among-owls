@@ -22,6 +22,7 @@ const token = process.env.DISCORD_TOKEN;
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO;
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE;
+
 const channelId = process.env.CHANNEL_ID;
 const { coolDownInterval } = settings_1.default;
 // Gloval vars
@@ -45,13 +46,14 @@ exports.client.once('ready', async () => {
     try {
         await (0, database_service_1.connectToDatabase)();
         console.log('Ye Among AOWLs - Server ready');
-        if (!node_fs_1.default.existsSync(__dirname + '/txnData/txnData.json')) {
-            console.log('does not exist');
-            node_fs_1.default.writeFileSync(__dirname + '/txnData/txnData.json', '');
+        let update = true;
+        if (!node_fs_1.default.existsSync('dist/txnData/txnData.json')) {
+            update = false;
+            node_fs_1.default.writeFileSync('dist/txnData/txnData.json', '');
         }
-        const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, false);
-        node_fs_1.default.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData));
-        exports.channel = exports.client.channels.cache.get(channelId);
+        const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, update);
+        node_fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
+        exports.channel = exports.client.channels.cache.get(process.env.CHANNEL_ID);
         exports.client.commands = new discord_js_1.Collection();
         const commandsPath = node_path_1.default.join(__dirname, 'commands');
         const commandFiles = node_fs_1.default

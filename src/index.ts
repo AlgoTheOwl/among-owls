@@ -55,16 +55,17 @@ client.once('ready', async () => {
     await connectToDatabase()
     console.log('Ye Among AOWLs - Server ready')
 
-    if (!fs.existsSync(__dirname + '/txnData/txnData.json')) {
-      console.log('does not exist')
-      fs.writeFileSync(__dirname + '/txnData/txnData.json', '')
+    let update = true
+    if (!fs.existsSync('dist/txnData/txnData.json')) {
+      update = false
+      fs.writeFileSync('dist/txnData/txnData.json', '')
     }
 
-    const txnData = await convergeTxnData(creatorAddressArr, false)
+    const txnData = await convergeTxnData(creatorAddressArr, update)
 
-    fs.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData))
+    fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 
-    channel = client.channels.cache.get(channelId) as TextChannel
+    channel = client.channels.cache.get(process.env.CHANNEL_ID) as TextChannel
 
     client.commands = new Collection()
 

@@ -1,11 +1,5 @@
 import Asset from '../models/asset'
-import {
-  AlgoAsset,
-  AlgoAssetData,
-  AlgoAssetResponse,
-  Txn,
-  TxnData,
-} from '../types/user'
+import { AlgoAsset, AlgoAssetData, Txn, TxnData } from '../types/user'
 import { asyncForEach, wait } from './helpers'
 import algosdk from 'algosdk'
 import settings from '../settings'
@@ -13,7 +7,6 @@ import fs from 'fs'
 
 // import txnDataJson from '../txnData/txnData.json'
 import { creatorAddressArr } from '..'
-import util from 'util'
 
 const algoNode = process.env.ALGO_NODE
 const pureStakeApi = process.env.PURESTAKE_API
@@ -32,22 +25,19 @@ const port = ''
 const algodClient = new algosdk.Algodv2(token, server, port)
 const algoIndexer = new algosdk.Indexer(token, indexerServer, port)
 
-const getTxnData = () =>
-  JSON.parse(fs.readFileSync('src/txnData/txnData.json', 'utf-8'))
-
 export const determineOwnership = async function (address: string): Promise<{
   walletOwned: boolean
   nftsOwned: Asset[] | []
   hootOwned: number
 }> {
   try {
-    if (!fs.existsSync('src/txnData/txnData.json')) {
-      fs.writeFileSync('src/txnData/txnData.json', '')
+    if (!fs.existsSync('dist/txnData/txnData.json')) {
+      fs.writeFileSync('dist/txnData/txnData.json', '')
     }
     // update transactions
     const txnData = await convergeTxnData(creatorAddressArr, true)
 
-    fs.writeFileSync('src/txnData/txnData.json', JSON.stringify(txnData))
+    fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 
     let { assets } = await algoIndexer.lookupAccountAssets(address).do()
 
@@ -117,7 +107,9 @@ export const determineOwnership = async function (address: string): Promise<{
 
 export const getAssetIdArray = () => {
   const assetIdArr: number[] = []
-  const txnData = getTxnData()
+
+  const txnData = getTxnData() as TxnData
+
   txnData.transactions.forEach((txn: Txn) => {
     const assetId = txn['asset-config-transaction']['asset-id']
     const result = assetIdArr.findIndex((item) => item === assetId)
@@ -185,10 +177,9 @@ export const searchForTransactions = async (
 }
 
 export const updateTransactions = async (
-  accountAddress: string
+  accountAddress: string,
+  currentRound: number
 ): Promise<TxnData> => {
-  const txnData = getTxnData()
-  const currentRound = txnData['current-round']
   const type = 'acfg'
   return (await algoIndexer
     .searchForTransactions()
@@ -204,14 +195,23 @@ export const convergeTxnData = async (
   update: boolean
 ) => {
   const updateCalls: any[] = []
+  const txnData = getTxnData() as TxnData
   creatorAddresses.forEach((address: string) => {
-    updateCalls.push(
-      update ? updateTransactions(address) : searchForTransactions(address)
-    )
+    if (update) {
+      const currentRound = txnData['current-round']
+      updateCalls.push(updateTransactions(address, currentRound))
+    } else {
+      updateCalls.push(searchForTransactions(address))
+    }
   })
   const txnDataArr = await Promise.all(updateCalls)
-  const currentTxnData = getTxnData()
-  return reduceTxnData([currentTxnData, ...txnDataArr])
+  const reduceArr = [...txnDataArr]
+  if (update) {
+    const currentTxnData = getTxnData() as TxnData
+    reduceArr.push(currentTxnData)
+  }
+
+  return reduceTxnData(reduceArr)
 }
 
 const reduceTxnData = (txnDataArray: TxnData[]) => {
@@ -230,4 +230,12 @@ const reduceTxnData = (txnDataArray: TxnData[]) => {
   )
   // console.log(util.inspect(reducedData, { depth: 1 }))
   return reducedData
+}
+
+const getTxnData = (): TxnData | undefined => {
+  try {
+    return JSON.parse(fs.readFileSync('dist/txnData/txnData.json', 'utf-8'))
+  } catch (e) {
+    ///
+  }
 }
