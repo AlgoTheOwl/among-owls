@@ -31,7 +31,9 @@ const downloadFile = async (asset, directory, username) => {
         const { assetUrl } = asset;
         if (assetUrl) {
             const url = (0, exports.normalizeIpfsUrl)(assetUrl);
-            const path = `${directory}/${username.replace(' ', '')}.jpg`;
+            const path = `${directory}/${username
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
+                .trim()}.jpg`;
             const writer = fs_1.default.createWriteStream(path);
             const res = await axios_1.default.get(url, {
                 responseType: 'stream',

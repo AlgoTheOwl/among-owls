@@ -96,7 +96,9 @@ const getAssetIdArray = () => {
     const assetIdArr = [];
     const txnData = getTxnData();
     txnData.transactions.forEach((txn) => {
-        const assetId = txn['asset-config-transaction']['asset-id'];
+        if (!txn['created-asset-index'])
+            return;
+        const assetId = txn['created-asset-index'];
         const result = assetIdArr.findIndex((item) => item === assetId);
         result <= -1 && assetIdArr.push(assetId);
     });
@@ -181,7 +183,7 @@ const reduceTxnData = (txnDataArray) => {
     const reducedData = txnDataArray.reduce((prevTxnData, txnData) => {
         // select the most recent round
         return {
-            ['current-round']: prevTxnData['current-round'] > txnData['current-round']
+            ['current-round']: prevTxnData['current-round'] < txnData['current-round']
                 ? prevTxnData['current-round']
                 : txnData['current-round'],
             ['next-token']: prevTxnData['next-token'],

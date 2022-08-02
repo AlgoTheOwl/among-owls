@@ -18,6 +18,7 @@ const game_1 = __importDefault(require("./models/game"));
 // Helpers
 const game_2 = require("./game");
 const algorand_1 = require("./utils/algorand");
+const helpers_1 = require("./utils/helpers");
 const token = process.env.DISCORD_TOKEN;
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO;
@@ -43,32 +44,37 @@ exports.client = new discord_js_1.Client({
 });
 exports.client.once('ready', async () => {
     try {
-        await (0, database_service_1.connectToDatabase)();
-        console.log('Ye Among AOWLs - Server ready');
-        let update = true;
-        if (!node_fs_1.default.existsSync('dist/txnData/txnData.json')) {
-            update = false;
-            node_fs_1.default.writeFileSync('dist/txnData/txnData.json', '');
-        }
-        const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, update);
-        node_fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
-        exports.channel = exports.client.channels.cache.get(channelId);
-        exports.client.commands = new discord_js_1.Collection();
-        const commandsPath = node_path_1.default.join(__dirname, 'commands');
-        const commandFiles = node_fs_1.default
-            .readdirSync(commandsPath)
-            .filter((file) => file.endsWith('.js'));
-        for (const file of commandFiles) {
-            const filePath = node_path_1.default.join(commandsPath, file);
-            const command = require(filePath);
-            exports.client.commands.set(command.data.name, command);
-        }
-        await (0, game_2.startWaitingRoom)();
+        main();
     }
     catch (error) {
         console.log('CLIENT ERROR', error);
+        (0, helpers_1.wait)(3000);
+        main();
     }
 });
+const main = async () => {
+    await (0, database_service_1.connectToDatabase)();
+    console.log('Ye Among AOWLs - Server ready');
+    let update = true;
+    if (!node_fs_1.default.existsSync('dist/txnData/txnData.json')) {
+        update = false;
+        node_fs_1.default.writeFileSync('dist/txnData/txnData.json', '');
+    }
+    const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, update);
+    node_fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
+    exports.channel = exports.client.channels.cache.get(channelId);
+    exports.client.commands = new discord_js_1.Collection();
+    const commandsPath = node_path_1.default.join(__dirname, 'commands');
+    const commandFiles = node_fs_1.default
+        .readdirSync(commandsPath)
+        .filter((file) => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const filePath = node_path_1.default.join(commandsPath, file);
+        const command = require(filePath);
+        exports.client.commands.set(command.data.name, command);
+    }
+    await (0, game_2.startWaitingRoom)();
+};
 /*
  *****************
  * COMMAND SERVER *
