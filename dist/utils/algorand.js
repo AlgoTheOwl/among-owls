@@ -37,7 +37,6 @@ const determineOwnership = async function (address) {
             .lookupAccountAssets(address)
             .limit(10000)
             .do();
-        console.log(assets.length);
         const { maxAssets } = settings_1.default;
         let walletOwned = false;
         const assetIdsOwned = [];
@@ -80,8 +79,6 @@ const determineOwnership = async function (address) {
             }
             await (0, helpers_1.wait)(1000);
         });
-        console.log(hootOwned);
-        console.log(assetIdsOwned);
         return {
             walletOwned,
             nftsOwned,

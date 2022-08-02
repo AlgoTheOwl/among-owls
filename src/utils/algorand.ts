@@ -44,8 +44,6 @@ export const determineOwnership = async function (address: string): Promise<{
       .limit(10000)
       .do()
 
-    console.log(assets.length)
-
     const { maxAssets } = settings
 
     let walletOwned = false
@@ -94,9 +92,6 @@ export const determineOwnership = async function (address: string): Promise<{
       }
       await wait(1000)
     })
-
-    console.log(hootOwned)
-    console.log(assetIdsOwned)
 
     return {
       walletOwned,
