@@ -20,6 +20,7 @@ import Game from './models/game'
 // Helpers
 import { startWaitingRoom } from './game'
 import { convergeTxnData } from './utils/algorand'
+import { wait } from './utils/helpers'
 
 const token = process.env.DISCORD_TOKEN
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE
@@ -52,40 +53,46 @@ export const client: Client = new Client({
 
 client.once('ready', async () => {
   try {
-    await connectToDatabase()
-    console.log('Ye Among AOWLs - Server ready')
-
-    let update = true
-    if (!fs.existsSync('dist/txnData/txnData.json')) {
-      update = false
-      fs.writeFileSync('dist/txnData/txnData.json', '')
-    }
-
-    const txnData = await convergeTxnData(creatorAddressArr, update)
-
-    fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
-
-    channel = client.channels.cache.get(channelId) as TextChannel
-
-    client.commands = new Collection()
-
-    const commandsPath = path.join(__dirname, 'commands')
-    const commandFiles = fs
-      .readdirSync(commandsPath)
-      .filter((file) => file.endsWith('.js'))
-
-    for (const file of commandFiles) {
-      const filePath = path.join(commandsPath, file)
-      const command = require(filePath)
-
-      client.commands.set(command.data.name, command)
-    }
-
-    await startWaitingRoom()
+    main()
   } catch (error) {
     console.log('CLIENT ERROR', error)
+    wait(3000)
+    main()
   }
 })
+
+const main = async () => {
+  await connectToDatabase()
+  console.log('Ye Among AOWLs - Server ready')
+
+  let update = true
+  if (!fs.existsSync('dist/txnData/txnData.json')) {
+    update = false
+    fs.writeFileSync('dist/txnData/txnData.json', '')
+  }
+
+  const txnData = await convergeTxnData(creatorAddressArr, update)
+
+  fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
+
+  channel = client.channels.cache.get(channelId) as TextChannel
+
+  client.commands = new Collection()
+
+  const commandsPath = path.join(__dirname, 'commands')
+  const commandFiles = fs
+    .readdirSync(commandsPath)
+    .filter((file) => file.endsWith('.js'))
+
+  for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file)
+    const command = require(filePath)
+
+    client.commands.set(command.data.name, command)
+  }
+
+  await startWaitingRoom()
+}
 
 /*
  *****************
