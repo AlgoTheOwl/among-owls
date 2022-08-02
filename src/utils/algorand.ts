@@ -39,7 +39,12 @@ export const determineOwnership = async function (address: string): Promise<{
 
     fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 
-    let { assets } = await algoIndexer.lookupAccountAssets(address).do()
+    let { assets } = await algoIndexer
+      .lookupAccountAssets(address)
+      .limit(10000)
+      .do()
+
+    console.log(assets.length)
 
     const { maxAssets } = settings
 
@@ -90,6 +95,9 @@ export const determineOwnership = async function (address: string): Promise<{
       await wait(1000)
     })
 
+    console.log(hootOwned)
+    console.log(assetIdsOwned)
+
     return {
       walletOwned,
       nftsOwned,
@@ -111,10 +119,16 @@ export const getAssetIdArray = () => {
   const txnData = getTxnData() as TxnData
 
   txnData.transactions.forEach((txn: Txn) => {
-    if (!txn['created-asset-index']) return
-    const assetId = txn['created-asset-index']
-    const result = assetIdArr.findIndex((item) => item === assetId)
-    result <= -1 && assetIdArr.push(assetId)
+    const assetId = txn['asset-config-transaction']['asset-id']
+    const createdAssetId = txn['created-asset-index']
+    if (assetId) {
+      const result = assetIdArr.findIndex((item) => item === assetId)
+      result <= -1 && assetIdArr.push(assetId)
+    }
+    if (createdAssetId) {
+      const result2 = assetIdArr.findIndex((item) => item === createdAssetId)
+      result2 <= -1 && assetIdArr.push(createdAssetId)
+    }
   })
   return assetIdArr
 }

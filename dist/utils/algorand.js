@@ -33,7 +33,11 @@ const determineOwnership = async function (address) {
         // update transactions
         const txnData = await (0, exports.convergeTxnData)(__1.creatorAddressArr, true);
         fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
-        let { assets } = await algoIndexer.lookupAccountAssets(address).do();
+        let { assets } = await algoIndexer
+            .lookupAccountAssets(address)
+            .limit(10000)
+            .do();
+        console.log(assets.length);
         const { maxAssets } = settings_1.default;
         let walletOwned = false;
         const assetIdsOwned = [];
@@ -76,6 +80,8 @@ const determineOwnership = async function (address) {
             }
             await (0, helpers_1.wait)(1000);
         });
+        console.log(hootOwned);
+        console.log(assetIdsOwned);
         return {
             walletOwned,
             nftsOwned,
@@ -96,11 +102,16 @@ const getAssetIdArray = () => {
     const assetIdArr = [];
     const txnData = getTxnData();
     txnData.transactions.forEach((txn) => {
-        if (!txn['created-asset-index'])
-            return;
-        const assetId = txn['created-asset-index'];
-        const result = assetIdArr.findIndex((item) => item === assetId);
-        result <= -1 && assetIdArr.push(assetId);
+        const assetId = txn['asset-config-transaction']['asset-id'];
+        const createdAssetId = txn['created-asset-index'];
+        if (assetId) {
+            const result = assetIdArr.findIndex((item) => item === assetId);
+            result <= -1 && assetIdArr.push(assetId);
+        }
+        if (createdAssetId) {
+            const result2 = assetIdArr.findIndex((item) => item === createdAssetId);
+            result2 <= -1 && assetIdArr.push(createdAssetId);
+        }
     });
     return assetIdArr;
 };
