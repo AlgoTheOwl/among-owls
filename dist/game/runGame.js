@@ -49,8 +49,9 @@ async function runGame() {
                             files: [attachment],
                             content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
                         });
-                        await (0, helpers_1.wait)(deathDeleteInterval);
-                        await deathGif.delete();
+                        setTimeout(() => {
+                            deathGif.delete();
+                        }, deathDeleteInterval);
                     }
                     // HANDLE WIN
                     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);

@@ -54,6 +54,7 @@ const startWaitingRoom = async () => {
     __1.game.active = true;
     __1.game.arena = await __1.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));
     await sendVictimSelectMenu();
+    await (0, helpers_1.wait)(1000);
     (0, runGame_1.default)();
 };
 exports.startWaitingRoom = startWaitingRoom;

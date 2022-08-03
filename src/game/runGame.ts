@@ -66,9 +66,9 @@ export default async function runGame() {
               content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
             })
 
-            await wait(deathDeleteInterval)
-
-            await deathGif.delete()
+            setTimeout(() => {
+              deathGif.delete()
+            }, deathDeleteInterval)
           }
 
           // HANDLE WIN

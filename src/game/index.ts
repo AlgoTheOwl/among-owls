@@ -67,6 +67,7 @@ export const startWaitingRoom = async (): Promise<void> => {
 
   await sendVictimSelectMenu()
 
+  await wait(1000)
   runGame()
 }
 
