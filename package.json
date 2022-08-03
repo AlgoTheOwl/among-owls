@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node -r dotenv/config dist/index.js",
-    "dev": "nodemon --ignore src/txnData -r dotenv/config dist/index.js",
+    "dev": "nodemon -r dotenv/config dist/index.js",
     "commands": "node -r dotenv/config dist/deployCommands.js"
   },
   "keywords": [],
@@ -27,7 +27,7 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "dist/txnData/*"
+      "dist/txnData"
     ]
   }
 }

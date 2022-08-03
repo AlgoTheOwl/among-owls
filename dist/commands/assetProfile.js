@@ -26,9 +26,13 @@ module.exports = {
             discordId,
         }));
         if (!initialUserData.assets[assetId]) {
-            return interaction.editReply({
+            interaction.editReply({
                 content: `You can't see another users asset profile`,
             });
+            setTimeout(() => {
+                interaction.deleteReply();
+            }, 2000);
+            return;
         }
         const { value: userData } = (await database_service_1.collections.users.findOneAndUpdate({
             discordId,

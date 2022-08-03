@@ -28,9 +28,13 @@ module.exports = {
     })) as WithId<User>
 
     if (!initialUserData.assets[assetId]) {
-      return interaction.editReply({
+      interaction.editReply({
         content: `You can't see another users asset profile`,
       })
+      setTimeout(() => {
+        interaction.deleteReply()
+      }, 2000)
+      return
     }
 
     const { value: userData } = (await collections.users.findOneAndUpdate(
