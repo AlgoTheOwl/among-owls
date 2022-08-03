@@ -42,13 +42,13 @@ export const startWaitingRoom = async (): Promise<void> => {
 
   await wait(2000)
 
-  // Do countdown
-  // let countDown = 5
-  // while (countDown >= 1) {
-  //   await sendCountdown(countDown, channel)
-  //   countDown--
-  //   await wait(1500)
-  // }
+  //Do countdown
+  let countDown = 5
+  while (countDown >= 1) {
+    await sendCountdown(countDown, channel)
+    countDown--
+    await wait(1000)
+  }
 
   const file = new MessageAttachment('src/images/main.gif')
 
@@ -80,7 +80,7 @@ const sendCountdown = async (countDown: number, channel: any) => {
         fetchReply: true,
       })
     } else {
-      await game.megatron.edit({ files: [countDownImage] })
+      await game.megatron.edit({ files: [countDownImage], fetchReply: true })
     }
   } catch (error) {
     console.log('ERROR WITH COUNTDOWN')

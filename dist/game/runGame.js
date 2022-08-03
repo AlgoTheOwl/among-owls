@@ -43,17 +43,14 @@ async function runGame() {
                     // HANDLE DEATH
                     if (victim.hp <= 0 && attacker && !handlingDeath) {
                         victim.dead = true;
-                        handlingDeath = true;
+                        // handlingDeath = true
                         const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
-                        await __1.game.megatron.edit({
+                        const deathGif = await __1.channel.send({
                             files: [attachment],
                             content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
                         });
-                        setTimeout(async () => {
-                            const file = new discord_js_1.MessageAttachment('src/images/main.gif');
-                            await __1.game.megatron.edit({ files: [file] });
-                            handlingDeath = false;
-                        }, deathDeleteInterval);
+                        await (0, helpers_1.wait)(deathDeleteInterval);
+                        await deathGif.delete();
                     }
                     // HANDLE WIN
                     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);

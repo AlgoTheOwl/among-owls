@@ -12,7 +12,7 @@ import { getRandomVictimId, getAttackString } from '../utils/attack'
 import { handleWin } from './win'
 import doEmbed from '../embeds'
 // Globals
-import { game } from '..'
+import { channel, game } from '..'
 // Schemas
 import Player from '../models/player'
 import embeds from '../constants/embeds'
@@ -54,23 +54,21 @@ export default async function runGame() {
           // HANDLE DEATH
           if (victim.hp <= 0 && attacker && !handlingDeath) {
             victim.dead = true
-            handlingDeath = true
+            // handlingDeath = true
 
             const attachment = new MessageAttachment(
               'src/images/death.gif',
               'death.gif'
             )
 
-            await game.megatron.edit({
+            const deathGif = await channel.send({
               files: [attachment],
               content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
             })
 
-            setTimeout(async () => {
-              const file = new MessageAttachment('src/images/main.gif')
-              await game.megatron.edit({ files: [file] })
-              handlingDeath = false
-            }, deathDeleteInterval)
+            await wait(deathDeleteInterval)
+
+            await deathGif.delete()
           }
 
           // HANDLE WIN

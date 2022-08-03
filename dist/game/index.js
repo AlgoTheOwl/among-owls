@@ -34,13 +34,13 @@ const startWaitingRoom = async () => {
     if (__1.game.waitingRoom)
         __1.game.waitingRoom = false;
     await (0, helpers_1.wait)(2000);
-    // Do countdown
-    // let countDown = 5
-    // while (countDown >= 1) {
-    //   await sendCountdown(countDown, channel)
-    //   countDown--
-    //   await wait(1500)
-    // }
+    //Do countdown
+    let countDown = 5;
+    while (countDown >= 1) {
+        await sendCountdown(countDown, __1.channel);
+        countDown--;
+        await (0, helpers_1.wait)(1000);
+    }
     const file = new discord_js_1.MessageAttachment('src/images/main.gif');
     if (__1.game.megatron) {
         await __1.game.megatron.edit({
@@ -68,7 +68,7 @@ const sendCountdown = async (countDown, channel) => {
             });
         }
         else {
-            await __1.game.megatron.edit({ files: [countDownImage] });
+            await __1.game.megatron.edit({ files: [countDownImage], fetchReply: true });
         }
     }
     catch (error) {

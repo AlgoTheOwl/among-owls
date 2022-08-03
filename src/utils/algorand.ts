@@ -93,8 +93,6 @@ export const determineOwnership = async function (address: string): Promise<{
       await wait(1000)
     })
 
-    console.log(nftsOwned)
-
     return {
       walletOwned,
       nftsOwned,
