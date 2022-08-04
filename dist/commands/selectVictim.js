@@ -19,6 +19,12 @@ module.exports = {
         const victimId = idArr[0];
         const player = __1.game.players[user.id];
         const victim = __1.game.players[victimId];
+        if (!player || player.dead) {
+            return interaction.reply({
+                ephemeral: true,
+                content: `You can't attack, you're dead!`,
+            });
+        }
         if (victimId === 'random') {
             if (player)
                 player.victimId = undefined;

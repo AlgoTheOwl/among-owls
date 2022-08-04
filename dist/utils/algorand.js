@@ -66,6 +66,7 @@ const determineOwnership = async function (address) {
                 }
             }
         });
+        console.log(assetIdsOwned);
         // fetch data for each asset but not too quickly
         await (0, helpers_1.asyncForEach)(assetIdsOwned, async (assetId) => {
             var _a;
@@ -77,7 +78,7 @@ const determineOwnership = async function (address) {
                     nftsOwned.push(new asset_1.default(assetId, name, url, params['unit-name']));
                 }
             }
-            await (0, helpers_1.wait)(1000);
+            await (0, helpers_1.wait)(250);
         });
         return {
             walletOwned,
