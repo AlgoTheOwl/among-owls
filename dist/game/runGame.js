@@ -29,7 +29,7 @@ async function runGame() {
                 let victim;
                 // DO DAMAGE
                 if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead) && __1.game.active) {
-                    if (player.victimId) {
+                    if (player.victimId && !__1.game.players[player.victimId].dead) {
                         victim = __1.game.players[player.victimId];
                     }
                     else {

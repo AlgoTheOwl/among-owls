@@ -39,7 +39,7 @@ export default async function runGame() {
 
         // DO DAMAGE
         if (attacker && !attacker?.timedOut && !attacker?.dead && game.active) {
-          if (player.victimId) {
+          if (player.victimId && !game.players[player.victimId].dead) {
             victim = game.players[player.victimId]
           } else {
             victim = game.players[getRandomVictimId(discordId)]
