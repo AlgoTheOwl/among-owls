@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleWin = void 0;
+// Discord
+const discord_js_1 = require("discord.js");
 const embeds_1 = __importDefault(require("../constants/embeds"));
 // Data
 const database_service_1 = require("../database/database.service");
@@ -22,6 +24,10 @@ const handleWin = async (player, winByTimeout) => {
     const winningUser = (await database_service_1.collections.users.findOne({
         _id: player.userId,
     }));
+    const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
+    await __1.game.megatron.edit({
+        files: [attachment],
+    });
     // Update user stats
     const currentHoot = winningUser.hoot ? winningUser.hoot : 0;
     const updatedHoot = currentHoot + hootOnWin;
@@ -34,6 +40,7 @@ const handleWin = async (player, winByTimeout) => {
     (0, helpers_1.resetGame)();
     (0, helpers_1.emptyDir)(imageDir);
     setAssetTimeout(playerArr);
+    await (0, helpers_1.wait)(2000);
     await __1.game.arena.edit((0, embeds_2.default)(embeds_1.default.win, { winByTimeout, player }));
     // Add new waiting room
     (0, _1.startWaitingRoom)();

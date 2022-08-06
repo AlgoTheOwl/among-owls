@@ -1,3 +1,5 @@
+// Discord
+import { MessageAttachment } from 'discord.js'
 // Schemas
 import Player from '../models/player'
 import { WithId } from 'mongodb'
@@ -6,7 +8,7 @@ import embeds from '../constants/embeds'
 // Data
 import { collections } from '../database/database.service'
 // Helpers
-import { resetGame, emptyDir, asyncForEach } from '../utils/helpers'
+import { resetGame, emptyDir, asyncForEach, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import { startWaitingRoom } from '.'
 // Globals
@@ -23,6 +25,11 @@ export const handleWin = async (player: Player, winByTimeout: boolean) => {
   const winningUser = (await collections.users.findOne({
     _id: player.userId,
   })) as WithId<User>
+
+  const attachment = new MessageAttachment('src/images/death.gif', 'death.gif')
+  await game.megatron.edit({
+    files: [attachment],
+  })
 
   // Update user stats
   const currentHoot = winningUser.hoot ? winningUser.hoot : 0
@@ -42,6 +49,7 @@ export const handleWin = async (player: Player, winByTimeout: boolean) => {
   resetGame()
   emptyDir(imageDir)
   setAssetTimeout(playerArr)
+  await wait(2000)
   await game.arena.edit(doEmbed(embeds.win, { winByTimeout, player }))
   // Add new waiting room
   startWaitingRoom()

@@ -40,26 +40,12 @@ async function runGame() {
                     // HANDLE DEATH
                     if (victim.hp <= 0 && attacker && !handlingDeath) {
                         victim.dead = true;
-                        // handlingDeath = true
-                        // const attachment = new MessageAttachment(
-                        //   'src/images/death.gif',
-                        //   'death.gif'
-                        // )
-                        // await game.megatron.edit({
-                        //   files: [attachment],
-                        //   content: `${attacker.asset.assetName} took ${victim.username} in one fell swoop. Owls be swoopin'`,
-                        // })
-                        // setTimeout(async () => {
-                        //   const file = new MessageAttachment('src/images/main.gif')
-                        //   await game.megatron.edit({ files: [file] })
-                        //   handlingDeath = false
-                        // }, deathDeleteInterval)
                     }
                     // HANDLE WIN
                     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
                     isWin = !!winningPlayer;
                     if (isWin && winningPlayer && __1.game.active) {
-                        return (0, win_1.handleWin)(winningPlayer, winByTimeout);
+                        (0, win_1.handleWin)(winningPlayer, winByTimeout);
                     }
                     // REFRESH EMBED
                     const attackField = {
@@ -71,6 +57,9 @@ async function runGame() {
                         attackField,
                     ].filter(Boolean);
                     await __1.game.arena.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
+                    if (isWin) {
+                        return;
+                    }
                 }
             });
         }
