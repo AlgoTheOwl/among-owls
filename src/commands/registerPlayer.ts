@@ -9,11 +9,10 @@ import { WithId } from 'mongodb'
 import User from '../models/user'
 import Player from '../models/player'
 // Helpers
-import { downloadFile, resetGame, updateGame, wait } from '../utils/helpers'
+import { downloadFile, updateGame } from '../utils/helpers'
 // Globals
 import { game } from '../index'
 import settings from '../settings'
-import { updateTransactions } from '../utils/algorand'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -27,68 +26,91 @@ module.exports = {
       const { values, user } = interaction
       const assetId = values[0]
       const { username, id } = user
-      const { imageDir, hp } = settings
+      const { imageDir, hp, maxCapacity } = settings
 
-      await interaction.deferReply({ ephemeral: true })
+      // Check for game capacity, allow already registered user to re-register
+      // even if capacity is full
+      if (
+        Object.values(game.players).length < maxCapacity ||
+        game.players[id]
+      ) {
+        await interaction.deferReply({ ephemeral: true })
 
-      const { assets, address, _id, coolDowns } =
-        (await collections.users.findOne({
-          discordId: user.id,
-        })) as WithId<User>
+        const { assets, address, _id, coolDowns } =
+          (await collections.users.findOne({
+            discordId: user.id,
+          })) as WithId<User>
 
-      const asset = assets[assetId]
+        const asset = assets[assetId]
 
-      if (!asset) {
-        return
-      }
+        if (!asset) {
+          return
+        }
 
-      const coolDown = coolDowns ? coolDowns[assetId] : null
+        const coolDown = coolDowns ? coolDowns[assetId] : null
 
-      if (coolDown && coolDown > Date.now()) {
-        const minutesLeft = Math.floor((coolDown - Date.now()) / 60000)
-        const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes'
-        return interaction.editReply({
-          content: `Please wait ${minutesLeft} ${minuteWord} before playing ${asset.assetName} again`,
+        if (coolDown && coolDown > Date.now()) {
+          const minutesLeft = Math.floor((coolDown - Date.now()) / 60000)
+          const minuteWord = minutesLeft === 1 ? 'minute' : 'minutes'
+          return interaction.editReply({
+            content: `Please wait ${minutesLeft} ${minuteWord} before playing ${asset.assetName} again`,
+          })
+        }
+
+        let localPath
+
+        try {
+          localPath = await downloadFile(asset, imageDir, username)
+        } catch (error) {
+          console.log('download error', error)
+        }
+
+        if (!localPath) {
+          return
+        }
+
+        const gameAsset = new Asset(
+          asset.assetId,
+          asset.assetName,
+          asset.assetUrl,
+          asset.unitName,
+          _id,
+          localPath,
+          undefined,
+          asset.alias
+        )
+
+        // check again for capacity once added
+        if (
+          Object.values(game.players).length >= maxCapacity &&
+          !game.players[id]
+        ) {
+          return interaction.editReply(
+            'Sorry, the game is at capacity, please wait until the next round'
+          )
+        }
+
+        game.players[id] = new Player(
+          username,
+          id,
+          address,
+          gameAsset,
+          _id,
+          hp,
+          Object.values(assets).length,
+          0
+        )
+        await interaction.editReply(
+          `${asset.alias || asset.assetName} has entered the game`
+        )
+        updateGame()
+      } else {
+        interaction.reply({
+          content:
+            'Sorry, the game is at capacity, please wait until the next round',
+          ephemeral: true,
         })
       }
-
-      let localPath
-
-      try {
-        localPath = await downloadFile(asset, imageDir, username)
-      } catch (error) {
-        console.log('download error', error)
-      }
-
-      if (!localPath) {
-        return
-      }
-
-      const gameAsset = new Asset(
-        asset.assetId,
-        asset.assetName,
-        asset.assetUrl,
-        asset.unitName,
-        _id,
-        localPath,
-        undefined,
-        asset.alias
-      )
-
-      game.players[id] = new Player(
-        username,
-        id,
-        address,
-        gameAsset,
-        _id,
-        hp,
-        Object.values(assets).length,
-        0
-      )
-      await interaction.editReply(
-        `${asset.alias || asset.assetName} has entered the game`
-      )
-      updateGame()
     } catch (error) {
       console.log(error)
     }
