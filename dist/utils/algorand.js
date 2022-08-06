@@ -66,7 +66,6 @@ const determineOwnership = async function (address) {
                 }
             }
         });
-        console.log(assetIdsOwned);
         // fetch data for each asset but not too quickly
         await (0, helpers_1.asyncForEach)(assetIdsOwned, async (assetId) => {
             var _a;
