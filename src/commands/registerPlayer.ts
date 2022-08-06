@@ -27,7 +27,7 @@ module.exports = {
       const { values, user } = interaction
       const assetId = values[0]
       const { username, id } = user
-      const { imageDir, hp } = settings
+      const { imageDir, hp, maxCapacity } = settings
 
       await interaction.deferReply({ ephemeral: true })
 
@@ -75,20 +75,26 @@ module.exports = {
         asset.alias
       )
 
-      game.players[id] = new Player(
-        username,
-        id,
-        address,
-        gameAsset,
-        _id,
-        hp,
-        Object.values(assets).length,
-        0
-      )
-      await interaction.editReply(
-        `${asset.alias || asset.assetName} has entered the game`
-      )
-      updateGame()
+      if (Object.values(game.players).length < maxCapacity) {
+        game.players[id] = new Player(
+          username,
+          id,
+          address,
+          gameAsset,
+          _id,
+          hp,
+          Object.values(assets).length,
+          0
+        )
+        await interaction.editReply(
+          `${asset.alias || asset.assetName} has entered the game`
+        )
+        updateGame()
+      } else {
+        await interaction.editReply(
+          'Sorry, the game is at capacity, please wait until the next round'
+        )
+      }
     } catch (error) {
       console.log(error)
     }
