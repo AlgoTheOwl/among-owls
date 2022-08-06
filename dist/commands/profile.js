@@ -30,8 +30,7 @@ module.exports = {
                 discordId: user.id,
             })) || null;
             if (!userData) {
-                return interaction.reply({
-                    ephemeral: true,
+                return interaction.editReply({
                     content: 'You need to register to use this command',
                 });
             }
@@ -40,8 +39,7 @@ module.exports = {
                 .setPlaceholder('See your AOWL stats');
             const assetArray = Object.values(userData.assets);
             if (!assetArray.length) {
-                return interaction.reply({
-                    ephemeral: true,
+                return interaction.editReply({
                     content: 'You have no AOWLS to profile.',
                 });
             }
