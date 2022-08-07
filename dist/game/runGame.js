@@ -23,7 +23,9 @@ async function runGame() {
             __1.game.active &&
             playerArr.length > 1) {
             await (0, helpers_1.asyncForEach)(playerArr, async (player) => {
-                await (0, helpers_1.wait)(2000);
+                if (!player.dead) {
+                    await (0, helpers_1.wait)(2000);
+                }
                 const { discordId } = player;
                 const attacker = __1.game.players[discordId];
                 let victim;

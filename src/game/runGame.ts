@@ -32,7 +32,9 @@ export default async function runGame() {
       playerArr.length > 1
     ) {
       await asyncForEach(playerArr, async (player: Player) => {
-        await wait(2000)
+        if (!player.dead) {
+          await wait(2000)
+        }
         const { discordId } = player
         const attacker = game.players[discordId] as Player
         let victim
