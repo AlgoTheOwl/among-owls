@@ -7,11 +7,11 @@ import { collections } from '../database/database.service'
 import { confirmRole } from '../utils/helpers'
 
 const roleId = process.env.ADMIN_ID
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('clear-leaderboard')
     .setDescription('clear the leaderboard standings'),
+  enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 
@@ -27,7 +27,6 @@ module.exports = {
         ephemeral: true,
       })
     }
-
     await interaction.deferReply({ ephemeral: true })
 
     try {
