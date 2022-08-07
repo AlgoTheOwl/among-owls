@@ -10,7 +10,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('clear-timeout')
     .setDescription('clear all timeouts'),
-  enabled: true,
+  enabled: process.env.CLEAR_TIMEOUT_ENABLED,
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return
 
