@@ -11,6 +11,7 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('clear-leaderboard')
         .setDescription('clear the leaderboard standings'),
+    enabled: true,
     async execute(interaction) {
         if (!interaction.isCommand())
             return;
