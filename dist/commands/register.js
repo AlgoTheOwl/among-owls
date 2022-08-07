@@ -12,8 +12,6 @@ const algorand_1 = require("../utils/algorand");
 const helpers_1 = require("../utils/helpers");
 // Schemas
 const user_1 = __importDefault(require("../models/user"));
-// Globals
-const __1 = require("..");
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
 const unitName = process.env.UNIT_NAME;
 module.exports = {
@@ -29,12 +27,12 @@ module.exports = {
         if (!interaction.isCommand())
             return;
         const { user, options } = interaction;
-        if (__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) {
-            return interaction.reply({
-                content: 'Please wait until after the game ends to register',
-                ephemeral: true,
-            });
-        }
+        // if (game?.active) {
+        //   return interaction.reply({
+        //     content: 'Please wait until after the game ends to register',
+        //     ephemeral: true,
+        //   })
+        // }
         // TODO: add ability to register for different games here
         const address = options.getString('address');
         if (address && !/^[a-zA-Z0-9]{58}$/.test(address)) {
