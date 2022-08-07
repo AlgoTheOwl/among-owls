@@ -22,9 +22,9 @@ exports.default = {
     // Minimum players needed to start a game
     minCapacity: 2,
     // Max amount of players allowed to join
-    maxCapacity: 4,
+    maxCapacity: 5,
     // Number of minutes a user will have to wait to join a game after participating once
-    assetCooldown: 30,
+    assetCooldown: 10,
     // Max assets the game will capture
     maxAssets: 20,
     // How often we refersh the waiting room embed
