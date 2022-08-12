@@ -1,10 +1,12 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 import {
-  MessageSelectMenu,
+  SelectMenuBuilder,
   Interaction,
-  MessageActionRow,
-  MessageEmbed,
+  MessageActionRowComponent,
+  EmbedBuilder,
+  InteractionType,
+  ActionRowBuilder,
 } from 'discord.js'
 // Data
 import { collections } from '../database/database.service'
@@ -25,7 +27,7 @@ module.exports = {
   enabled: true,
   async execute(interaction: Interaction) {
     try {
-      if (!interaction.isCommand()) return
+      if (interaction.type !== InteractionType.ApplicationCommand) return
 
       const { maxAssets } = settings
 
@@ -44,7 +46,7 @@ module.exports = {
         })
       }
 
-      const selectMenu = new MessageSelectMenu()
+      const selectMenu = new SelectMenuBuilder()
         .setCustomId('asset-profile')
         .setPlaceholder('See your AOWL stats')
 
@@ -93,14 +95,15 @@ module.exports = {
         { name: 'Games won', value: yaoWins }
       )
 
-      const row = new MessageActionRow().addComponents(selectMenu)
+      const row = new ActionRowBuilder().addComponents(selectMenu)
       const embed = doEmbed(embeds.profile, {
         thumbNail,
         fields,
-      }) as MessageEmbed
+      }) as EmbedBuilder
 
       await interaction.editReply({
         content: 'Choose your AOWL',
+        //@ts-ignore
         components: [row],
         embeds: [embed],
       })

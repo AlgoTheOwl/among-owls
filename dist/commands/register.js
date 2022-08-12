@@ -4,13 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processRegistration = void 0;
+// Discord
 const builders_1 = require("@discordjs/builders");
 // Data
 const database_service_1 = require("../database/database.service");
 // Helpers
 const algorand_1 = require("../utils/algorand");
 const helpers_1 = require("../utils/helpers");
-// Schemas
 const user_1 = __importDefault(require("../models/user"));
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
 const unitName = process.env.UNIT_NAME;
@@ -24,7 +24,7 @@ module.exports = {
         .setRequired(true)),
     enabled: true,
     async execute(interaction) {
-        if (!interaction.isCommand())
+        if (!interaction.isChatInputCommand())
             return;
         const { user, options } = interaction;
         // if (game?.active) {

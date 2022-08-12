@@ -1,5 +1,5 @@
+import { InteractionType } from 'discord.js'
 // Discord
-import { RegistrationResult } from '../types/user'
 import { SlashCommandBuilder } from '@discordjs/builders'
 // Data
 import { collections } from '../database/database.service'
@@ -7,6 +7,7 @@ import { collections } from '../database/database.service'
 import { determineOwnership } from '../utils/algorand'
 import { addRole } from '../utils/helpers'
 // Schemas
+import { RegistrationResult } from '../types/user'
 import User from '../models/user'
 import { WithId } from 'mongodb'
 import { Interaction } from 'discord.js'
@@ -29,7 +30,7 @@ module.exports = {
     ),
   enabled: true,
   async execute(interaction: Interaction) {
-    if (!interaction.isCommand()) return
+    if (!interaction.isChatInputCommand()) return
 
     const { user, options } = interaction
 

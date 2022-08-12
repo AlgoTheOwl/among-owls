@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // Discord
 const builders_1 = require("@discordjs/builders");
+const discord_js_1 = require("discord.js");
 // Data
 const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../constants/embeds"));
@@ -16,7 +17,7 @@ module.exports = {
         .setDescription('show global leaderboard for AOWL games'),
     enabled: true,
     async execute(interaction) {
-        if (!interaction.isCommand())
+        if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
         const winningUsers = (await database_service_1.collections.users
             .find({ yaoWins: { $gt: 0 } })

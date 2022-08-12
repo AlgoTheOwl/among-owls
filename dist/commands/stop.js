@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // Discord
 const builders_1 = require("@discordjs/builders");
+const discord_js_1 = require("discord.js");
 // Helpers
 const helpers_1 = require("../utils/helpers");
 // Globals
@@ -13,7 +14,7 @@ module.exports = {
         .setDescription('Stop the current game'),
     enabled: true,
     async execute(interaction) {
-        if (!interaction.isCommand())
+        if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
         const { user } = interaction;
         const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, user.id);

@@ -54,15 +54,16 @@ module.exports = {
                 }
             })
                 .filter(Boolean);
-            const selectMenu = new discord_js_1.MessageSelectMenu()
+            const selectMenu = new discord_js_1.SelectMenuBuilder()
                 .setCustomId('register-player')
                 .setPlaceholder('Select an AOWL to attack');
             if (options.length) {
                 selectMenu.addOptions(options);
             }
-            const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
+            const row = new discord_js_1.ActionRowBuilder().addComponents(selectMenu);
             await interaction.editReply({
                 content: 'Choose your AOWL',
+                //@ts-ignore
                 components: [row],
             });
         }

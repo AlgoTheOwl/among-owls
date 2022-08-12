@@ -1,7 +1,7 @@
 // Discord
 import {
   Client,
-  Intents,
+  GatewayIntentBits,
   Interaction,
   Collection,
   SelectMenuInteraction,
@@ -42,12 +42,11 @@ export const creatorAddressArr = [
 ]
 
 export const client: Client = new Client({
-  restRequestTimeout: 60000,
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_MESSAGES,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
   ],
 })
 
@@ -100,37 +99,32 @@ const main = async () => {
  *****************
  */
 
-client.on(
-  'interactionCreate',
-  async (
-    interaction: Interaction | SelectMenuInteraction | ButtonInteraction
-  ) => {
-    let command
-    if (interaction.isCommand()) {
-      // ensure two games can't start simultaneously
-      if (
-        (game?.active || game?.waitingRoom) &&
-        interaction.commandName === 'start'
-      ) {
-        return await interaction.reply({
-          content: 'A game is already running',
-          ephemeral: true,
-        })
-      }
+client.on('interactionCreate', async (interaction: any) => {
+  let command
+  if (interaction.isCommand()) {
+    // ensure two games can't start simultaneously
+    if (
+      (game?.active || game?.waitingRoom) &&
+      interaction.commandName === 'start'
+    ) {
+      return await interaction.reply({
+        content: 'A game is already running',
+        ephemeral: true,
+      })
+    }
 
-      command = client.commands.get(interaction.commandName)
-    }
-    if (interaction.isSelectMenu() || interaction.isButton()) {
-      command = client.commands.get(interaction.customId)
-    }
-    if (!command) return
-
-    try {
-      await command.execute(interaction)
-    } catch (error) {
-      console.error(error)
-    }
+    command = client.commands.get(interaction.commandName)
   }
-)
+  if (interaction.isSelectMenu() || interaction.isButton()) {
+    command = client.commands.get(interaction.customId)
+  }
+  if (!command) return
+
+  try {
+    await command.execute(interaction)
+  } catch (error) {
+    console.error(error)
+  }
+})
 
 client.login(token)

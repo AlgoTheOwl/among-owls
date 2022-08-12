@@ -1,8 +1,9 @@
 // Discord
 import {
+  ActionRowBuilder,
   ButtonInteraction,
-  MessageActionRow,
-  MessageSelectMenu,
+  MessageActionRowComponent,
+  SelectMenuBuilder,
 } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 // Data
@@ -73,7 +74,7 @@ module.exports = {
         value: string
       }[]
 
-      const selectMenu = new MessageSelectMenu()
+      const selectMenu = new SelectMenuBuilder()
         .setCustomId('register-player')
         .setPlaceholder('Select an AOWL to attack')
 
@@ -81,10 +82,11 @@ module.exports = {
         selectMenu.addOptions(options)
       }
 
-      const row = new MessageActionRow().addComponents(selectMenu)
+      const row = new ActionRowBuilder().addComponents(selectMenu)
 
       await interaction.editReply({
         content: 'Choose your AOWL',
+        //@ts-ignore
         components: [row],
       })
     } catch (error) {

@@ -1,6 +1,6 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { Interaction } from 'discord.js'
+import { Interaction, InteractionType } from 'discord.js'
 // Data
 import { collections } from '../database/database.service'
 // Helpers
@@ -12,7 +12,7 @@ module.exports = {
     .setDescription('clear all timeouts'),
   enabled: process.env.CLEAR_TIMEOUT_ENABLED,
   async execute(interaction: Interaction) {
-    if (!interaction.isCommand()) return
+    if (interaction.type !== InteractionType.ApplicationCommand) return
 
     await interaction.deferReply({ ephemeral: true })
 

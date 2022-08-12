@@ -16,7 +16,7 @@ module.exports = {
         .setRequired(true)),
     enabled: true,
     async execute(interaction) {
-        if (!interaction.isCommand())
+        if (!interaction.isChatInputCommand())
             return;
         const { user } = interaction;
         const name = interaction.options.getString('name');

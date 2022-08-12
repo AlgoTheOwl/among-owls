@@ -1,9 +1,9 @@
 // Discord
 import {
-  MessageAttachment,
-  MessageSelectMenu,
-  MessageActionRow,
+  AttachmentBuilder,
+  SelectMenuBuilder,
   MessageOptions,
+  ActionRowBuilder,
 } from 'discord.js'
 // Helpers
 import { resetGame, wait } from '../utils/helpers'
@@ -50,7 +50,7 @@ export const startWaitingRoom = async (): Promise<void> => {
   //   await wait(1500)
   // }
 
-  const file = new MessageAttachment('src/images/main.gif')
+  const file = new AttachmentBuilder('src/images/main.gif')
 
   if (game.megatron) {
     await game.megatron.edit({
@@ -70,23 +70,23 @@ export const startWaitingRoom = async (): Promise<void> => {
   runGame()
 }
 
-const sendCountdown = async (countDown: number, channel: any) => {
-  try {
-    const imagePath = `src/images/${countDown}.png`
-    const countDownImage = new MessageAttachment(imagePath)
-    if (!game.megatron) {
-      game.megatron = await channel.send({
-        files: [countDownImage],
-        fetchReply: true,
-      })
-    } else {
-      await game.megatron.edit({ files: [countDownImage] })
-    }
-  } catch (error) {
-    console.log('ERROR WITH COUNTDOWN')
-    console.log(error)
-  }
-}
+// const sendCountdown = async (countDown: number, channel: any) => {
+//   try {
+//     const imagePath = `src/images/${countDown}.png`
+//     const countDownImage = new AttachmentBuilder(imagePath)
+//     if (!game.megatron) {
+//       game.megatron = await channel.send({
+//         files: [countDownImage],
+//         fetchReply: true,
+//       })
+//     } else {
+//       await game.megatron.edit({ files: [countDownImage] })
+//     }
+//   } catch (error) {
+//     console.log('ERROR WITH COUNTDOWN')
+//     console.log(error)
+//   }
+// }
 
 const sendVictimSelectMenu = async () => {
   const playerArr = Object.values(game.players)
@@ -95,18 +95,18 @@ const sendVictimSelectMenu = async () => {
     .filter((player: Player) => !player.timedOut && !player.dead)
     .map((player: Player) => ({
       label: `Attack ${player.username}`,
-      description: '',
+      description: ' ',
       value: player.discordId,
     }))
 
-  const victimSelectMenu = new MessageActionRow().addComponents(
-    new MessageSelectMenu()
+  const victimSelectMenu = new ActionRowBuilder().addComponents(
+    new SelectMenuBuilder()
       .setCustomId('select-victim')
       .setPlaceholder('Attack a random victim')
       .addOptions([
         {
           label: `Attack a random victim`,
-          description: '',
+          description: ' ',
           value: 'random',
         },
         ...victims,
@@ -114,6 +114,7 @@ const sendVictimSelectMenu = async () => {
   )
 
   await channel.send({
+    //@ts-ignore
     components: [victimSelectMenu],
   })
 }

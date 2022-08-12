@@ -1,8 +1,8 @@
 import {
   ColorResolvable,
-  MessageActionRow,
-  MessageEmbed,
-  MessageAttachment,
+  MessageActionRowComponent,
+  Embed,
+  Attachment,
 } from 'discord.js'
 import Player from '../models/player'
 
@@ -17,7 +17,7 @@ export interface EmbedData {
   countDown?: number
   player?: Player
   winByTimeout?: boolean
-  files?: MessageAttachment[]
+  files?: Attachment[]
   rawEmbed?: boolean
 }
 
@@ -32,10 +32,10 @@ type Footer = {
 }
 
 export interface EmbedReply {
-  embeds: [MessageEmbed]
+  embeds: [Embed]
   fetchReply: boolean
-  components?: MessageActionRow[]
-  files?: MessageAttachment[]
+  components?: MessageActionRowComponent[]
+  files?: Attachment[]
 }
 
 export interface Intervals {

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // Discrod
 const builders_1 = require("@discordjs/builders");
+const discord_js_1 = require("discord.js");
 // Data
 const database_service_1 = require("../database/database.service");
 // Helpers
@@ -12,7 +13,7 @@ module.exports = {
         .setDescription('claim your hoot!'),
     enabled: true,
     async execute(interaction) {
-        if (!interaction.isCommand())
+        if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
         try {
             const { user } = interaction;

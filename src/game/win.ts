@@ -1,5 +1,5 @@
 // Discord
-import { MessageAttachment } from 'discord.js'
+import { AttachmentBuilder } from 'discord.js'
 // Schemas
 import Player from '../models/player'
 import { WithId } from 'mongodb'
@@ -26,7 +26,9 @@ export const handleWin = async (player: Player, winByTimeout: boolean) => {
     _id: player.userId,
   })) as WithId<User>
 
-  const attachment = new MessageAttachment('src/images/death.gif', 'death.gif')
+  const attachment = new AttachmentBuilder('src/images/death.gif', {
+    name: 'death.gif',
+  })
   await game.megatron.edit({
     files: [attachment],
   })

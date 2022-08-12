@@ -1,6 +1,6 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { Interaction } from 'discord.js'
+import { Interaction, InteractionType } from 'discord.js'
 // Globals
 import { game } from '..'
 import { collections } from '../database/database.service'
@@ -21,7 +21,7 @@ module.exports = {
     ),
   enabled: true,
   async execute(interaction: Interaction) {
-    if (!interaction.isCommand()) return
+    if (!interaction.isChatInputCommand()) return
     const { user } = interaction
     const name = interaction.options.getString('name') as string
 

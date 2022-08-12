@@ -1,13 +1,13 @@
 // Discord
 import {
-  MessageEmbed,
-  MessageActionRow,
-  MessageButton,
   ColorResolvable,
-  MessageAttachment,
   MessagePayload,
   InteractionReplyOptions,
   MessageOptions,
+  ButtonStyle,
+  ActionRowBuilder,
+  ButtonBuilder,
+  EmbedBuilder,
 } from 'discord.js'
 // Types/Constants
 import { EmbedData } from './types/game'
@@ -20,7 +20,7 @@ import { mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
 const defaultEmbedValues: EmbedData = {
   title: '🔥 Ye Among AOWLs 🔥',
   description: '💀 Who will survive? 💀',
-  color: 'DARK_AQUA',
+  color: 'DarkAqua',
   image: 'attachment://main.gif',
   // thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
   footer: {
@@ -37,7 +37,7 @@ export default function doEmbed(
   | string
   | MessagePayload
   | InteractionReplyOptions
-  | MessageEmbed
+  | EmbedBuilder
   | MessageOptions {
   let data: EmbedData = {}
   let components = []
@@ -62,19 +62,19 @@ export default function doEmbed(
     }
 
     components.push(
-      new MessageActionRow().addComponents(
-        new MessageButton()
+      new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
           .setCustomId('select-attacker')
           .setLabel('Choose your AOWL')
-          .setStyle('PRIMARY'),
-        new MessageButton()
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
           .setCustomId('begin-game')
           .setLabel('Start game')
-          .setStyle('SECONDARY'),
-        new MessageButton()
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
           .setCustomId('withdraw-player')
           .setLabel('Withdraw AOWL')
-          .setStyle('DANGER')
+          .setStyle(ButtonStyle.Danger)
       )
     )
   }
@@ -86,7 +86,7 @@ export default function doEmbed(
     data = {
       title: '🔥 Ye Among AOWLs 🔥',
       description: '💀 Who will survive? 💀',
-      color: 'RANDOM',
+      color: 'Random',
       image: undefined,
       fields,
       footer: {
@@ -95,17 +95,17 @@ export default function doEmbed(
     }
   }
 
-  // Waiting Room Countdown
-  if (type === embeds.countDown) {
-    const imagePath = `src/images/${options?.countDown}.png`
-    const countDownImage = new MessageAttachment(imagePath)
-    data = {
-      title: 'Ready your AOWLS!',
-      description: `Game starting in ${options?.countDown}...`,
-      files: [countDownImage],
-      image: `attachment://${options?.countDown}.png`,
-    }
-  }
+  // // Waiting Room Countdown
+  // if (type === embeds.countDown) {
+  //   const imagePath = `src/images/${options?.countDown}.png`
+  //   const countDownImage = new AttachmentBuilder(imagePath, {name: options})
+  //   data = {
+  //     title: 'Ready your AOWLS!',
+  //     description: `Game starting in ${options?.countDown}...`,
+  //     files: [countDownImage],
+  //     image: `attachment://${options?.countDown}.png`,
+  //   }
+  // }
 
   // Players timed out
   if (type === embeds.timedOut) {
@@ -130,7 +130,7 @@ export default function doEmbed(
           ? 'won by default - all other players timed out!'
           : `destroyed the competition and won 5 hoot!`
       }`,
-      color: 'DARK_AQUA',
+      color: 'DarkAqua',
       image: normalizeIpfsUrl(asserUrl),
     }
   }
@@ -196,7 +196,7 @@ export default function doEmbed(
     ...data,
   }
 
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
 
   let thumbNailUrl
 
@@ -219,6 +219,7 @@ export default function doEmbed(
   return {
     embeds: [embed],
     fetchReply: true,
+    //@ts-ignore
     components,
     files: files?.length ? files : undefined,
   }

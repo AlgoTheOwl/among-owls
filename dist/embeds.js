@@ -13,7 +13,7 @@ const helpers_1 = require("./utils/helpers");
 const defaultEmbedValues = {
     title: '🔥 Ye Among AOWLs 🔥',
     description: '💀 Who will survive? 💀',
-    color: 'DARK_AQUA',
+    color: 'DarkAqua',
     image: 'attachment://main.gif',
     // thumbNail: 'https://www.randgallery.com/wp-content/uploads/2021/11/owl.jpg',
     footer: {
@@ -42,16 +42,16 @@ function doEmbed(type, options) {
                 };
             }),
         };
-        components.push(new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
+        components.push(new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
             .setCustomId('select-attacker')
             .setLabel('Choose your AOWL')
-            .setStyle('PRIMARY'), new discord_js_1.MessageButton()
+            .setStyle(discord_js_1.ButtonStyle.Primary), new discord_js_1.ButtonBuilder()
             .setCustomId('begin-game')
             .setLabel('Start game')
-            .setStyle('SECONDARY'), new discord_js_1.MessageButton()
+            .setStyle(discord_js_1.ButtonStyle.Secondary), new discord_js_1.ButtonBuilder()
             .setCustomId('withdraw-player')
             .setLabel('Withdraw AOWL')
-            .setStyle('DANGER')));
+            .setStyle(discord_js_1.ButtonStyle.Danger)));
     }
     if (type === embeds_1.default.activeGame) {
         const fields = (options === null || options === void 0 ? void 0 : options.hasOwnProperty('fields'))
@@ -60,7 +60,7 @@ function doEmbed(type, options) {
         data = {
             title: '🔥 Ye Among AOWLs 🔥',
             description: '💀 Who will survive? 💀',
-            color: 'RANDOM',
+            color: 'Random',
             image: undefined,
             fields,
             footer: {
@@ -68,17 +68,17 @@ function doEmbed(type, options) {
             },
         };
     }
-    // Waiting Room Countdown
-    if (type === embeds_1.default.countDown) {
-        const imagePath = `src/images/${options === null || options === void 0 ? void 0 : options.countDown}.png`;
-        const countDownImage = new discord_js_1.MessageAttachment(imagePath);
-        data = {
-            title: 'Ready your AOWLS!',
-            description: `Game starting in ${options === null || options === void 0 ? void 0 : options.countDown}...`,
-            files: [countDownImage],
-            image: `attachment://${options === null || options === void 0 ? void 0 : options.countDown}.png`,
-        };
-    }
+    // // Waiting Room Countdown
+    // if (type === embeds.countDown) {
+    //   const imagePath = `src/images/${options?.countDown}.png`
+    //   const countDownImage = new AttachmentBuilder(imagePath, {name: options})
+    //   data = {
+    //     title: 'Ready your AOWLS!',
+    //     description: `Game starting in ${options?.countDown}...`,
+    //     files: [countDownImage],
+    //     image: `attachment://${options?.countDown}.png`,
+    //   }
+    // }
     // Players timed out
     if (type === embeds_1.default.timedOut) {
         data = {
@@ -97,7 +97,7 @@ function doEmbed(type, options) {
             description: `${username}'s ${alias || assetName} ${winByTimeout
                 ? 'won by default - all other players timed out!'
                 : `destroyed the competition and won 5 hoot!`}`,
-            color: 'DARK_AQUA',
+            color: 'DarkAqua',
             image: (0, helpers_1.normalizeIpfsUrl)(asserUrl),
         };
     }
@@ -142,7 +142,7 @@ function doEmbed(type, options) {
         };
     }
     let { title, description, color, image, thumbNail, fields, footer, files, rawEmbed, } = Object.assign(Object.assign({}, defaultEmbedValues), data);
-    const embed = new discord_js_1.MessageEmbed();
+    const embed = new discord_js_1.EmbedBuilder();
     let thumbNailUrl;
     if (thumbNail) {
         thumbNailUrl = (0, helpers_1.normalizeIpfsUrl)(thumbNail);
@@ -160,6 +160,7 @@ function doEmbed(type, options) {
     return {
         embeds: [embed],
         fetchReply: true,
+        //@ts-ignore
         components,
         files: (files === null || files === void 0 ? void 0 : files.length) ? files : undefined,
     };

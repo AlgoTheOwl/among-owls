@@ -1,6 +1,6 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { Interaction } from 'discord.js'
+import { Interaction, InteractionType } from 'discord.js'
 // Helpers
 import { confirmRole, resetGame } from '../utils/helpers'
 // Globals
@@ -14,7 +14,7 @@ module.exports = {
     .setDescription('Stop the current game'),
   enabled: true,
   async execute(interaction: Interaction) {
-    if (!interaction.isCommand()) return
+    if (interaction.type !== InteractionType.ApplicationCommand) return
 
     const { user } = interaction
 

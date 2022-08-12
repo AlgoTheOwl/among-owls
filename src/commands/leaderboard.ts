@@ -1,6 +1,6 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { Interaction } from 'discord.js'
+import { Interaction, InteractionType } from 'discord.js'
 import { InteractionReplyOptions } from 'discord.js'
 // Data
 import { collections } from '../database/database.service'
@@ -17,7 +17,7 @@ module.exports = {
     .setDescription('show global leaderboard for AOWL games'),
   enabled: true,
   async execute(interaction: Interaction) {
-    if (!interaction.isCommand()) return
+    if (interaction.type !== InteractionType.ApplicationCommand) return
 
     const winningUsers = (await collections.users
       .find({ yaoWins: { $gt: 0 } })

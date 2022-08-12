@@ -21,7 +21,7 @@ module.exports = {
     async execute(interaction) {
         var _a;
         try {
-            if (!interaction.isCommand())
+            if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
                 return;
             const { maxAssets } = settings_1.default;
             const { user } = interaction;
@@ -34,7 +34,7 @@ module.exports = {
                     content: 'You need to register to use this command',
                 });
             }
-            const selectMenu = new discord_js_1.MessageSelectMenu()
+            const selectMenu = new discord_js_1.SelectMenuBuilder()
                 .setCustomId('asset-profile')
                 .setPlaceholder('See your AOWL stats');
             const assetArray = Object.values(userData.assets);
@@ -69,13 +69,14 @@ module.exports = {
             const yaoWins = userData.yaoWins ? userData.yaoWins.toString() : '0';
             // discord username
             fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot }, { name: 'Games won', value: yaoWins });
-            const row = new discord_js_1.MessageActionRow().addComponents(selectMenu);
+            const row = new discord_js_1.ActionRowBuilder().addComponents(selectMenu);
             const embed = (0, embeds_2.default)(embeds_1.default.profile, {
                 thumbNail,
                 fields,
             });
             await interaction.editReply({
                 content: 'Choose your AOWL',
+                //@ts-ignore
                 components: [row],
                 embeds: [embed],
             });

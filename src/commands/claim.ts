@@ -1,6 +1,6 @@
 // Discrod
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { Interaction } from 'discord.js'
+import { Interaction, InteractionType } from 'discord.js'
 // Schemas
 import { WithId } from 'mongodb'
 import User from '../models/user'
@@ -15,7 +15,7 @@ module.exports = {
     .setDescription('claim your hoot!'),
   enabled: true,
   async execute(interaction: Interaction) {
-    if (!interaction.isCommand()) return
+    if (interaction.type !== InteractionType.ApplicationCommand) return
     try {
       const { user } = interaction
 

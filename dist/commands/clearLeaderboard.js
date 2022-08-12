@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // Discord
 const builders_1 = require("@discordjs/builders");
+const discord_js_1 = require("discord.js");
 // Data
 const database_service_1 = require("../database/database.service");
 // Helpers
@@ -13,7 +14,7 @@ module.exports = {
         .setDescription('clear the leaderboard standings'),
     enabled: true,
     async execute(interaction) {
-        if (!interaction.isCommand())
+        if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
         const { user: { id }, } = interaction;
         const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, id);

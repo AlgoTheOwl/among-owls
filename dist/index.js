@@ -34,12 +34,11 @@ exports.creatorAddressArr = [
     creatorAddressThree,
 ];
 exports.client = new discord_js_1.Client({
-    restRequestTimeout: 60000,
     intents: [
-        discord_js_1.Intents.FLAGS.GUILDS,
-        discord_js_1.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-        discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
-        discord_js_1.Intents.FLAGS.GUILD_MESSAGES,
+        discord_js_1.GatewayIntentBits.Guilds,
+        discord_js_1.GatewayIntentBits.GuildEmojisAndStickers,
+        discord_js_1.GatewayIntentBits.GuildMembers,
+        discord_js_1.GatewayIntentBits.GuildMessages,
     ],
 });
 exports.client.once('ready', async () => {

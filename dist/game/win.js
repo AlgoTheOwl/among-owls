@@ -24,7 +24,9 @@ const handleWin = async (player, winByTimeout) => {
     const winningUser = (await database_service_1.collections.users.findOne({
         _id: player.userId,
     }));
-    const attachment = new discord_js_1.MessageAttachment('src/images/death.gif', 'death.gif');
+    const attachment = new discord_js_1.AttachmentBuilder('src/images/death.gif', {
+        name: 'death.gif',
+    });
     await __1.game.megatron.edit({
         files: [attachment],
     });

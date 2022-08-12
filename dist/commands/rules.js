@@ -2,13 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // Discord
 const builders_1 = require("@discordjs/builders");
+const discord_js_1 = require("discord.js");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('rules')
         .setDescription('see game rules'),
     enabled: true,
     async execute(interaction) {
-        if (!interaction.isCommand())
+        if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
         const optInAssetId = process.env.OPT_IN_ASSET_ID;
         return interaction.reply({
