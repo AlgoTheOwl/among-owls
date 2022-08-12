@@ -1,13 +1,5 @@
 // Discord
-import {
-  Client,
-  GatewayIntentBits,
-  Interaction,
-  Collection,
-  SelectMenuInteraction,
-  ButtonInteraction,
-  TextChannel,
-} from 'discord.js'
+import { Client, GatewayIntentBits, Collection, TextChannel } from 'discord.js'
 // Node
 import fs from 'node:fs'
 import path from 'node:path'
