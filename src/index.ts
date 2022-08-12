@@ -35,10 +35,10 @@ export const creatorAddressArr = [
 
 export const client: Client = new Client({
   intents: [
-    GatewayIntentBits?.Guilds,
-    GatewayIntentBits?.GuildEmojisAndStickers,
-    GatewayIntentBits?.GuildMembers,
-    GatewayIntentBits?.GuildMessages,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
   ],
 })
 

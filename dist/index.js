@@ -35,10 +35,10 @@ exports.creatorAddressArr = [
 ];
 exports.client = new discord_js_1.Client({
     intents: [
-        discord_js_1.GatewayIntentBits === null || discord_js_1.GatewayIntentBits === void 0 ? void 0 : discord_js_1.GatewayIntentBits.Guilds,
-        discord_js_1.GatewayIntentBits === null || discord_js_1.GatewayIntentBits === void 0 ? void 0 : discord_js_1.GatewayIntentBits.GuildEmojisAndStickers,
-        discord_js_1.GatewayIntentBits === null || discord_js_1.GatewayIntentBits === void 0 ? void 0 : discord_js_1.GatewayIntentBits.GuildMembers,
-        discord_js_1.GatewayIntentBits === null || discord_js_1.GatewayIntentBits === void 0 ? void 0 : discord_js_1.GatewayIntentBits.GuildMessages,
+        discord_js_1.GatewayIntentBits.Guilds,
+        discord_js_1.GatewayIntentBits.GuildEmojisAndStickers,
+        discord_js_1.GatewayIntentBits.GuildMembers,
+        discord_js_1.GatewayIntentBits.GuildMessages,
     ],
 });
 exports.client.once('ready', async () => {
