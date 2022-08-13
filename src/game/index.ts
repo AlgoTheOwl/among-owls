@@ -42,14 +42,6 @@ export const startWaitingRoom = async (): Promise<void> => {
 
   await wait(2000)
 
-  // Do countdown
-  // let countDown = 5
-  // while (countDown >= 1) {
-  //   await sendCountdown(countDown, channel)
-  //   countDown--
-  //   await wait(1500)
-  // }
-
   const file = new AttachmentBuilder('src/images/main.gif')
 
   if (game.megatron) {
@@ -69,24 +61,6 @@ export const startWaitingRoom = async (): Promise<void> => {
 
   runGame()
 }
-
-// const sendCountdown = async (countDown: number, channel: any) => {
-//   try {
-//     const imagePath = `src/images/${countDown}.png`
-//     const countDownImage = new AttachmentBuilder(imagePath)
-//     if (!game.megatron) {
-//       game.megatron = await channel.send({
-//         files: [countDownImage],
-//         fetchReply: true,
-//       })
-//     } else {
-//       await game.megatron.edit({ files: [countDownImage] })
-//     }
-//   } catch (error) {
-//     console.log('ERROR WITH COUNTDOWN')
-//     console.log(error)
-//   }
-// }
 
 const sendVictimSelectMenu = async () => {
   const playerArr = Object.values(game.players)

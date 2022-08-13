@@ -47,7 +47,10 @@ export default async function runGame() {
             victim = game.players[getRandomVictimId(discordId)]
           }
           const damage = doDamage(attacker, false)
-          victim.hp -= damage
+
+          if (victim) {
+            victim.hp -= damage
+          }
 
           // HANDLE DEATH
           if (victim.hp <= 0 && attacker && !handlingDeath) {

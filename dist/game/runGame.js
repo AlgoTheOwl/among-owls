@@ -38,7 +38,9 @@ async function runGame() {
                         victim = __1.game.players[(0, attack_1.getRandomVictimId)(discordId)];
                     }
                     const damage = (0, helpers_1.doDamage)(attacker, false);
-                    victim.hp -= damage;
+                    if (victim) {
+                        victim.hp -= damage;
+                    }
                     // HANDLE DEATH
                     if (victim.hp <= 0 && attacker && !handlingDeath) {
                         victim.dead = true;
