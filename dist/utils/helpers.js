@@ -8,11 +8,9 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
 const embeds_1 = __importDefault(require("../embeds"));
-const settings_1 = __importDefault(require("../settings"));
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const database_service_1 = require("../database/database.service");
-const { damagePerAowl, hp, damageRange } = settings_1.default;
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
@@ -151,18 +149,19 @@ const randomSort = (arr) => {
     return arr;
 };
 exports.randomSort = randomSort;
-const resetGame = (stopped = false) => {
+const resetGame = (stopped = false, channelId) => {
     var _a;
-    __1.game.players = {};
-    __1.game.active = false;
-    __1.game.win = false;
-    __1.game.waitingRoom = false;
-    __1.game.attackEngaged = false;
-    __1.game.stopped = false;
-    __1.game.megatron = undefined;
+    const game = __1.games[channelId];
+    game.players = {};
+    game.active = false;
+    game.win = false;
+    game.waitingRoom = false;
+    game.attackEngaged = false;
+    game.stopped = false;
+    game.megatron = undefined;
     if (stopped) {
-        __1.game.stopped = true;
-        stopped && ((_a = __1.game === null || __1.game === void 0 ? void 0 : __1.game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped)));
+        game.stopped = true;
+        stopped && ((_a = game === null || game === void 0 ? void 0 : game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped, channelId)));
     }
 };
 exports.resetGame = resetGame;
@@ -200,10 +199,11 @@ const normalizeIpfsUrl = (url) => {
     }
 };
 exports.normalizeIpfsUrl = normalizeIpfsUrl;
-const updateGame = () => {
-    __1.game.update = true;
+const updateGame = (channelId) => {
+    const game = __1.games[channelId];
+    game.update = true;
     setTimeout(() => {
-        __1.game.update = false;
+        game.update = false;
     }, 3000);
 };
 exports.updateGame = updateGame;

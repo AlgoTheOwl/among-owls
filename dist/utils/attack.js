@@ -17,9 +17,10 @@ const getAttackString = (assetName, victimName, damage) => {
         .replace('{damage}', damage.toString());
 };
 exports.getAttackString = getAttackString;
-const getRandomVictimId = (attackerId) => {
+const getRandomVictimId = (attackerId, channelId) => {
     var _a;
-    const filteredPlayerArray = Object.values(__1.game.players).filter((player) => (player === null || player === void 0 ? void 0 : player.discordId) !== attackerId && !player.timedOut && !player.dead);
+    const game = __1.games[channelId];
+    const filteredPlayerArray = Object.values(game.players).filter((player) => (player === null || player === void 0 ? void 0 : player.discordId) !== attackerId && !player.timedOut && !player.dead);
     const randomIndex = Math.floor(Math.random() * filteredPlayerArray.length);
     return (_a = filteredPlayerArray[randomIndex]) === null || _a === void 0 ? void 0 : _a.discordId;
 };

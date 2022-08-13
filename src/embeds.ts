@@ -13,7 +13,7 @@ import {
 import { EmbedData } from './types/game'
 import embeds from './constants/embeds'
 // Game state
-import { game } from '.'
+import { games } from '.'
 // Helpers
 import { mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
 
@@ -32,6 +32,7 @@ const defaultEmbedValues: EmbedData = {
 
 export default function doEmbed(
   type: string,
+  channelId: string,
   options?: any
 ):
   | string
@@ -41,6 +42,7 @@ export default function doEmbed(
   | MessageOptions {
   let data: EmbedData = {}
   let components = []
+  const game = games[channelId]
   const playerArr = Object.values(game.players)
   const playerCount = playerArr.length
 

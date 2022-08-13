@@ -11,7 +11,7 @@ import Player from '../models/player'
 // Helpers
 import { downloadFile, updateGame } from '../utils/helpers'
 // Globals
-import { game } from '../index'
+import { games } from '../index'
 import settings from '../settings'
 
 module.exports = {
@@ -21,9 +21,12 @@ module.exports = {
   async execute(interaction: SelectMenuInteraction) {
     try {
       if (!interaction.isSelectMenu()) return
-      if (!game.waitingRoom) return
 
       const { values, user, channelId } = interaction
+      const game = games[channelId]
+
+      if (!game.waitingRoom) return
+
       const assetId = values[0]
       const { username, id } = user
       const { imageDir, hp, maxCapacity } = settings[channelId]
@@ -103,7 +106,7 @@ module.exports = {
         await interaction.editReply(
           `${asset.alias || asset.assetName} has entered the game`
         )
-        updateGame()
+        updateGame(channelId)
       } else {
         interaction.reply({
           content:

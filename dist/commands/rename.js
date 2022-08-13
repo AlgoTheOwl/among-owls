@@ -18,9 +18,10 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isChatInputCommand())
             return;
-        const { user } = interaction;
+        const { user, channelId } = interaction;
+        const game = __1.games[channelId];
         const name = interaction.options.getString('name');
-        const player = (__1.game === null || __1.game === void 0 ? void 0 : __1.game.players[user.id]) || null;
+        const player = (game === null || game === void 0 ? void 0 : game.players[user.id]) || null;
         let assetId;
         const userData = (await database_service_1.collections.users.findOne({
             discordId: user.id,
@@ -58,7 +59,7 @@ module.exports = {
                 content: `Your AOWL is now named ${name}`,
                 ephemeral: true,
             });
-            (0, helpers_1.updateGame)();
+            (0, helpers_1.updateGame)(channelId);
         }
     },
 };

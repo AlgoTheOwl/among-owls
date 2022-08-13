@@ -2,7 +2,7 @@
 import { ButtonInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
-import { game } from '../index'
+import { games } from '../index'
 import { updateGame } from '../utils/helpers'
 
 module.exports = {
@@ -12,6 +12,8 @@ module.exports = {
   async execute(interaction: ButtonInteraction) {
     try {
       if (!interaction.isButton()) return
+      const { channelId } = interaction
+      const game = games[channelId]
       if (!game.waitingRoom) return
 
       const { user } = interaction
@@ -26,7 +28,7 @@ module.exports = {
           ephemeral: true,
           content: `${player.asset.alias || player.asset.assetName} removed`,
         })
-        updateGame()
+        updateGame(channelId)
       } else {
         interaction.reply({
           ephemeral: true,

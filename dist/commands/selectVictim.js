@@ -9,7 +9,9 @@ module.exports = {
         .setName('select-victim')
         .setDescription('Choose a new victim to attack'),
     async execute(interaction) {
-        if (!__1.game.active || __1.game.waitingRoom) {
+        const { channelId } = interaction;
+        const game = __1.games[channelId];
+        if (!game.active || game.waitingRoom) {
             return interaction.reply({
                 content: 'There is no active game to select a victim',
                 ephemeral: true,
@@ -17,8 +19,8 @@ module.exports = {
         }
         const { values: idArr, user } = interaction;
         const victimId = idArr[0];
-        const player = __1.game.players[user.id];
-        const victim = __1.game.players[victimId];
+        const player = game.players[user.id];
+        const victim = game.players[victimId];
         if (!player || player.dead) {
             return interaction.reply({
                 ephemeral: true,

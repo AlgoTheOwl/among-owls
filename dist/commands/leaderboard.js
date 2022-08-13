@@ -19,6 +19,7 @@ module.exports = {
     async execute(interaction) {
         if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
+        const { channelId } = interaction;
         const winningUsers = (await database_service_1.collections.users
             .find({ yaoWins: { $gt: 0 } })
             .limit(10)
@@ -33,7 +34,9 @@ module.exports = {
             };
         });
         if (fields === null || fields === void 0 ? void 0 : fields.length) {
-            await interaction.reply((0, embeds_2.default)(embeds_1.default.leaderBoard, { fields }));
+            await interaction.reply((0, embeds_2.default)(embeds_1.default.leaderBoard, channelId, {
+                fields,
+            }));
         }
         else {
             await interaction.reply({ content: 'no winners yet!', ephemeral: true });

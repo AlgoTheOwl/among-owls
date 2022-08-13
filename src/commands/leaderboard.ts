@@ -19,6 +19,8 @@ module.exports = {
   async execute(interaction: Interaction) {
     if (interaction.type !== InteractionType.ApplicationCommand) return
 
+    const { channelId } = interaction
+
     const winningUsers = (await collections.users
       .find({ yaoWins: { $gt: 0 } })
       .limit(10)
@@ -36,7 +38,9 @@ module.exports = {
 
     if (fields?.length) {
       await interaction.reply(
-        doEmbed(embeds.leaderBoard, { fields }) as InteractionReplyOptions
+        doEmbed(embeds.leaderBoard, channelId, {
+          fields,
+        }) as InteractionReplyOptions
       )
     } else {
       await interaction.reply({ content: 'no winners yet!', ephemeral: true })

@@ -2,7 +2,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Interaction } from 'discord.js'
 // Globals
-import { game } from '..'
+import { games } from '..'
 import { collections } from '../database/database.service'
 import User from '../models/user'
 import { WithId } from 'mongodb'
@@ -22,7 +22,8 @@ module.exports = {
   enabled: true,
   async execute(interaction: Interaction) {
     if (!interaction.isChatInputCommand()) return
-    const { user } = interaction
+    const { user, channelId } = interaction
+    const game = games[channelId]
     const name = interaction.options.getString('name') as string
 
     const player = game?.players[user.id] || null
@@ -74,7 +75,7 @@ module.exports = {
         content: `Your AOWL is now named ${name}`,
         ephemeral: true,
       })
-      updateGame()
+      updateGame(channelId)
     }
   },
 }

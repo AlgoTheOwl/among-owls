@@ -19,7 +19,7 @@ module.exports = {
     if (!interaction.isSelectMenu()) return
 
     await interaction.deferReply()
-    const { values, user } = interaction
+    const { values, user, channelId } = interaction
     const assetId = Number(values[0])
     const discordId = user.id
 
@@ -68,7 +68,7 @@ module.exports = {
       }
 
       await interaction.editReply(
-        doEmbed(embeds.assetProfile, {
+        doEmbed(embeds.assetProfile, channelId, {
           assetUrl,
           fields,
           assetName,

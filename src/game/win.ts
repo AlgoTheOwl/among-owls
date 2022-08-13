@@ -1,5 +1,5 @@
 // Discord
-import { AttachmentBuilder } from 'discord.js'
+import { AttachmentBuilder, TextChannel } from 'discord.js'
 // Schemas
 import Player from '../models/player'
 import { WithId } from 'mongodb'
@@ -12,14 +12,17 @@ import { resetGame, emptyDir, asyncForEach, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import { startWaitingRoom } from '.'
 // Globals
-import { game } from '..'
+import { games } from '..'
 import settings from '../settings'
+import Game from '../models/game'
 
 export const handleWin = async (
   player: Player,
   winByTimeout: boolean,
-  channelId: string
+  channel: TextChannel
 ) => {
+  const { id: channelId } = channel
+  const game = games[channelId]
   const { imageDir, hootSettings, assetCooldown } = settings[channelId]
   const { hootOnWin } = hootSettings
   game.active = false
@@ -40,7 +43,7 @@ export const handleWin = async (
   const currentHoot = winningUser.hoot ? winningUser.hoot : 0
   const updatedHoot = currentHoot + hootOnWin
   const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
-  const updatedAssets = updateAsset(winningUser)
+  const updatedAssets = updateAsset(winningUser, game.players)
 
   await collections.users.findOneAndUpdate(
     { _id: player.userId },
@@ -51,13 +54,15 @@ export const handleWin = async (
 
   const playerArr = Object.values(game.players)
 
-  resetGame()
+  resetGame(false, channelId)
   emptyDir(imageDir)
   setAssetTimeout(playerArr, assetCooldown)
   await wait(2000)
-  await game.arena.edit(doEmbed(embeds.win, { winByTimeout, player }))
+  await game.arena.edit(
+    doEmbed(embeds.win, channelId, { winByTimeout, player })
+  )
   // Add new waiting room
-  startWaitingRoom(channelId)
+  startWaitingRoom(channel)
 }
 
 const setAssetTimeout = async (players: Player[], assetCooldown: number) => {
@@ -78,9 +83,9 @@ const setAssetTimeout = async (players: Player[], assetCooldown: number) => {
   })
 }
 
-const updateAsset = (winningUser: User) => {
+const updateAsset = (winningUser: User, players: { [key: string]: Player }) => {
   const winnerAssets = winningUser.assets
-  const winningAsset = game.players[winningUser.discordId].asset
+  const winningAsset = players[winningUser.discordId].asset
   const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1
   const updatedAsset = { ...winningAsset, wins: winningAssetWins }
   return { ...winnerAssets, [updatedAsset.assetId]: updatedAsset }

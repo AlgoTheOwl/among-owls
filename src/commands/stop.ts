@@ -4,7 +4,7 @@ import { Interaction, InteractionType } from 'discord.js'
 // Helpers
 import { confirmRole, resetGame } from '../utils/helpers'
 // Globals
-import { game } from '..'
+import { games } from '..'
 
 const roleId: string = process.env.ADMIN_ID
 
@@ -16,7 +16,8 @@ module.exports = {
   async execute(interaction: Interaction) {
     if (interaction.type !== InteractionType.ApplicationCommand) return
 
-    const { user } = interaction
+    const { user, channelId } = interaction
+    const game = games[channelId]
 
     const hasRole = await confirmRole(roleId, interaction, user.id)
 
@@ -33,7 +34,7 @@ module.exports = {
         ephemeral: true,
       })
 
-    resetGame(true)
+    resetGame(true, channelId)
     return interaction.reply({ content: 'Game stopped', ephemeral: true })
   },
 }

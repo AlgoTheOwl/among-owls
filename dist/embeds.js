@@ -22,10 +22,11 @@ const defaultEmbedValues = {
     },
     rawEmbed: false,
 };
-function doEmbed(type, options) {
+function doEmbed(type, channelId, options) {
     let data = {};
     let components = [];
-    const playerArr = Object.values(_1.game.players);
+    const game = _1.games[channelId];
+    const playerArr = Object.values(game.players);
     const playerCount = playerArr.length;
     // Waiting Room
     if (type === embeds_1.default.waitingRoom) {

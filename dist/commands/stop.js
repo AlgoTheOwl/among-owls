@@ -16,7 +16,8 @@ module.exports = {
     async execute(interaction) {
         if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
-        const { user } = interaction;
+        const { user, channelId } = interaction;
+        const game = __1.games[channelId];
         const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, user.id);
         if (!hasRole) {
             return await interaction.reply({
@@ -24,12 +25,12 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        if (!(__1.game === null || __1.game === void 0 ? void 0 : __1.game.active) && !__1.game.waitingRoom)
+        if (!(game === null || game === void 0 ? void 0 : game.active) && !game.waitingRoom)
             return interaction.reply({
                 content: 'Game is not currently running',
                 ephemeral: true,
             });
-        (0, helpers_1.resetGame)(true);
+        (0, helpers_1.resetGame)(true, channelId);
         return interaction.reply({ content: 'Game stopped', ephemeral: true });
     },
 };

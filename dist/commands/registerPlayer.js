@@ -22,16 +22,17 @@ module.exports = {
         try {
             if (!interaction.isSelectMenu())
                 return;
-            if (!index_1.game.waitingRoom)
-                return;
             const { values, user, channelId } = interaction;
+            const game = index_1.games[channelId];
+            if (!game.waitingRoom)
+                return;
             const assetId = values[0];
             const { username, id } = user;
             const { imageDir, hp, maxCapacity } = settings_1.default[channelId];
             // Check for game capacity, allow already registered user to re-register
             // even if capacity is full
-            if (Object.values(index_1.game.players).length < maxCapacity ||
-                index_1.game.players[id]) {
+            if (Object.values(game.players).length < maxCapacity ||
+                game.players[id]) {
                 await interaction.deferReply({ ephemeral: true });
                 const { assets, address, _id, coolDowns } = (await database_service_1.collections.users.findOne({
                     discordId: user.id,
@@ -60,13 +61,13 @@ module.exports = {
                 }
                 const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath, undefined, asset.alias);
                 // check again for capacity once added
-                if (Object.values(index_1.game.players).length >= maxCapacity &&
-                    !index_1.game.players[id]) {
+                if (Object.values(game.players).length >= maxCapacity &&
+                    !game.players[id]) {
                     return interaction.editReply('Sorry, the game is at capacity, please wait until the next round');
                 }
-                index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, Object.values(assets).length, 0);
+                game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, Object.values(assets).length, 0);
                 await interaction.editReply(`${asset.alias || asset.assetName} has entered the game`);
-                (0, helpers_1.updateGame)();
+                (0, helpers_1.updateGame)(channelId);
             }
             else {
                 interaction.reply({

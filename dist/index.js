@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = exports.creatorAddressArr = exports.channel = exports.emojis = exports.game = void 0;
+exports.client = exports.creatorAddressArr = exports.channel = exports.emojis = exports.games = void 0;
 // Discord
 const discord_js_1 = require("discord.js");
 // Node
@@ -11,6 +11,8 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 // Helpers
 const database_service_1 = require("./database/database.service");
+// Globals
+const settings_1 = __importDefault(require("./settings"));
 // Schema
 const game_1 = __importDefault(require("./models/game"));
 // Helpers
@@ -21,10 +23,9 @@ const token = process.env.DISCORD_TOKEN;
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO;
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE;
-const channelId = process.env.CHANNEL_ID;
-// Gloval vars
-exports.game = new game_1.default({}, false, false, 0);
+const channelIds = process.env.CHANNEL_IDS;
 exports.emojis = {};
+const channelIdArr = channelIds.split(',');
 exports.creatorAddressArr = [
     creatorAddressOne,
     creatorAddressTwo,
@@ -58,7 +59,6 @@ const main = async () => {
     }
     const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, update);
     node_fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
-    exports.channel = exports.client.channels.cache.get(channelId);
     exports.client.commands = new discord_js_1.Collection();
     const commandsPath = node_path_1.default.join(__dirname, 'commands');
     const commandFiles = node_fs_1.default
@@ -69,7 +69,13 @@ const main = async () => {
         const command = require(filePath);
         exports.client.commands.set(command.data.name, command);
     }
-    await (0, game_2.startWaitingRoom)(channelId);
+    // start game for each channel
+    (0, helpers_1.asyncForEach)(channelIdArr, async (channelId) => {
+        const channel = exports.client.channels.cache.get(channelId);
+        const { maxCapacity } = settings_1.default[channelId];
+        exports.games[channelId] = new game_1.default({}, false, false, maxCapacity, channelId);
+        (0, game_2.startWaitingRoom)(channel);
+    });
 };
 /*
  *****************
@@ -78,9 +84,11 @@ const main = async () => {
  */
 exports.client.on('interactionCreate', async (interaction) => {
     let command;
-    if (interaction.isCommand()) {
+    if (interaction.type === discord_js_1.InteractionType.ApplicationCommand) {
         // ensure two games can't start simultaneously
-        if (((exports.game === null || exports.game === void 0 ? void 0 : exports.game.active) || (exports.game === null || exports.game === void 0 ? void 0 : exports.game.waitingRoom)) &&
+        const { channelId } = interaction;
+        const game = exports.games[channelId];
+        if (((game === null || game === void 0 ? void 0 : game.active) || (game === null || game === void 0 ? void 0 : game.waitingRoom)) &&
             interaction.commandName === 'start') {
             return await interaction.reply({
                 content: 'A game is already running',

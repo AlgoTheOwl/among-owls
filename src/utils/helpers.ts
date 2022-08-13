@@ -6,13 +6,10 @@ import { Interaction } from 'discord.js'
 import Player from '../models/player'
 import doEmbed from '../embeds'
 import Asset from '../models/asset'
-import settings from '../settings'
-import { game } from '..'
+import { games } from '..'
 import embeds from '../constants/embeds'
 import { collections } from '../database/database.service'
 import { WithId } from 'mongodb'
-
-const { damagePerAowl, hp, damageRange } = settings
 
 export const wait = async (duration: number) => {
   await new Promise((res) => {
@@ -178,7 +175,11 @@ export const randomSort = (arr: any[]): any[] => {
   return arr
 }
 
-export const resetGame = (stopped: boolean = false): void => {
+export const resetGame = (
+  stopped: boolean = false,
+  channelId: string
+): void => {
+  const game = games[channelId]
   game.players = {}
   game.active = false
   game.win = false
@@ -189,7 +190,7 @@ export const resetGame = (stopped: boolean = false): void => {
 
   if (stopped) {
     game.stopped = true
-    stopped && game?.embed?.edit(doEmbed(embeds.stopped))
+    stopped && game?.embed?.edit(doEmbed(embeds.stopped, channelId))
   }
 }
 
@@ -233,7 +234,8 @@ export const normalizeIpfsUrl = (url: string): string => {
   }
 }
 
-export const updateGame = () => {
+export const updateGame = (channelId: string) => {
+  const game = games[channelId]
   game.update = true
   setTimeout(() => {
     game.update = false

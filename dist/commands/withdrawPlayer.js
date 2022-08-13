@@ -11,18 +11,20 @@ module.exports = {
         try {
             if (!interaction.isButton())
                 return;
-            if (!index_1.game.waitingRoom)
+            const { channelId } = interaction;
+            const game = index_1.games[channelId];
+            if (!game.waitingRoom)
                 return;
             const { user } = interaction;
             const { id } = user;
-            const player = index_1.game === null || index_1.game === void 0 ? void 0 : index_1.game.players[id];
+            const player = game === null || game === void 0 ? void 0 : game.players[id];
             if (player) {
-                delete index_1.game.players[id];
+                delete game.players[id];
                 interaction.reply({
                     ephemeral: true,
                     content: `${player.asset.alias || player.asset.assetName} removed`,
                 });
-                (0, helpers_1.updateGame)();
+                (0, helpers_1.updateGame)(channelId);
             }
             else {
                 interaction.reply({

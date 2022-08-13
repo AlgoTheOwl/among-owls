@@ -12,7 +12,7 @@ import User from '../models/user'
 import { WithId } from 'mongodb'
 import Asset from '../models/asset'
 // Globals
-import { game } from '..'
+import { games } from '..'
 import settings from '../settings'
 
 module.exports = {
@@ -25,6 +25,8 @@ module.exports = {
         user: { id },
         channelId,
       } = interaction
+
+      const game = games[channelId]
 
       const { maxAssets } = settings[channelId]
 

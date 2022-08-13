@@ -4,6 +4,7 @@ import {
   SelectMenuBuilder,
   MessageOptions,
   ActionRowBuilder,
+  TextChannel,
 } from 'discord.js'
 // Helpers
 import { resetGame, wait } from '../utils/helpers'
@@ -11,19 +12,21 @@ import doEmbed from '../embeds'
 import runGame from './runGame'
 // Globals
 import settings from '../settings'
-import { game, channel } from '..'
+import { games, channel } from '..'
 // Schemas
 import embeds from '../constants/embeds'
 import Player from '../models/player'
 
-export const startWaitingRoom = async (channelId: string): Promise<void> => {
+export const startWaitingRoom = async (channel: TextChannel): Promise<void> => {
+  const { id: channelId } = channel
+  const game = games[channelId]
   const { maxCapacity } = settings[channelId]
   let capacity = maxCapacity
 
-  resetGame()
+  resetGame(false, channelId)
 
   game.megatron = await channel.send(
-    doEmbed(embeds.waitingRoom) as MessageOptions
+    doEmbed(embeds.waitingRoom, channelId) as MessageOptions
   )
   // Do waiting room
   game.waitingRoom = true
@@ -32,7 +35,7 @@ export const startWaitingRoom = async (channelId: string): Promise<void> => {
 
   while (playerCount < capacity && game.waitingRoom) {
     if (game.update) {
-      await game.megatron.edit(doEmbed(embeds.waitingRoom))
+      await game.megatron.edit(doEmbed(embeds.waitingRoom, channelId))
       playerCount = getPlayerCount()
     }
     await wait(1000)
@@ -55,15 +58,17 @@ export const startWaitingRoom = async (channelId: string): Promise<void> => {
 
   // start game
   game.active = true
-  game.arena = await channel.send(doEmbed(embeds.activeGame) as MessageOptions)
+  game.arena = await channel.send(
+    doEmbed(embeds.activeGame, channelId) as MessageOptions
+  )
 
-  await sendVictimSelectMenu()
+  await sendVictimSelectMenu(game.players)
 
-  runGame(channelId)
+  runGame(channel)
 }
 
-const sendVictimSelectMenu = async () => {
-  const playerArr = Object.values(game.players)
+const sendVictimSelectMenu = async (players: { [key: string]: Player }) => {
+  const playerArr = Object.values(players)
 
   const victims = playerArr
     .filter((player: Player) => !player.timedOut && !player.dead)

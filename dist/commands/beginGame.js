@@ -15,15 +15,16 @@ module.exports = {
     async execute(interaction) {
         const { user, channelId } = interaction;
         const { minCapacity } = settings_1.default[channelId];
-        const playerArr = Object.values(__1.game.players);
-        if (!__1.game.waitingRoom) {
+        const game = __1.games[channelId];
+        const playerArr = Object.values(game.players);
+        if (!game.waitingRoom) {
             return interaction.reply({
                 content: 'Game is not currently active. use the /start command to start the game',
                 ephemeral: true,
             });
         }
         if (playerArr.length >= minCapacity) {
-            __1.game.waitingRoom = false;
+            game.waitingRoom = false;
             interaction.reply({
                 content: `${user.username} has started the game`,
             });

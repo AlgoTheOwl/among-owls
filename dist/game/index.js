@@ -15,28 +15,30 @@ const settings_1 = __importDefault(require("../settings"));
 const __1 = require("..");
 // Schemas
 const embeds_2 = __importDefault(require("../constants/embeds"));
-const startWaitingRoom = async (channelId) => {
+const startWaitingRoom = async (channel) => {
+    const { id: channelId } = channel;
+    const game = __1.games[channelId];
     const { maxCapacity } = settings_1.default[channelId];
     let capacity = maxCapacity;
-    (0, helpers_1.resetGame)();
-    __1.game.megatron = await __1.channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom));
+    (0, helpers_1.resetGame)(false, channelId);
+    game.megatron = await channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom, channelId));
     // Do waiting room
-    __1.game.waitingRoom = true;
+    game.waitingRoom = true;
     let playerCount = 0;
-    const getPlayerCount = () => Object.values(__1.game.players).length;
-    while (playerCount < capacity && __1.game.waitingRoom) {
-        if (__1.game.update) {
-            await __1.game.megatron.edit((0, embeds_1.default)(embeds_2.default.waitingRoom));
+    const getPlayerCount = () => Object.values(game.players).length;
+    while (playerCount < capacity && game.waitingRoom) {
+        if (game.update) {
+            await game.megatron.edit((0, embeds_1.default)(embeds_2.default.waitingRoom, channelId));
             playerCount = getPlayerCount();
         }
         await (0, helpers_1.wait)(1000);
     }
-    if (__1.game.waitingRoom)
-        __1.game.waitingRoom = false;
+    if (game.waitingRoom)
+        game.waitingRoom = false;
     await (0, helpers_1.wait)(2000);
     const file = new discord_js_1.AttachmentBuilder('src/images/main.gif');
-    if (__1.game.megatron) {
-        await __1.game.megatron.edit({
+    if (game.megatron) {
+        await game.megatron.edit({
             files: [file],
             embeds: [],
             components: [],
@@ -44,14 +46,14 @@ const startWaitingRoom = async (channelId) => {
         });
     }
     // start game
-    __1.game.active = true;
-    __1.game.arena = await __1.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));
-    await sendVictimSelectMenu();
-    (0, runGame_1.default)(channelId);
+    game.active = true;
+    game.arena = await channel.send((0, embeds_1.default)(embeds_2.default.activeGame, channelId));
+    await sendVictimSelectMenu(game.players);
+    (0, runGame_1.default)(channel);
 };
 exports.startWaitingRoom = startWaitingRoom;
-const sendVictimSelectMenu = async () => {
-    const playerArr = Object.values(__1.game.players);
+const sendVictimSelectMenu = async (players) => {
+    const playerArr = Object.values(players);
     const victims = playerArr
         .filter((player) => !player.timedOut && !player.dead)
         .map((player) => ({

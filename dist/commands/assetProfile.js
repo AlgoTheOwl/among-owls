@@ -19,7 +19,7 @@ module.exports = {
         if (!interaction.isSelectMenu())
             return;
         await interaction.deferReply();
-        const { values, user } = interaction;
+        const { values, user, channelId } = interaction;
         const assetId = Number(values[0]);
         const discordId = user.id;
         const initialUserData = (await database_service_1.collections.users.findOne({
@@ -55,7 +55,7 @@ module.exports = {
             if (alias) {
                 fields.splice(1, 0, { name: 'Custom name', value: alias.slice(0, 100) });
             }
-            await interaction.editReply((0, embeds_2.default)(embeds_1.default.assetProfile, {
+            await interaction.editReply((0, embeds_2.default)(embeds_1.default.assetProfile, channelId, {
                 assetUrl,
                 fields,
                 assetName,

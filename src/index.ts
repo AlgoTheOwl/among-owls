@@ -1,5 +1,11 @@
 // Discord
-import { Client, GatewayIntentBits, Collection, TextChannel } from 'discord.js'
+import {
+  Client,
+  GatewayIntentBits,
+  TextChannel,
+  InteractionType,
+  Collection,
+} from 'discord.js'
 // Node
 import fs from 'node:fs'
 import path from 'node:path'
@@ -12,18 +18,19 @@ import Game from './models/game'
 // Helpers
 import { startWaitingRoom } from './game'
 import { convergeTxnData } from './utils/algorand'
-import { wait } from './utils/helpers'
+import { wait, asyncForEach } from './utils/helpers'
 
 const token = process.env.DISCORD_TOKEN
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE
-const channelId = process.env.CHANNEL_ID
+const channelIds = process.env.CHANNEL_IDS
 
 // Gloval vars
-export let game: Game = new Game({}, false, false, 0)
+export let games: { [key: string]: Game }
 export let emojis = {}
 export let channel: TextChannel
+const channelIdArr = channelIds.split(',')
 
 export const creatorAddressArr = [
   creatorAddressOne,
@@ -64,8 +71,6 @@ const main = async () => {
 
   fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 
-  channel = client.channels.cache.get(channelId) as TextChannel
-
   client.commands = new Collection()
 
   const commandsPath = path.join(__dirname, 'commands')
@@ -80,7 +85,13 @@ const main = async () => {
     client.commands.set(command.data.name, command)
   }
 
-  await startWaitingRoom(channelId)
+  // start game for each channel
+  asyncForEach(channelIdArr, async (channelId: string) => {
+    const channel = client.channels.cache.get(channelId) as TextChannel
+    const { maxCapacity } = settings[channelId]
+    games[channelId] = new Game({}, false, false, maxCapacity, channelId)
+    startWaitingRoom(channel)
+  })
 }
 
 /*
@@ -91,8 +102,10 @@ const main = async () => {
 
 client.on('interactionCreate', async (interaction: any) => {
   let command
-  if (interaction.isCommand()) {
+  if (interaction.type === InteractionType.ApplicationCommand) {
     // ensure two games can't start simultaneously
+    const { channelId } = interaction
+    const game = games[channelId]
     if (
       (game?.active || game?.waitingRoom) &&
       interaction.commandName === 'start'

@@ -95,7 +95,7 @@ module.exports = {
       )
 
       const row = new ActionRowBuilder().addComponents(selectMenu)
-      const embed = doEmbed(embeds.profile, {
+      const embed = doEmbed(embeds.profile, channelId, {
         thumbNail,
         fields,
       }) as EmbedBuilder

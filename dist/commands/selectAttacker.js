@@ -18,8 +18,9 @@ module.exports = {
     async execute(interaction) {
         try {
             const { user: { id }, channelId, } = interaction;
+            const game = __1.games[channelId];
             const { maxAssets } = settings_1.default[channelId];
-            if (!__1.game.waitingRoom) {
+            if (!game.waitingRoom) {
                 return interaction.reply({
                     content: 'Game is not currently active. Use the /start command to start the game',
                     ephemeral: true,

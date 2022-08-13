@@ -70,7 +70,7 @@ module.exports = {
             // discord username
             fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot }, { name: 'Games won', value: yaoWins });
             const row = new discord_js_1.ActionRowBuilder().addComponents(selectMenu);
-            const embed = (0, embeds_2.default)(embeds_1.default.profile, {
+            const embed = (0, embeds_2.default)(embeds_1.default.profile, channelId, {
                 thumbNail,
                 fields,
             });

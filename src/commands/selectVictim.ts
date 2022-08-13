@@ -2,13 +2,16 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { SelectMenuInteraction } from 'discord.js'
 // Globals
-import { game } from '..'
+import { games } from '..'
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('select-victim')
     .setDescription('Choose a new victim to attack'),
   async execute(interaction: SelectMenuInteraction) {
+    const { channelId } = interaction
+    const game = games[channelId]
+
     if (!game.active || game.waitingRoom) {
       return interaction.reply({
         content: 'There is no active game to select a victim',

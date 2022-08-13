@@ -11,16 +11,18 @@ import { getRandomVictimId, getAttackString } from '../utils/attack'
 import { handleWin } from './win'
 import doEmbed from '../embeds'
 // Globals
-import { game } from '..'
+import { games } from '..'
 // Schemas
 import Player from '../models/player'
 import embeds from '../constants/embeds'
 import settings from '../settings'
+import { TextChannel } from 'discord.js'
 
-export default async function runGame(channelId: string) {
+export default async function runGame(channel: TextChannel) {
+  const { id: channelId } = channel
   try {
-    const { players } = game
-    const playerArr = Object.values(players)
+    const game = games[channelId]
+    const playerArr = Object.values(game.players)
     const { damagePerAowl, damageRange } = settings[channelId]
 
     let isWin = false
@@ -46,7 +48,7 @@ export default async function runGame(channelId: string) {
           if (player.victimId && !game.players[player.victimId].dead) {
             victim = game.players[player.victimId]
           } else {
-            victim = game.players[getRandomVictimId(discordId)]
+            victim = game.players[getRandomVictimId(discordId, channelId)]
           }
           const damage = doDamage(attacker, false, damagePerAowl, damageRange)
 
@@ -64,7 +66,7 @@ export default async function runGame(channelId: string) {
           isWin = !!winningPlayer
 
           if (isWin && winningPlayer && game.active) {
-            handleWin(winningPlayer, winByTimeout, channelId)
+            handleWin(winningPlayer, winByTimeout, channel)
           }
 
           // REFRESH EMBED
@@ -82,7 +84,9 @@ export default async function runGame(channelId: string) {
             attackField,
           ].filter(Boolean)
 
-          await game.arena.edit(doEmbed(embeds.activeGame, { fields }))
+          await game.arena.edit(
+            doEmbed(embeds.activeGame, channelId, { fields })
+          )
           if (isWin) {
             return
           }
@@ -91,6 +95,6 @@ export default async function runGame(channelId: string) {
     }
   } catch (error) {
     console.log(error)
-    resetGame()
+    resetGame(false, channelId)
   }
 }
