@@ -166,7 +166,7 @@ const resetGame = (stopped = false) => {
     }
 };
 exports.resetGame = resetGame;
-const doDamage = (player, withMultiplier = false) => {
+const doDamage = (player, withMultiplier = false, damagePerAowl, damageRange) => {
     if (withMultiplier) {
         const { assetMultiplier } = player;
         const multiplierDamage = (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl;

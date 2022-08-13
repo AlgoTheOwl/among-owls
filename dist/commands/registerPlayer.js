@@ -24,10 +24,10 @@ module.exports = {
                 return;
             if (!index_1.game.waitingRoom)
                 return;
-            const { values, user } = interaction;
+            const { values, user, channelId } = interaction;
             const assetId = values[0];
             const { username, id } = user;
-            const { imageDir, hp, maxCapacity } = settings_1.default;
+            const { imageDir, hp, maxCapacity } = settings_1.default[channelId];
             // Check for game capacity, allow already registered user to re-register
             // even if capacity is full
             if (Object.values(index_1.game.players).length < maxCapacity ||

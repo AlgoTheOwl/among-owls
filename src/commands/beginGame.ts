@@ -10,8 +10,8 @@ module.exports = {
     .setName('begin-game')
     .setDescription('begin the game'),
   async execute(interaction: ButtonInteraction) {
-    const { user } = interaction
-    const { minCapacity } = settings
+    const { user, channelId } = interaction
+    const { minCapacity } = settings[channelId]
     const playerArr = Object.values(game.players)
 
     if (!game.waitingRoom) {

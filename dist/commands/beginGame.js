@@ -13,8 +13,8 @@ module.exports = {
         .setName('begin-game')
         .setDescription('begin the game'),
     async execute(interaction) {
-        const { user } = interaction;
-        const { minCapacity } = settings_1.default;
+        const { user, channelId } = interaction;
+        const { minCapacity } = settings_1.default[channelId];
         const playerArr = Object.values(__1.game.players);
         if (!__1.game.waitingRoom) {
             return interaction.reply({

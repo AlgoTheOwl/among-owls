@@ -11,8 +11,6 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 // Helpers
 const database_service_1 = require("./database/database.service");
-// Globals
-const settings_1 = __importDefault(require("./settings"));
 // Schema
 const game_1 = __importDefault(require("./models/game"));
 // Helpers
@@ -24,9 +22,8 @@ const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO;
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE;
 const channelId = process.env.CHANNEL_ID;
-const { coolDownInterval } = settings_1.default;
 // Gloval vars
-exports.game = new game_1.default({}, false, false, coolDownInterval);
+exports.game = new game_1.default({}, false, false, 0);
 exports.emojis = {};
 exports.creatorAddressArr = [
     creatorAddressOne,
@@ -72,7 +69,7 @@ const main = async () => {
         const command = require(filePath);
         exports.client.commands.set(command.data.name, command);
     }
-    await (0, game_2.startWaitingRoom)();
+    await (0, game_2.startWaitingRoom)(channelId);
 };
 /*
  *****************

@@ -23,10 +23,10 @@ module.exports = {
       if (!interaction.isSelectMenu()) return
       if (!game.waitingRoom) return
 
-      const { values, user } = interaction
+      const { values, user, channelId } = interaction
       const assetId = values[0]
       const { username, id } = user
-      const { imageDir, hp, maxCapacity } = settings
+      const { imageDir, hp, maxCapacity } = settings[channelId]
 
       // Check for game capacity, allow already registered user to re-register
       // even if capacity is full

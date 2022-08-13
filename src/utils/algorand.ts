@@ -25,7 +25,10 @@ const port = ''
 const algodClient = new algosdk.Algodv2(token, server, port)
 const algoIndexer = new algosdk.Indexer(token, indexerServer, port)
 
-export const determineOwnership = async function (address: string): Promise<{
+export const determineOwnership = async function (
+  address: string,
+  maxAssets: number
+): Promise<{
   walletOwned: boolean
   nftsOwned: Asset[] | []
   hootOwned: number
@@ -43,8 +46,6 @@ export const determineOwnership = async function (address: string): Promise<{
       .lookupAccountAssets(address)
       .limit(10000)
       .do()
-
-    const { maxAssets } = settings
 
     let walletOwned = false
     const assetIdsOwned: number[] = []

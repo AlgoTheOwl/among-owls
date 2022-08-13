@@ -12,6 +12,8 @@ const database_service_1 = require("../database/database.service");
 const algorand_1 = require("../utils/algorand");
 const helpers_1 = require("../utils/helpers");
 const user_1 = __importDefault(require("../models/user"));
+const settings_1 = __importDefault(require("../settings"));
+// Globals
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
 const unitName = process.env.UNIT_NAME;
 module.exports = {
@@ -26,13 +28,8 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isChatInputCommand())
             return;
-        const { user, options } = interaction;
-        // if (game?.active) {
-        //   return interaction.reply({
-        //     content: 'Please wait until after the game ends to register',
-        //     ephemeral: true,
-        //   })
-        // }
+        const { user, options, channelId } = interaction;
+        const { maxAssets } = settings_1.default[channelId];
         // TODO: add ability to register for different games here
         const address = options.getString('address');
         if (address && !/^[a-zA-Z0-9]{58}$/.test(address)) {
@@ -48,7 +45,7 @@ module.exports = {
             ephemeral: true,
         });
         if (address) {
-            const { status, registeredUser, asset } = await (0, exports.processRegistration)(username, id, address);
+            const { status, registeredUser, asset } = await (0, exports.processRegistration)(username, id, address, maxAssets);
             // add permissions if succesful
             if (registeredUser && asset) {
                 (0, helpers_1.addRole)(interaction, process.env.REGISTERED_ID, registeredUser);
@@ -60,7 +57,7 @@ module.exports = {
         }
     },
 };
-const processRegistration = async (username, discordId, address) => {
+const processRegistration = async (username, discordId, address, maxAssets) => {
     var _a, _b, _c;
     try {
         // Attempt to find user in db
@@ -69,7 +66,7 @@ const processRegistration = async (username, discordId, address) => {
         })));
         // Check to see if wallet has opt-in asset
         // Retreive assetIds from specific collections
-        const { walletOwned, nftsOwned, hootOwned } = await (0, algorand_1.determineOwnership)(address);
+        const { walletOwned, nftsOwned, hootOwned } = await (0, algorand_1.determineOwnership)(address, maxAssets);
         const keyedNfts = {};
         nftsOwned.forEach((nft) => {
             keyedNfts[nft.assetId] = nft;

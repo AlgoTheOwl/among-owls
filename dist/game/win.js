@@ -16,9 +16,9 @@ const _1 = require(".");
 // Globals
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
-const { imageDir, hootSettings } = settings_1.default;
-const { hootOnWin } = hootSettings;
-const handleWin = async (player, winByTimeout) => {
+const handleWin = async (player, winByTimeout, channelId) => {
+    const { imageDir, hootSettings, assetCooldown } = settings_1.default[channelId];
+    const { hootOnWin } = hootSettings;
     __1.game.active = false;
     // Increment score and hoot of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
@@ -41,19 +41,18 @@ const handleWin = async (player, winByTimeout) => {
     const playerArr = Object.values(__1.game.players);
     (0, helpers_1.resetGame)();
     (0, helpers_1.emptyDir)(imageDir);
-    setAssetTimeout(playerArr);
+    setAssetTimeout(playerArr, assetCooldown);
     await (0, helpers_1.wait)(2000);
     await __1.game.arena.edit((0, embeds_2.default)(embeds_1.default.win, { winByTimeout, player }));
     // Add new waiting room
-    (0, _1.startWaitingRoom)();
+    (0, _1.startWaitingRoom)(channelId);
 };
 exports.handleWin = handleWin;
-const setAssetTimeout = async (players) => {
+const setAssetTimeout = async (players, assetCooldown) => {
     // For each player set Asset timeout on user
     await (0, helpers_1.asyncForEach)(players, async (player) => {
         const { userId, asset } = player;
         const { assetId } = asset;
-        const { assetCooldown } = settings_1.default;
         const coolDownDoneDate = Date.now() + assetCooldown * 60000;
         const user = await database_service_1.collections.users.findOne({ _id: userId });
         await database_service_1.collections.users.findOneAndUpdate({ _id: userId }, {

@@ -23,8 +23,8 @@ module.exports = {
         try {
             if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
                 return;
-            const { maxAssets } = settings_1.default;
-            const { user } = interaction;
+            const { user, channelId } = interaction;
+            const { maxAssets } = settings_1.default[channelId];
             await interaction.deferReply();
             const userData = (await database_service_1.collections.users.findOne({
                 discordId: user.id,

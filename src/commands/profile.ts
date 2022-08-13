@@ -29,9 +29,8 @@ module.exports = {
     try {
       if (interaction.type !== InteractionType.ApplicationCommand) return
 
-      const { maxAssets } = settings
-
-      const { user } = interaction
+      const { user, channelId } = interaction
+      const { maxAssets } = settings[channelId]
 
       await interaction.deferReply()
 

@@ -11,10 +11,12 @@ const embeds_1 = __importDefault(require("../embeds"));
 // Globals
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
-async function runGame() {
+const settings_1 = __importDefault(require("../settings"));
+async function runGame(channelId) {
     try {
         const { players } = __1.game;
         const playerArr = Object.values(players);
+        const { damagePerAowl, damageRange } = settings_1.default[channelId];
         let isWin = false;
         let handlingDeath = false;
         // MAIN GAME LOOP
@@ -37,7 +39,7 @@ async function runGame() {
                     else {
                         victim = __1.game.players[(0, attack_1.getRandomVictimId)(discordId)];
                     }
-                    const damage = (0, helpers_1.doDamage)(attacker, false);
+                    const damage = (0, helpers_1.doDamage)(attacker, false, damagePerAowl, damageRange);
                     if (victim) {
                         victim.hp -= damage;
                     }
@@ -49,7 +51,7 @@ async function runGame() {
                     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
                     isWin = !!winningPlayer;
                     if (isWin && winningPlayer && __1.game.active) {
-                        (0, win_1.handleWin)(winningPlayer, winByTimeout);
+                        (0, win_1.handleWin)(winningPlayer, winByTimeout, channelId);
                     }
                     // REFRESH EMBED
                     const attackField = {

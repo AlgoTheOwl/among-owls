@@ -20,10 +20,8 @@ const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE
 const channelId = process.env.CHANNEL_ID
 
-const { coolDownInterval } = settings
-
 // Gloval vars
-export let game: Game = new Game({}, false, false, coolDownInterval)
+export let game: Game = new Game({}, false, false, 0)
 export let emojis = {}
 export let channel: TextChannel
 
@@ -82,7 +80,7 @@ const main = async () => {
     client.commands.set(command.data.name, command)
   }
 
-  await startWaitingRoom()
+  await startWaitingRoom(channelId)
 }
 
 /*

@@ -17,8 +17,8 @@ module.exports = {
         .setDescription(`Pick which AOWL you'd like to compete`),
     async execute(interaction) {
         try {
-            const { user: { id }, } = interaction;
-            const { maxAssets } = settings_1.default;
+            const { user: { id }, channelId, } = interaction;
+            const { maxAssets } = settings_1.default[channelId];
             if (!__1.game.waitingRoom) {
                 return interaction.reply({
                     content: 'Game is not currently active. Use the /start command to start the game',

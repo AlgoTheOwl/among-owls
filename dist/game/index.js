@@ -15,8 +15,8 @@ const settings_1 = __importDefault(require("../settings"));
 const __1 = require("..");
 // Schemas
 const embeds_2 = __importDefault(require("../constants/embeds"));
-const startWaitingRoom = async () => {
-    const { maxCapacity } = settings_1.default;
+const startWaitingRoom = async (channelId) => {
+    const { maxCapacity } = settings_1.default[channelId];
     let capacity = maxCapacity;
     (0, helpers_1.resetGame)();
     __1.game.megatron = await __1.channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom));
@@ -47,7 +47,7 @@ const startWaitingRoom = async () => {
     __1.game.active = true;
     __1.game.arena = await __1.channel.send((0, embeds_1.default)(embeds_2.default.activeGame));
     await sendVictimSelectMenu();
-    (0, runGame_1.default)();
+    (0, runGame_1.default)(channelId);
 };
 exports.startWaitingRoom = startWaitingRoom;
 const sendVictimSelectMenu = async () => {

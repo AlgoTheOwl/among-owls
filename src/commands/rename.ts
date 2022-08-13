@@ -1,6 +1,6 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { Interaction, InteractionType } from 'discord.js'
+import { Interaction } from 'discord.js'
 // Globals
 import { game } from '..'
 import { collections } from '../database/database.service'

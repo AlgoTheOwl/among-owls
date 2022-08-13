@@ -2,7 +2,6 @@
 import {
   ActionRowBuilder,
   ButtonInteraction,
-  MessageActionRowComponent,
   SelectMenuBuilder,
 } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
@@ -24,9 +23,10 @@ module.exports = {
     try {
       const {
         user: { id },
+        channelId,
       } = interaction
 
-      const { maxAssets } = settings
+      const { maxAssets } = settings[channelId]
 
       if (!game.waitingRoom) {
         return interaction.reply({

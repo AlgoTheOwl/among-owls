@@ -195,7 +195,9 @@ export const resetGame = (stopped: boolean = false): void => {
 
 export const doDamage = (
   player: Player,
-  withMultiplier: boolean = false
+  withMultiplier: boolean = false,
+  damagePerAowl: number,
+  damageRange: number
 ): number => {
   if (withMultiplier) {
     const { assetMultiplier } = player

@@ -15,11 +15,13 @@ import { game } from '..'
 // Schemas
 import Player from '../models/player'
 import embeds from '../constants/embeds'
+import settings from '../settings'
 
-export default async function runGame() {
+export default async function runGame(channelId: string) {
   try {
     const { players } = game
     const playerArr = Object.values(players)
+    const { damagePerAowl, damageRange } = settings[channelId]
 
     let isWin = false
     let handlingDeath = false
@@ -46,7 +48,7 @@ export default async function runGame() {
           } else {
             victim = game.players[getRandomVictimId(discordId)]
           }
-          const damage = doDamage(attacker, false)
+          const damage = doDamage(attacker, false, damagePerAowl, damageRange)
 
           if (victim) {
             victim.hp -= damage
@@ -62,7 +64,7 @@ export default async function runGame() {
           isWin = !!winningPlayer
 
           if (isWin && winningPlayer && game.active) {
-            handleWin(winningPlayer, winByTimeout)
+            handleWin(winningPlayer, winByTimeout, channelId)
           }
 
           // REFRESH EMBED

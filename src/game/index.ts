@@ -16,8 +16,8 @@ import { game, channel } from '..'
 import embeds from '../constants/embeds'
 import Player from '../models/player'
 
-export const startWaitingRoom = async (): Promise<void> => {
-  const { maxCapacity } = settings
+export const startWaitingRoom = async (channelId: string): Promise<void> => {
+  const { maxCapacity } = settings[channelId]
   let capacity = maxCapacity
 
   resetGame()
@@ -59,7 +59,7 @@ export const startWaitingRoom = async (): Promise<void> => {
 
   await sendVictimSelectMenu()
 
-  runGame()
+  runGame(channelId)
 }
 
 const sendVictimSelectMenu = async () => {

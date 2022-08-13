@@ -15,10 +15,13 @@ import { startWaitingRoom } from '.'
 import { game } from '..'
 import settings from '../settings'
 
-const { imageDir, hootSettings } = settings
-const { hootOnWin } = hootSettings
-
-export const handleWin = async (player: Player, winByTimeout: boolean) => {
+export const handleWin = async (
+  player: Player,
+  winByTimeout: boolean,
+  channelId: string
+) => {
+  const { imageDir, hootSettings, assetCooldown } = settings[channelId]
+  const { hootOnWin } = hootSettings
   game.active = false
 
   // Increment score and hoot of winning player
@@ -50,19 +53,18 @@ export const handleWin = async (player: Player, winByTimeout: boolean) => {
 
   resetGame()
   emptyDir(imageDir)
-  setAssetTimeout(playerArr)
+  setAssetTimeout(playerArr, assetCooldown)
   await wait(2000)
   await game.arena.edit(doEmbed(embeds.win, { winByTimeout, player }))
   // Add new waiting room
-  startWaitingRoom()
+  startWaitingRoom(channelId)
 }
 
-const setAssetTimeout = async (players: Player[]) => {
+const setAssetTimeout = async (players: Player[], assetCooldown: number) => {
   // For each player set Asset timeout on user
   await asyncForEach(players, async (player: Player) => {
     const { userId, asset } = player
     const { assetId } = asset
-    const { assetCooldown } = settings
     const coolDownDoneDate = Date.now() + assetCooldown * 60000
     const user = await collections.users.findOne({ _id: userId })
     await collections.users.findOneAndUpdate(
