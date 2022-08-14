@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = exports.creatorAddressArr = exports.channel = exports.emojis = exports.games = void 0;
+exports.client = exports.creatorAddressArr = exports.emojis = exports.games = void 0;
 // Discord
 const discord_js_1 = require("discord.js");
 // Node
@@ -24,6 +24,8 @@ const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO;
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE;
 const channelIds = process.env.CHANNEL_IDS;
+// Gloval vars
+exports.games = {};
 exports.emojis = {};
 const channelIdArr = channelIds.split(',');
 exports.creatorAddressArr = [
@@ -71,10 +73,15 @@ const main = async () => {
     }
     // start game for each channel
     (0, helpers_1.asyncForEach)(channelIdArr, async (channelId) => {
-        const channel = exports.client.channels.cache.get(channelId);
-        const { maxCapacity } = settings_1.default[channelId];
-        exports.games[channelId] = new game_1.default({}, false, false, maxCapacity, channelId);
-        (0, game_2.startWaitingRoom)(channel);
+        if (settings_1.default[channelId]) {
+            const channel = exports.client.channels.cache.get(channelId);
+            const { maxCapacity } = settings_1.default[channelId];
+            exports.games[channelId] = new game_1.default({}, false, false, maxCapacity, channelId);
+            (0, game_2.startWaitingRoom)(channel);
+        }
+        else {
+            console.log(`missing settings for channel ${channelId}`);
+        }
     });
 };
 /*

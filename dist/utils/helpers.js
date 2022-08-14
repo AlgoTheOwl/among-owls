@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateGame = exports.normalizeIpfsUrl = exports.isIpfs = exports.getUsersFromPlayers = exports.doDamage = exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
+exports.checkIfRegisteredPlayer = exports.updateGame = exports.normalizeIpfsUrl = exports.isIpfs = exports.getUsersFromPlayers = exports.doDamage = exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
@@ -207,3 +207,14 @@ const updateGame = (channelId) => {
     }, 3000);
 };
 exports.updateGame = updateGame;
+const checkIfRegisteredPlayer = (games, assetId, discordId) => {
+    let gameCount = 0;
+    const gameArray = Object.values(games);
+    gameArray.forEach((game) => {
+        var _a, _b;
+        if (((_b = (_a = game.players[discordId]) === null || _a === void 0 ? void 0 : _a.asset) === null || _b === void 0 ? void 0 : _b.assetId) === Number(assetId))
+            gameCount++;
+    });
+    return gameCount >= 1;
+};
+exports.checkIfRegisteredPlayer = checkIfRegisteredPlayer;

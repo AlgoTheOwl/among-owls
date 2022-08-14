@@ -9,7 +9,11 @@ import { WithId } from 'mongodb'
 import User from '../models/user'
 import Player from '../models/player'
 // Helpers
-import { downloadFile, updateGame } from '../utils/helpers'
+import {
+  downloadFile,
+  updateGame,
+  checkIfRegisteredPlayer,
+} from '../utils/helpers'
 // Globals
 import { games } from '../index'
 import settings from '../settings'
@@ -30,6 +34,14 @@ module.exports = {
       const assetId = values[0]
       const { username, id } = user
       const { imageDir, hp, maxCapacity } = settings[channelId]
+
+      // Check if user is another game
+      if (checkIfRegisteredPlayer(games, assetId, id)) {
+        return interaction.reply({
+          ephemeral: true,
+          content: `You can't register with the same AOWL in two games at a time`,
+        })
+      }
 
       // Check for game capacity, allow already registered user to re-register
       // even if capacity is full

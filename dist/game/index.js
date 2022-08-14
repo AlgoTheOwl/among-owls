@@ -48,11 +48,11 @@ const startWaitingRoom = async (channel) => {
     // start game
     game.active = true;
     game.arena = await channel.send((0, embeds_1.default)(embeds_2.default.activeGame, channelId));
-    await sendVictimSelectMenu(game.players);
+    await sendVictimSelectMenu(game.players, channel);
     (0, runGame_1.default)(channel);
 };
 exports.startWaitingRoom = startWaitingRoom;
-const sendVictimSelectMenu = async (players) => {
+const sendVictimSelectMenu = async (players, channel) => {
     const playerArr = Object.values(players);
     const victims = playerArr
         .filter((player) => !player.timedOut && !player.dead)
@@ -72,7 +72,7 @@ const sendVictimSelectMenu = async (players) => {
         },
         ...victims,
     ]));
-    await __1.channel.send({
+    await channel.send({
         //@ts-ignore
         components: [victimSelectMenu],
     });

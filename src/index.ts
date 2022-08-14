@@ -27,9 +27,8 @@ const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE
 const channelIds = process.env.CHANNEL_IDS
 
 // Gloval vars
-export let games: { [key: string]: Game }
+export const games: { [key: string]: Game } = {}
 export let emojis = {}
-export let channel: TextChannel
 const channelIdArr = channelIds.split(',')
 
 export const creatorAddressArr = [
@@ -87,10 +86,14 @@ const main = async () => {
 
   // start game for each channel
   asyncForEach(channelIdArr, async (channelId: string) => {
-    const channel = client.channels.cache.get(channelId) as TextChannel
-    const { maxCapacity } = settings[channelId]
-    games[channelId] = new Game({}, false, false, maxCapacity, channelId)
-    startWaitingRoom(channel)
+    if (settings[channelId]) {
+      const channel = client.channels.cache.get(channelId) as TextChannel
+      const { maxCapacity } = settings[channelId]
+      games[channelId] = new Game({}, false, false, maxCapacity, channelId)
+      startWaitingRoom(channel)
+    } else {
+      console.log(`missing settings for channel ${channelId}`)
+    }
   })
 }
 

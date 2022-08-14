@@ -4,6 +4,7 @@ import axios from 'axios'
 import User from '../models/user'
 import { Interaction } from 'discord.js'
 import Player from '../models/player'
+import Game from '../models/game'
 import doEmbed from '../embeds'
 import Asset from '../models/asset'
 import { games } from '..'
@@ -240,4 +241,17 @@ export const updateGame = (channelId: string) => {
   setTimeout(() => {
     game.update = false
   }, 3000)
+}
+
+export const checkIfRegisteredPlayer = (
+  games: { [key: string]: Game },
+  assetId: string,
+  discordId: string
+) => {
+  let gameCount = 0
+  const gameArray = Object.values(games)
+  gameArray.forEach((game: Game) => {
+    if (game.players[discordId]?.asset?.assetId === Number(assetId)) gameCount++
+  })
+  return gameCount >= 1
 }

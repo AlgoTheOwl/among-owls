@@ -29,6 +29,13 @@ module.exports = {
             const assetId = values[0];
             const { username, id } = user;
             const { imageDir, hp, maxCapacity } = settings_1.default[channelId];
+            // Check if user is another game
+            if ((0, helpers_1.checkIfRegisteredPlayer)(index_1.games, assetId, id)) {
+                return interaction.reply({
+                    ephemeral: true,
+                    content: `You can't register with the same AOWL in two games at a time`,
+                });
+            }
             // Check for game capacity, allow already registered user to re-register
             // even if capacity is full
             if (Object.values(game.players).length < maxCapacity ||

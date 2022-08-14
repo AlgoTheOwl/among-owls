@@ -12,7 +12,7 @@ import doEmbed from '../embeds'
 import runGame from './runGame'
 // Globals
 import settings from '../settings'
-import { games, channel } from '..'
+import { games } from '..'
 // Schemas
 import embeds from '../constants/embeds'
 import Player from '../models/player'
@@ -62,12 +62,15 @@ export const startWaitingRoom = async (channel: TextChannel): Promise<void> => {
     doEmbed(embeds.activeGame, channelId) as MessageOptions
   )
 
-  await sendVictimSelectMenu(game.players)
+  await sendVictimSelectMenu(game.players, channel)
 
   runGame(channel)
 }
 
-const sendVictimSelectMenu = async (players: { [key: string]: Player }) => {
+const sendVictimSelectMenu = async (
+  players: { [key: string]: Player },
+  channel: TextChannel
+) => {
   const playerArr = Object.values(players)
 
   const victims = playerArr
