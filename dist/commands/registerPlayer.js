@@ -11,6 +11,7 @@ const asset_1 = __importDefault(require("../models/asset"));
 const player_1 = __importDefault(require("../models/player"));
 // Helpers
 const helpers_1 = require("../utils/helpers");
+const fs_1 = __importDefault(require("fs"));
 // Globals
 const index_1 = require("../index");
 const settings_1 = __importDefault(require("../settings"));
@@ -58,7 +59,14 @@ module.exports = {
                 }
                 let localPath;
                 try {
-                    localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
+                    // Create file for channel and download image
+                    const path = `${imageDir}/${channelId}`;
+                    if (!fs_1.default.existsSync(path)) {
+                        fs_1.default.mkdir(path, (err) => {
+                            console.log(err);
+                        });
+                    }
+                    localPath = await (0, helpers_1.downloadFile)(asset, path, username);
                 }
                 catch (error) {
                     console.log('download error', error);

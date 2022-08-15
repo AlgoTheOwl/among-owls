@@ -23,11 +23,9 @@ const token = process.env.DISCORD_TOKEN;
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO;
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE;
-const channelIds = process.env.CHANNEL_IDS;
 // Gloval vars
 exports.games = {};
 exports.emojis = {};
-const channelIdArr = channelIds.split(',');
 exports.creatorAddressArr = [
     creatorAddressOne,
     creatorAddressTwo,
@@ -71,6 +69,7 @@ const main = async () => {
         const command = require(filePath);
         exports.client.commands.set(command.data.name, command);
     }
+    const channelIdArr = Object.keys(settings_1.default);
     // start game for each channel
     (0, helpers_1.asyncForEach)(channelIdArr, async (channelId) => {
         if (settings_1.default[channelId]) {

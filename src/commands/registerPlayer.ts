@@ -14,6 +14,7 @@ import {
   updateGame,
   checkIfRegisteredPlayer,
 } from '../utils/helpers'
+import fs from 'fs'
 // Globals
 import { games } from '../index'
 import settings from '../settings'
@@ -75,7 +76,15 @@ module.exports = {
         let localPath
 
         try {
-          localPath = await downloadFile(asset, imageDir, username)
+          // Create file for channel and download image
+          const path = `${imageDir}/${channelId}`
+          if (!fs.existsSync(path)) {
+            fs.mkdir(path, (err) => {
+              console.log(err)
+            })
+          }
+
+          localPath = await downloadFile(asset, path, username)
         } catch (error) {
           console.log('download error', error)
         }

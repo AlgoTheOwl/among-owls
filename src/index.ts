@@ -24,12 +24,10 @@ const token = process.env.DISCORD_TOKEN
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE
-const channelIds = process.env.CHANNEL_IDS
 
 // Gloval vars
 export const games: { [key: string]: Game } = {}
 export let emojis = {}
-const channelIdArr = channelIds.split(',')
 
 export const creatorAddressArr = [
   creatorAddressOne,
@@ -83,6 +81,8 @@ const main = async () => {
 
     client.commands.set(command.data.name, command)
   }
+
+  const channelIdArr = Object.keys(settings)
 
   // start game for each channel
   asyncForEach(channelIdArr, async (channelId: string) => {
