@@ -106,19 +106,6 @@ const main = async () => {
 client.on('interactionCreate', async (interaction: any) => {
   let command
   if (interaction.type === InteractionType.ApplicationCommand) {
-    // ensure two games can't start simultaneously
-    const { channelId } = interaction
-    const game = games[channelId]
-    if (
-      (game?.active || game?.waitingRoom) &&
-      interaction.commandName === 'start'
-    ) {
-      return await interaction.reply({
-        content: 'A game is already running',
-        ephemeral: true,
-      })
-    }
-
     command = client.commands.get(interaction.commandName)
   }
   if (interaction.isSelectMenu() || interaction.isButton()) {

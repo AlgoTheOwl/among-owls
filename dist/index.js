@@ -91,16 +91,6 @@ const main = async () => {
 exports.client.on('interactionCreate', async (interaction) => {
     let command;
     if (interaction.type === discord_js_1.InteractionType.ApplicationCommand) {
-        // ensure two games can't start simultaneously
-        const { channelId } = interaction;
-        const game = exports.games[channelId];
-        if (((game === null || game === void 0 ? void 0 : game.active) || (game === null || game === void 0 ? void 0 : game.waitingRoom)) &&
-            interaction.commandName === 'start') {
-            return await interaction.reply({
-                content: 'A game is already running',
-                ephemeral: true,
-            });
-        }
         command = exports.client.commands.get(interaction.commandName);
     }
     if (interaction.isSelectMenu() || interaction.isButton()) {
