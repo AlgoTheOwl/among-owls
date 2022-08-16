@@ -80,28 +80,20 @@ const main = async () => {
  *****************
  */
 exports.client.on('interactionCreate', async (interaction) => {
-    let command;
-    if (interaction.isCommand()) {
-        // ensure two games can't start simultaneously
-        if (((exports.game === null || exports.game === void 0 ? void 0 : exports.game.active) || (exports.game === null || exports.game === void 0 ? void 0 : exports.game.waitingRoom)) &&
-            interaction.commandName === 'start') {
-            return await interaction.reply({
-                content: 'A game is already running',
-                ephemeral: true,
-            });
-        }
-        command = exports.client.commands.get(interaction.commandName);
-    }
-    if (interaction.isSelectMenu() || interaction.isButton()) {
-        command = exports.client.commands.get(interaction.customId);
-    }
-    if (!command)
-        return;
     try {
+        let command;
+        if (interaction.isCommand()) {
+            command = exports.client.commands.get(interaction.commandName);
+        }
+        if (interaction.isSelectMenu() || interaction.isButton()) {
+            command = exports.client.commands.get(interaction.customId);
+        }
+        if (!command)
+            return;
         await command.execute(interaction);
     }
     catch (error) {
-        console.error(error);
+        console.log('****** INTERACTION ERROR ******');
     }
 });
 exports.client.login(token);
