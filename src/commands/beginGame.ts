@@ -15,6 +15,8 @@ module.exports = {
     const game = games[channelId]
     const playerArr = Object.values(game.players)
 
+    if (!playerArr.includes()
+
     if (!game.waitingRoom) {
       return interaction.reply({
         content:
