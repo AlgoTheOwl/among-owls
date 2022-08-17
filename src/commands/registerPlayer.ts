@@ -9,9 +9,14 @@ import { WithId } from 'mongodb'
 import User from '../models/user'
 import Player from '../models/player'
 // Helpers
-import { downloadFile, updateGame } from '../utils/helpers'
+import {
+  downloadFile,
+  updateGame,
+  checkIfRegisteredPlayer,
+} from '../utils/helpers'
+import fs from 'fs'
 // Globals
-import { game } from '../index'
+import { games } from '../index'
 import settings from '../settings'
 
 module.exports = {
@@ -21,12 +26,23 @@ module.exports = {
   async execute(interaction: SelectMenuInteraction) {
     try {
       if (!interaction.isSelectMenu()) return
+
+      const { values, user, channelId } = interaction
+      const game = games[channelId]
+
       if (!game.waitingRoom) return
 
-      const { values, user } = interaction
       const assetId = values[0]
       const { username, id } = user
-      const { imageDir, hp, maxCapacity } = settings
+      const { imageDir, hp, maxCapacity } = settings[channelId]
+
+      // Check if user is another game
+      if (checkIfRegisteredPlayer(games, assetId, id)) {
+        return interaction.reply({
+          ephemeral: true,
+          content: `You can't register with the same AOWL in two games at a time`,
+        })
+      }
 
       // Check for game capacity, allow already registered user to re-register
       // even if capacity is full
@@ -60,7 +76,15 @@ module.exports = {
         let localPath
 
         try {
-          localPath = await downloadFile(asset, imageDir, username)
+          // Create file for channel and download image
+          const path = `${imageDir}/${channelId}`
+          if (!fs.existsSync(path)) {
+            fs.mkdir(path, (err) => {
+              console.log(err)
+            })
+          }
+
+          localPath = await downloadFile(asset, path, username)
         } catch (error) {
           console.log('download error', error)
         }
@@ -103,7 +127,7 @@ module.exports = {
         await interaction.editReply(
           `${asset.alias || asset.assetName} has entered the game`
         )
-        updateGame()
+        updateGame(channelId)
       } else {
         interaction.reply({
           content:

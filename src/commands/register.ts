@@ -1,4 +1,3 @@
-import { InteractionType } from 'discord.js'
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 // Data
@@ -12,9 +11,8 @@ import User from '../models/user'
 import { WithId } from 'mongodb'
 import { Interaction } from 'discord.js'
 import Asset from '../models/asset'
+import settings from '../settings'
 // Globals
-import { game } from '..'
-
 const optInAssetId: number = Number(process.env.OPT_IN_ASSET_ID)
 const unitName: string = process.env.UNIT_NAME
 
@@ -32,14 +30,9 @@ module.exports = {
   async execute(interaction: Interaction) {
     if (!interaction.isChatInputCommand()) return
 
-    const { user, options } = interaction
+    const { user, options, channelId } = interaction
+    const { maxAssets } = settings[channelId]
 
-    // if (game?.active) {
-    //   return interaction.reply({
-    //     content: 'Please wait until after the game ends to register',
-    //     ephemeral: true,
-    //   })
-    // }
     // TODO: add ability to register for different games here
     const address = options.getString('address')
 
@@ -63,7 +56,8 @@ module.exports = {
       const { status, registeredUser, asset } = await processRegistration(
         username,
         id,
-        address
+        address,
+        maxAssets
       )
       // add permissions if succesful
       if (registeredUser && asset) {
@@ -81,7 +75,8 @@ module.exports = {
 export const processRegistration = async (
   username: string,
   discordId: string,
-  address: string
+  address: string,
+  maxAssets: number
 ): Promise<RegistrationResult> => {
   try {
     // Attempt to find user in db
@@ -92,7 +87,8 @@ export const processRegistration = async (
     // Check to see if wallet has opt-in asset
     // Retreive assetIds from specific collections
     const { walletOwned, nftsOwned, hootOwned } = await determineOwnership(
-      address
+      address,
+      maxAssets
     )
 
     const keyedNfts: { [key: string]: Asset } = {}

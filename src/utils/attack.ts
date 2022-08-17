@@ -1,5 +1,5 @@
 import { randomNumber } from '../utils/helpers'
-import { game } from '..'
+import { games } from '..'
 
 const attackStrings = [
   'HOOT, HOOT! {assetName} slashes at\n {victimName} for {damage} damage',
@@ -20,7 +20,11 @@ export const getAttackString = (
     .replace('{damage}', damage.toString())
 }
 
-export const getRandomVictimId = (attackerId: string): string => {
+export const getRandomVictimId = (
+  attackerId: string,
+  channelId: string
+): string => {
+  const game = games[channelId]
   const filteredPlayerArray = Object.values(game.players).filter(
     (player) =>
       player?.discordId !== attackerId && !player.timedOut && !player.dead

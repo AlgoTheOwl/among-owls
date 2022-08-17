@@ -39,7 +39,6 @@ export interface EmbedReply {
 }
 
 export interface Intervals {
-  timeoutInterval: ReturnType<typeof setInterval> | null
   autoGameInterval: ReturnType<typeof setInterval> | null
   playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> }
 }

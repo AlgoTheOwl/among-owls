@@ -2,7 +2,6 @@
 import {
   ActionRowBuilder,
   ButtonInteraction,
-  MessageActionRowComponent,
   SelectMenuBuilder,
 } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
@@ -13,7 +12,7 @@ import User from '../models/user'
 import { WithId } from 'mongodb'
 import Asset from '../models/asset'
 // Globals
-import { game } from '..'
+import { games } from '..'
 import settings from '../settings'
 
 module.exports = {
@@ -24,9 +23,12 @@ module.exports = {
     try {
       const {
         user: { id },
+        channelId,
       } = interaction
 
-      const { maxAssets } = settings
+      const game = games[channelId]
+
+      const { maxAssets } = settings[channelId]
 
       if (!game.waitingRoom) {
         return interaction.reply({

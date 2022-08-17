@@ -23,8 +23,8 @@ module.exports = {
         try {
             if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
                 return;
-            const { maxAssets } = settings_1.default;
-            const { user } = interaction;
+            const { user, channelId } = interaction;
+            const { maxAssets } = settings_1.default[channelId];
             await interaction.deferReply();
             const userData = (await database_service_1.collections.users.findOne({
                 discordId: user.id,
@@ -70,7 +70,7 @@ module.exports = {
             // discord username
             fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot }, { name: 'Games won', value: yaoWins });
             const row = new discord_js_1.ActionRowBuilder().addComponents(selectMenu);
-            const embed = (0, embeds_2.default)(embeds_1.default.profile, {
+            const embed = (0, embeds_2.default)(embeds_1.default.profile, channelId, {
                 thumbNail,
                 fields,
             });

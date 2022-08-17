@@ -29,9 +29,8 @@ module.exports = {
     try {
       if (interaction.type !== InteractionType.ApplicationCommand) return
 
-      const { maxAssets } = settings
-
-      const { user } = interaction
+      const { user, channelId } = interaction
+      const { maxAssets } = settings[channelId]
 
       await interaction.deferReply()
 
@@ -96,7 +95,7 @@ module.exports = {
       )
 
       const row = new ActionRowBuilder().addComponents(selectMenu)
-      const embed = doEmbed(embeds.profile, {
+      const embed = doEmbed(embeds.profile, channelId, {
         thumbNail,
         fields,
       }) as EmbedBuilder

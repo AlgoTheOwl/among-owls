@@ -2,7 +2,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { ButtonInteraction } from 'discord.js'
 // Globals
-import { game } from '..'
+import { games } from '..'
 import settings from '../settings'
 
 module.exports = {
@@ -10,8 +10,9 @@ module.exports = {
     .setName('begin-game')
     .setDescription('begin the game'),
   async execute(interaction: ButtonInteraction) {
-    const { user } = interaction
-    const { minCapacity } = settings
+    const { user, channelId } = interaction
+    const { minCapacity } = settings[channelId]
+    const game = games[channelId]
     const playerArr = Object.values(game.players)
 
     if (!game.waitingRoom) {

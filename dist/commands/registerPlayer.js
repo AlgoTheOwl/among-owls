@@ -11,6 +11,7 @@ const asset_1 = __importDefault(require("../models/asset"));
 const player_1 = __importDefault(require("../models/player"));
 // Helpers
 const helpers_1 = require("../utils/helpers");
+const fs_1 = __importDefault(require("fs"));
 // Globals
 const index_1 = require("../index");
 const settings_1 = __importDefault(require("../settings"));
@@ -22,16 +23,24 @@ module.exports = {
         try {
             if (!interaction.isSelectMenu())
                 return;
-            if (!index_1.game.waitingRoom)
+            const { values, user, channelId } = interaction;
+            const game = index_1.games[channelId];
+            if (!game.waitingRoom)
                 return;
-            const { values, user } = interaction;
             const assetId = values[0];
             const { username, id } = user;
-            const { imageDir, hp, maxCapacity } = settings_1.default;
+            const { imageDir, hp, maxCapacity } = settings_1.default[channelId];
+            // Check if user is another game
+            if ((0, helpers_1.checkIfRegisteredPlayer)(index_1.games, assetId, id)) {
+                return interaction.reply({
+                    ephemeral: true,
+                    content: `You can't register with the same AOWL in two games at a time`,
+                });
+            }
             // Check for game capacity, allow already registered user to re-register
             // even if capacity is full
-            if (Object.values(index_1.game.players).length < maxCapacity ||
-                index_1.game.players[id]) {
+            if (Object.values(game.players).length < maxCapacity ||
+                game.players[id]) {
                 await interaction.deferReply({ ephemeral: true });
                 const { assets, address, _id, coolDowns } = (await database_service_1.collections.users.findOne({
                     discordId: user.id,
@@ -50,7 +59,14 @@ module.exports = {
                 }
                 let localPath;
                 try {
-                    localPath = await (0, helpers_1.downloadFile)(asset, imageDir, username);
+                    // Create file for channel and download image
+                    const path = `${imageDir}/${channelId}`;
+                    if (!fs_1.default.existsSync(path)) {
+                        fs_1.default.mkdir(path, (err) => {
+                            console.log(err);
+                        });
+                    }
+                    localPath = await (0, helpers_1.downloadFile)(asset, path, username);
                 }
                 catch (error) {
                     console.log('download error', error);
@@ -60,13 +76,13 @@ module.exports = {
                 }
                 const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath, undefined, asset.alias);
                 // check again for capacity once added
-                if (Object.values(index_1.game.players).length >= maxCapacity &&
-                    !index_1.game.players[id]) {
+                if (Object.values(game.players).length >= maxCapacity &&
+                    !game.players[id]) {
                     return interaction.editReply('Sorry, the game is at capacity, please wait until the next round');
                 }
-                index_1.game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, Object.values(assets).length, 0);
+                game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, Object.values(assets).length, 0);
                 await interaction.editReply(`${asset.alias || asset.assetName} has entered the game`);
-                (0, helpers_1.updateGame)();
+                (0, helpers_1.updateGame)(channelId);
             }
             else {
                 interaction.reply({

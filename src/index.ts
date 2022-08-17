@@ -1,5 +1,11 @@
 // Discord
-import { Client, GatewayIntentBits, Collection, TextChannel } from 'discord.js'
+import {
+  Client,
+  GatewayIntentBits,
+  TextChannel,
+  InteractionType,
+  Collection,
+} from 'discord.js'
 // Node
 import fs from 'node:fs'
 import path from 'node:path'
@@ -12,20 +18,16 @@ import Game from './models/game'
 // Helpers
 import { startWaitingRoom } from './game'
 import { convergeTxnData } from './utils/algorand'
-import { wait } from './utils/helpers'
+import { wait, asyncForEach } from './utils/helpers'
 
 const token = process.env.DISCORD_TOKEN
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE
 const creatorAddressTwo = process.env.CREATOR_ADDRESS_TWO
 const creatorAddressThree = process.env.CREATOR_ADDRESS_THREE
-const channelId = process.env.CHANNEL_ID
-
-const { coolDownInterval } = settings
 
 // Gloval vars
-export let game: Game = new Game({}, false, false, coolDownInterval)
+export const games: { [key: string]: Game } = {}
 export let emojis = {}
-export let channel: TextChannel
 
 export const creatorAddressArr = [
   creatorAddressOne,
@@ -66,8 +68,6 @@ const main = async () => {
 
   fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 
-  channel = client.channels.cache.get(channelId) as TextChannel
-
   client.commands = new Collection()
 
   const commandsPath = path.join(__dirname, 'commands')
@@ -82,7 +82,19 @@ const main = async () => {
     client.commands.set(command.data.name, command)
   }
 
-  await startWaitingRoom()
+  const channelIdArr = Object.keys(settings)
+
+  // start game for each channel
+  asyncForEach(channelIdArr, async (channelId: string) => {
+    if (settings[channelId]) {
+      const channel = client.channels.cache.get(channelId) as TextChannel
+      const { maxCapacity } = settings[channelId]
+      games[channelId] = new Game({}, false, false, maxCapacity, channelId)
+      startWaitingRoom(channel)
+    } else {
+      console.log(`missing settings for channel ${channelId}`)
+    }
+  })
 }
 
 /*
@@ -101,7 +113,6 @@ client.on('interactionCreate', async (interaction: any) => {
       command = client.commands.get(interaction.customId)
     }
     if (!command) return
-
     await command.execute(interaction)
   } catch (error) {
     console.log('****** INTERACTION ERROR ******')

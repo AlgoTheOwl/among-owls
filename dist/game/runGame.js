@@ -11,33 +11,36 @@ const embeds_1 = __importDefault(require("../embeds"));
 // Globals
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
-async function runGame() {
+const settings_1 = __importDefault(require("../settings"));
+async function runGame(channel) {
+    const { id: channelId } = channel;
     try {
-        const { players } = __1.game;
-        const playerArr = Object.values(players);
+        const game = __1.games[channelId];
+        const playerArr = Object.values(game.players);
+        const { damagePerAowl, damageRange } = settings_1.default[channelId];
         let isWin = false;
         let handlingDeath = false;
         // MAIN GAME LOOP
-        while (!__1.game.stopped &&
-            !__1.game.waitingRoom &&
-            __1.game.active &&
+        while (!game.stopped &&
+            !game.waitingRoom &&
+            game.active &&
             playerArr.length > 1) {
             await (0, helpers_1.asyncForEach)(playerArr, async (player) => {
                 if (!player.dead) {
                     await (0, helpers_1.wait)(2000);
                 }
                 const { discordId } = player;
-                const attacker = __1.game.players[discordId];
+                const attacker = game.players[discordId];
                 let victim;
                 // DO DAMAGE
-                if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead) && __1.game.active) {
-                    if (player.victimId && !__1.game.players[player.victimId].dead) {
-                        victim = __1.game.players[player.victimId];
+                if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead) && game.active) {
+                    if (player.victimId && !game.players[player.victimId].dead) {
+                        victim = game.players[player.victimId];
                     }
                     else {
-                        victim = __1.game.players[(0, attack_1.getRandomVictimId)(discordId)];
+                        victim = game.players[(0, attack_1.getRandomVictimId)(discordId, channelId)];
                     }
-                    const damage = (0, helpers_1.doDamage)(attacker, false);
+                    const damage = (0, helpers_1.doDamage)(attacker, false, damagePerAowl, damageRange);
                     if (victim) {
                         victim.hp -= damage;
                     }
@@ -48,8 +51,8 @@ async function runGame() {
                     // HANDLE WIN
                     const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
                     isWin = !!winningPlayer;
-                    if (isWin && winningPlayer && __1.game.active) {
-                        (0, win_1.handleWin)(winningPlayer, winByTimeout);
+                    if (isWin && winningPlayer && game.active) {
+                        (0, win_1.handleWin)(winningPlayer, winByTimeout, channel);
                     }
                     // REFRESH EMBED
                     const attackField = {
@@ -60,7 +63,7 @@ async function runGame() {
                         ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
                         attackField,
                     ].filter(Boolean);
-                    await __1.game.arena.edit((0, embeds_1.default)(embeds_2.default.activeGame, { fields }));
+                    await game.arena.edit((0, embeds_1.default)(embeds_2.default.activeGame, channelId, { fields }));
                     if (isWin) {
                         return;
                     }
@@ -70,7 +73,7 @@ async function runGame() {
     }
     catch (error) {
         console.log(error);
-        (0, helpers_1.resetGame)();
+        (0, helpers_1.resetGame)(false, channelId);
     }
 }
 exports.default = runGame;
