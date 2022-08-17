@@ -69,7 +69,7 @@ module.exports = {
             });
         }
         catch (error) {
-            console.log('ERROR SELECTING');
+            console.log('****** PLAYER SELECTION ERROR ******');
             console.log(error);
             //@ts-ignore
         }

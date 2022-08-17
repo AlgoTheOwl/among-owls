@@ -69,7 +69,7 @@ module.exports = {
                     localPath = await (0, helpers_1.downloadFile)(asset, path, username);
                 }
                 catch (error) {
-                    console.log('download error', error);
+                    console.log('****** ERROR DOWNLOADING ******');
                 }
                 if (!localPath) {
                     return;
@@ -92,6 +92,7 @@ module.exports = {
             }
         }
         catch (error) {
+            console.log('****** ERROR REGISTERING ******');
             console.log(error);
         }
     },

@@ -82,7 +82,7 @@ module.exports = {
             });
         }
         catch (error) {
-            console.log('Error getting profile');
+            console.log('****** PROFLE ERROR ******');
             console.log(error);
         }
     },

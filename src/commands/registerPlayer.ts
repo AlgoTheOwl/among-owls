@@ -86,7 +86,7 @@ module.exports = {
 
           localPath = await downloadFile(asset, path, username)
         } catch (error) {
-          console.log('download error', error)
+          console.log('****** ERROR DOWNLOADING ******')
         }
 
         if (!localPath) {
@@ -136,6 +136,7 @@ module.exports = {
         })
       }
     } catch (error) {
+      console.log('****** ERROR REGISTERING ******')
       console.log(error)
     }
   },
