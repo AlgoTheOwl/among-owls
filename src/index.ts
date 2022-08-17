@@ -104,19 +104,18 @@ const main = async () => {
  */
 
 client.on('interactionCreate', async (interaction: any) => {
-  let command
-  if (interaction.type === InteractionType.ApplicationCommand) {
-    command = client.commands.get(interaction.commandName)
-  }
-  if (interaction.isSelectMenu() || interaction.isButton()) {
-    command = client.commands.get(interaction.customId)
-  }
-  if (!command) return
-
   try {
+    let command
+    if (interaction.isCommand()) {
+      command = client.commands.get(interaction.commandName)
+    }
+    if (interaction.isSelectMenu() || interaction.isButton()) {
+      command = client.commands.get(interaction.customId)
+    }
+    if (!command) return
     await command.execute(interaction)
   } catch (error) {
-    console.error(error)
+    console.log('****** INTERACTION ERROR ******')
   }
 })
 

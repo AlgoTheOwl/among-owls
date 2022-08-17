@@ -89,20 +89,20 @@ const main = async () => {
  *****************
  */
 exports.client.on('interactionCreate', async (interaction) => {
-    let command;
-    if (interaction.type === discord_js_1.InteractionType.ApplicationCommand) {
-        command = exports.client.commands.get(interaction.commandName);
-    }
-    if (interaction.isSelectMenu() || interaction.isButton()) {
-        command = exports.client.commands.get(interaction.customId);
-    }
-    if (!command)
-        return;
     try {
+        let command;
+        if (interaction.isCommand()) {
+            command = exports.client.commands.get(interaction.commandName);
+        }
+        if (interaction.isSelectMenu() || interaction.isButton()) {
+            command = exports.client.commands.get(interaction.customId);
+        }
+        if (!command)
+            return;
         await command.execute(interaction);
     }
     catch (error) {
-        console.error(error);
+        console.log('****** INTERACTION ERROR ******');
     }
 });
 exports.client.login(token);
