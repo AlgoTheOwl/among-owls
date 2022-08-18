@@ -72,7 +72,7 @@ async function runGame(channel) {
         }
     }
     catch (error) {
-        console.log(error);
+        console.log('****** ERROR RUNNNINGS GAME ******', error);
         (0, helpers_1.resetGame)(false, channelId);
     }
 }

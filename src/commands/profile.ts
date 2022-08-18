@@ -107,8 +107,7 @@ module.exports = {
         embeds: [embed],
       })
     } catch (error) {
-      console.log('****** PROFLE ERROR ******')
-      console.log(error)
+      console.log('****** PROFLE ERROR ******', error)
     }
   },
 }

@@ -36,8 +36,7 @@ module.exports = {
         })
       }
     } catch (error) {
-      console.log('****** WITHDRAW ERROR ******')
-      console.log(error)
+      console.log('****** WITHDRAW ERROR ******', error)
     }
   },
 }

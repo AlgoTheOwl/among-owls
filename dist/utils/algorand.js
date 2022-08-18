@@ -84,7 +84,7 @@ const determineOwnership = async function (address, maxAssets) {
         };
     }
     catch (error) {
-        console.log(error);
+        console.log('****** ERROR DETERMINING OWNERSHIP ******', error);
         return {
             walletOwned: false,
             nftsOwned: [],
@@ -120,7 +120,7 @@ const findAsset = async (assetId) => {
             return assetData.assets[0];
     }
     catch (error) {
-        console.log(error);
+        console.log('****** ERROR FINDING ASSET ******', error);
     }
 };
 exports.findAsset = findAsset;
@@ -138,7 +138,7 @@ const claimHoot = async (amount, receiverAddress) => {
         return await algosdk_1.default.waitForConfirmation(algodClient, xtx.txId, 4);
     }
     catch (error) {
-        console.log(error);
+        console.log('****** ERROR CLAIMING HOOT', error);
     }
 };
 exports.claimHoot = claimHoot;
@@ -196,7 +196,6 @@ const reduceTxnData = (txnDataArray) => {
             transactions: [...prevTxnData.transactions, ...txnData.transactions],
         };
     });
-    // console.log(util.inspect(reducedData, { depth: 1 }))
     return reducedData;
 };
 const getTxnData = () => {

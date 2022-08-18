@@ -62,14 +62,12 @@ module.exports = {
                     // Create file for channel and download image
                     const path = `${imageDir}/${channelId}`;
                     if (!fs_1.default.existsSync(path)) {
-                        fs_1.default.mkdir(path, (err) => {
-                            console.log(err);
-                        });
+                        fs_1.default.mkdir(path, (err) => { });
                     }
                     localPath = await (0, helpers_1.downloadFile)(asset, path, username);
                 }
                 catch (error) {
-                    console.log('****** ERROR DOWNLOADING ******');
+                    console.log('****** ERROR DOWNLOADING ******', error);
                 }
                 if (!localPath) {
                     return;
@@ -92,8 +90,7 @@ module.exports = {
             }
         }
         catch (error) {
-            console.log('****** ERROR REGISTERING ******');
-            console.log(error);
+            console.log('****** ERROR REGISTERING ******', error);
         }
     },
 };

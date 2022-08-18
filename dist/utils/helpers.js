@@ -83,7 +83,7 @@ const emptyDir = (dirPath) => {
         });
     }
     catch (error) {
-        console.log('Error deleting contents of image directory', error);
+        console.log('****** ERROR DELETING IMAGE DIR ******', error);
     }
 };
 exports.emptyDir = emptyDir;
@@ -95,20 +95,25 @@ const addRole = async (interaction, roleId, user) => {
         role && (await (member === null || member === void 0 ? void 0 : member.roles.add(role.id)));
     }
     catch (error) {
-        console.log('Error adding role', error);
+        console.log('****** ERROR ADDING ROLE ******', error);
     }
 };
 exports.addRole = addRole;
 const removeRole = async (interaction, roleId, discordId) => {
     var _a, _b;
-    const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.id === roleId);
-    const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === discordId);
-    role && (await (member === null || member === void 0 ? void 0 : member.roles.remove(role.id)));
+    try {
+        const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.id === roleId);
+        const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === discordId);
+        role && (await (member === null || member === void 0 ? void 0 : member.roles.remove(role.id)));
+    }
+    catch (error) {
+        console.log('****** ERROR DELETING ROLE ******', error);
+    }
 };
 exports.removeRole = removeRole;
-const confirmRole = async (roleId, interaction, userId) => {
+const confirmRole = (roleId, interaction, discordId) => {
     var _a;
-    const member = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.members.cache.find((member) => member.id === userId);
+    const member = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.members.cache.find((member) => member.id === discordId);
     return member === null || member === void 0 ? void 0 : member.roles.cache.has(roleId);
 };
 exports.confirmRole = confirmRole;

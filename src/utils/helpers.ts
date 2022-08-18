@@ -88,7 +88,7 @@ export const emptyDir = (dirPath: string): void => {
       } else fs.unlinkSync(fullPath)
     })
   } catch (error) {
-    console.log('Error deleting contents of image directory', error)
+    console.log('****** ERROR DELETING IMAGE DIR ******', error)
   }
 }
 
@@ -106,7 +106,7 @@ export const addRole = async (
     )
     role && (await member?.roles.add(role.id))
   } catch (error) {
-    console.log('Error adding role', error)
+    console.log('****** ERROR ADDING ROLE ******', error)
   }
 }
 
@@ -115,20 +115,26 @@ export const removeRole = async (
   roleId: string,
   discordId: string
 ): Promise<void> => {
-  const role = interaction.guild?.roles.cache.find((role) => role.id === roleId)
-  const member = interaction.guild?.members.cache.find(
-    (member) => member.id === discordId
-  )
-  role && (await member?.roles.remove(role.id))
+  try {
+    const role = interaction.guild?.roles.cache.find(
+      (role) => role.id === roleId
+    )
+    const member = interaction.guild?.members.cache.find(
+      (member) => member.id === discordId
+    )
+    role && (await member?.roles.remove(role.id))
+  } catch (error) {
+    console.log('****** ERROR DELETING ROLE ******', error)
+  }
 }
 
-export const confirmRole = async (
+export const confirmRole = (
   roleId: string,
   interaction: Interaction,
-  userId: string
-): Promise<boolean | undefined> => {
+  discordId: string
+): boolean | undefined => {
   const member = interaction.guild?.members.cache.find(
-    (member) => member.id === userId
+    (member) => member.id === discordId
   )
   return member?.roles.cache.has(roleId)
 }

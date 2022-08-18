@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 let settings = {};
 const env = process.env.ENV;
 if (env === 'DEV') {
+    console.log('dev');
     settings = {
         '984079278683598928': {
             channelName: 'testChannel1',
@@ -61,6 +62,7 @@ if (env === 'DEV') {
     };
 }
 if (env === 'PROD') {
+    console.log('PROD');
     settings = {
         '1003046615273189496': {
             channelName: 'among-4-aowls',

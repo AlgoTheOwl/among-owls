@@ -7,6 +7,7 @@ import fs from 'fs'
 
 // import txnDataJson from '../txnData/txnData.json'
 import { creatorAddressArr } from '..'
+import { CommandInteractionOptionResolver } from 'discord.js'
 
 const algoNode = process.env.ALGO_NODE
 const pureStakeApi = process.env.PURESTAKE_API
@@ -100,7 +101,7 @@ export const determineOwnership = async function (
       hootOwned,
     }
   } catch (error) {
-    console.log(error)
+    console.log('****** ERROR DETERMINING OWNERSHIP ******', error)
     return {
       walletOwned: false,
       nftsOwned: [],
@@ -139,7 +140,7 @@ export const findAsset = async (
     const assetData = await algoIndexer.searchForAssets().index(assetId).do()
     if (assetData?.assets) return assetData.assets[0]
   } catch (error) {
-    console.log(error)
+    console.log('****** ERROR FINDING ASSET ******', error)
   }
 }
 
@@ -169,7 +170,7 @@ export const claimHoot = async (amount: number, receiverAddress: string) => {
     let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do()
     return await algosdk.waitForConfirmation(algodClient, xtx.txId, 4)
   } catch (error) {
-    console.log(error)
+    console.log('****** ERROR CLAIMING HOOT', error)
   }
 }
 
@@ -239,7 +240,6 @@ const reduceTxnData = (txnDataArray: TxnData[]) => {
       }
     }
   )
-  // console.log(util.inspect(reducedData, { depth: 1 }))
   return reducedData
 }
 

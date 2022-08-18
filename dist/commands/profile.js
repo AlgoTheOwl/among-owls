@@ -82,8 +82,7 @@ module.exports = {
             });
         }
         catch (error) {
-            console.log('****** PROFLE ERROR ******');
-            console.log(error);
+            console.log('****** PROFLE ERROR ******', error);
         }
     },
 };

@@ -8,6 +8,8 @@ const builders_1 = require("@discordjs/builders");
 // Globals
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
+const helpers_1 = require("../utils/helpers");
+const adminId = process.env.ADMIN_ID;
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('begin-game')
@@ -17,6 +19,15 @@ module.exports = {
         const { minCapacity } = settings_1.default[channelId];
         const game = __1.games[channelId];
         const playerArr = Object.values(game.players);
+        if (!game.players[user.id]) {
+            const isAdmin = (0, helpers_1.confirmRole)(adminId, interaction, user.id);
+            if (!isAdmin) {
+                return interaction.reply({
+                    content: 'You need to be registered in gameplay to start the game',
+                    ephemeral: true,
+                });
+            }
+        }
         if (!game.waitingRoom) {
             return interaction.reply({
                 content: 'Game is not currently active. use the /start command to start the game',

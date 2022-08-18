@@ -16,6 +16,7 @@ import embeds from './constants/embeds'
 import { games } from '.'
 // Helpers
 import { mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
+import settings from './settings'
 
 const defaultEmbedValues: EmbedData = {
   title: '🔥 Ye Among AOWLs 🔥',
@@ -45,6 +46,9 @@ export default function doEmbed(
   const game = games[channelId]
   const playerArr = Object.values(game.players)
   const playerCount = playerArr.length
+  const {
+    hootSettings: { hootOnWin },
+  } = settings[channelId]
 
   // Waiting Room
   if (type === embeds.waitingRoom) {
@@ -130,7 +134,7 @@ export default function doEmbed(
       description: `${username}'s ${alias || assetName} ${
         winByTimeout
           ? 'won by default - all other players timed out!'
-          : `destroyed the competition and won 5 hoot!`
+          : `destroyed the competition and won ${hootOnWin} hoot!`
       }`,
       color: 'DarkAqua',
       image: normalizeIpfsUrl(asserUrl),

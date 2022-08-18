@@ -10,6 +10,7 @@ const embeds_1 = __importDefault(require("./constants/embeds"));
 const _1 = require(".");
 // Helpers
 const helpers_1 = require("./utils/helpers");
+const settings_1 = __importDefault(require("./settings"));
 const defaultEmbedValues = {
     title: '🔥 Ye Among AOWLs 🔥',
     description: '💀 Who will survive? 💀',
@@ -28,6 +29,7 @@ function doEmbed(type, channelId, options) {
     const game = _1.games[channelId];
     const playerArr = Object.values(game.players);
     const playerCount = playerArr.length;
+    const { hootSettings: { hootOnWin }, } = settings_1.default[channelId];
     // Waiting Room
     if (type === embeds_1.default.waitingRoom) {
         const playerWord = playerCount === 1 ? 'player' : 'players';
@@ -97,7 +99,7 @@ function doEmbed(type, channelId, options) {
             title: 'WINNER!!!',
             description: `${username}'s ${alias || assetName} ${winByTimeout
                 ? 'won by default - all other players timed out!'
-                : `destroyed the competition and won 5 hoot!`}`,
+                : `destroyed the competition and won ${hootOnWin} hoot!`}`,
             color: 'DarkAqua',
             image: (0, helpers_1.normalizeIpfsUrl)(asserUrl),
         };

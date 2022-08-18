@@ -48,7 +48,7 @@ client.once('ready', async () => {
   try {
     main()
   } catch (error) {
-    console.log('CLIENT ERROR', error)
+    console.log('****** CLIENT ERROR ******', error)
     wait(3000)
     main()
   }
@@ -84,8 +84,11 @@ const main = async () => {
 
   const channelIdArr = Object.keys(settings)
 
+  console.log(settings)
+
   // start game for each channel
   asyncForEach(channelIdArr, async (channelId: string) => {
+    console.log(channelId)
     if (settings[channelId]) {
       const channel = client.channels.cache.get(channelId) as TextChannel
       const { maxCapacity } = settings[channelId]

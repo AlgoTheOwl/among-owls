@@ -92,9 +92,7 @@ module.exports = {
         components: [row],
       })
     } catch (error) {
-      console.log('****** PLAYER SELECTION ERROR ******')
-      console.log(error)
-      //@ts-ignore
+      console.log('****** PLAYER SELECTION ERROR ******', error)
     }
   },
 }
