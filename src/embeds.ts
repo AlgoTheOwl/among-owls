@@ -44,7 +44,7 @@ export default function doEmbed(
   let data: EmbedData = {}
   let components = []
   const game = games[channelId]
-  const playerArr = Object.values(game.players)
+  const playerArr = Object.values(game?.players)
   const playerCount = playerArr.length
   const {
     hootSettings: { hootOnWin },

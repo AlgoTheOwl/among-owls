@@ -27,7 +27,7 @@ function doEmbed(type, channelId, options) {
     let data = {};
     let components = [];
     const game = _1.games[channelId];
-    const playerArr = Object.values(game.players);
+    const playerArr = Object.values(game === null || game === void 0 ? void 0 : game.players);
     const playerCount = playerArr.length;
     const { hootSettings: { hootOnWin }, } = settings_1.default[channelId];
     // Waiting Room
