@@ -27,7 +27,6 @@ function doEmbed(type, channelId, options) {
     let data = {};
     let components = [];
     const game = _1.games[channelId];
-    const { hootSettings: { hootOnWin }, } = settings_1.default[channelId];
     // Waiting Room
     if (type === embeds_1.default.waitingRoom) {
         const playerArr = Object.values(game === null || game === void 0 ? void 0 : game.players);
@@ -72,17 +71,6 @@ function doEmbed(type, channelId, options) {
             },
         };
     }
-    // // Waiting Room Countdown
-    // if (type === embeds.countDown) {
-    //   const imagePath = `src/images/${options?.countDown}.png`
-    //   const countDownImage = new AttachmentBuilder(imagePath, {name: options})
-    //   data = {
-    //     title: 'Ready your AOWLS!',
-    //     description: `Game starting in ${options?.countDown}...`,
-    //     files: [countDownImage],
-    //     image: `attachment://${options?.countDown}.png`,
-    //   }
-    // }
     // Players timed out
     if (type === embeds_1.default.timedOut) {
         data = {
@@ -96,6 +84,7 @@ function doEmbed(type, channelId, options) {
         const asserUrl = player.asset.assetUrl;
         const { asset, username } = player;
         const { alias, assetName } = asset;
+        const { hootSettings: { hootOnWin }, } = settings_1.default[channelId];
         data = {
             title: 'WINNER!!!',
             description: `${username}'s ${alias || assetName} ${winByTimeout

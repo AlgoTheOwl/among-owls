@@ -45,10 +45,6 @@ export default function doEmbed(
   let components = []
   const game = games[channelId]
 
-  const {
-    hootSettings: { hootOnWin },
-  } = settings[channelId]
-
   // Waiting Room
   if (type === embeds.waitingRoom) {
     const playerArr = Object.values(game?.players)
@@ -103,18 +99,6 @@ export default function doEmbed(
     }
   }
 
-  // // Waiting Room Countdown
-  // if (type === embeds.countDown) {
-  //   const imagePath = `src/images/${options?.countDown}.png`
-  //   const countDownImage = new AttachmentBuilder(imagePath, {name: options})
-  //   data = {
-  //     title: 'Ready your AOWLS!',
-  //     description: `Game starting in ${options?.countDown}...`,
-  //     files: [countDownImage],
-  //     image: `attachment://${options?.countDown}.png`,
-  //   }
-  // }
-
   // Players timed out
   if (type === embeds.timedOut) {
     data = {
@@ -130,6 +114,9 @@ export default function doEmbed(
     const asserUrl = player.asset.assetUrl
     const { asset, username } = player
     const { alias, assetName } = asset
+    const {
+      hootSettings: { hootOnWin },
+    } = settings[channelId]
 
     data = {
       title: 'WINNER!!!',
