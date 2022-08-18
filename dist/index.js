@@ -91,7 +91,7 @@ const main = async () => {
 exports.client.on('interactionCreate', async (interaction) => {
     try {
         let command;
-        if (interaction.isCommand()) {
+        if (interaction.type === discord_js_1.InteractionType.ApplicationCommand) {
             command = exports.client.commands.get(interaction.commandName);
         }
         if (interaction.isSelectMenu() || interaction.isButton()) {
@@ -102,7 +102,7 @@ exports.client.on('interactionCreate', async (interaction) => {
         await command.execute(interaction);
     }
     catch (error) {
-        console.log('****** INTERACTION ERROR ******');
+        console.log('****** INTERACTION ERROR ******', error);
     }
 });
 exports.client.login(token);

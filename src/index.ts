@@ -3,8 +3,8 @@ import {
   Client,
   GatewayIntentBits,
   TextChannel,
-  InteractionType,
   Collection,
+  InteractionType,
 } from 'discord.js'
 // Node
 import fs from 'node:fs'
@@ -106,7 +106,7 @@ const main = async () => {
 client.on('interactionCreate', async (interaction: any) => {
   try {
     let command
-    if (interaction.isCommand()) {
+    if (interaction.type === InteractionType.ApplicationCommand) {
       command = client.commands.get(interaction.commandName)
     }
     if (interaction.isSelectMenu() || interaction.isButton()) {
@@ -115,7 +115,7 @@ client.on('interactionCreate', async (interaction: any) => {
     if (!command) return
     await command.execute(interaction)
   } catch (error) {
-    console.log('****** INTERACTION ERROR ******')
+    console.log('****** INTERACTION ERROR ******', error)
   }
 })
 
