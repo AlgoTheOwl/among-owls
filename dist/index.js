@@ -70,10 +70,8 @@ const main = async () => {
         exports.client.commands.set(command.data.name, command);
     }
     const channelIdArr = Object.keys(settings_1.default);
-    console.log(settings_1.default);
     // start game for each channel
     (0, helpers_1.asyncForEach)(channelIdArr, async (channelId) => {
-        console.log(channelId);
         if (settings_1.default[channelId]) {
             const channel = exports.client.channels.cache.get(channelId);
             const { maxCapacity } = settings_1.default[channelId];
