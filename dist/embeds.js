@@ -27,11 +27,11 @@ function doEmbed(type, channelId, options) {
     let data = {};
     let components = [];
     const game = _1.games[channelId];
-    const playerArr = Object.values(game === null || game === void 0 ? void 0 : game.players);
-    const playerCount = playerArr.length;
     const { hootSettings: { hootOnWin }, } = settings_1.default[channelId];
     // Waiting Room
     if (type === embeds_1.default.waitingRoom) {
+        const playerArr = Object.values(game === null || game === void 0 ? void 0 : game.players);
+        const playerCount = playerArr.length;
         const playerWord = playerCount === 1 ? 'player' : 'players';
         const hasWord = playerCount === 1 ? 'has' : 'have';
         data = {
@@ -57,6 +57,7 @@ function doEmbed(type, channelId, options) {
             .setStyle(discord_js_1.ButtonStyle.Danger)));
     }
     if (type === embeds_1.default.activeGame) {
+        const playerArr = Object.values(game === null || game === void 0 ? void 0 : game.players);
         const fields = (options === null || options === void 0 ? void 0 : options.hasOwnProperty('fields'))
             ? options.fields
             : (0, helpers_1.mapPlayersForEmbed)(playerArr, 'game');

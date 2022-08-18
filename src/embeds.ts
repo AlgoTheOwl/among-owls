@@ -44,14 +44,15 @@ export default function doEmbed(
   let data: EmbedData = {}
   let components = []
   const game = games[channelId]
-  const playerArr = Object.values(game?.players)
-  const playerCount = playerArr.length
+
   const {
     hootSettings: { hootOnWin },
   } = settings[channelId]
 
   // Waiting Room
   if (type === embeds.waitingRoom) {
+    const playerArr = Object.values(game?.players)
+    const playerCount = playerArr.length
     const playerWord = playerCount === 1 ? 'player' : 'players'
     const hasWord = playerCount === 1 ? 'has' : 'have'
 
@@ -86,6 +87,7 @@ export default function doEmbed(
   }
 
   if (type === embeds.activeGame) {
+    const playerArr = Object.values(game?.players)
     const fields = options?.hasOwnProperty('fields')
       ? options.fields
       : mapPlayersForEmbed(playerArr, 'game')
