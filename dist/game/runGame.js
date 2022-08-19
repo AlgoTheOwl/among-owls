@@ -40,33 +40,33 @@ async function runGame(channel) {
                     else {
                         victim = game.players[(0, attack_1.getRandomVictimId)(discordId, channelId)];
                     }
-                    const damage = (0, helpers_1.doDamage)(attacker, false, damagePerAowl, damageRange);
                     if (victim) {
+                        const damage = (0, helpers_1.doDamage)(attacker, false, damagePerAowl, damageRange);
                         victim.hp -= damage;
+                        if (victim.hp <= 0 && attacker && !handlingDeath) {
+                            victim.dead = true;
+                        }
+                        // HANDLE WIN
+                        const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
+                        isWin = !!winningPlayer;
+                        if (isWin && winningPlayer && game.active) {
+                            (0, win_1.handleWin)(winningPlayer, winByTimeout, channel);
+                        }
+                        // REFRESH EMBED
+                        const attackField = {
+                            name: 'ATTACK',
+                            value: (0, attack_1.getAttackString)(attacker.asset.alias || attacker.asset.assetName, victim.username, damage),
+                        };
+                        const fields = [
+                            ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
+                            attackField,
+                        ].filter(Boolean);
+                        await game.arena.edit((0, embeds_1.default)(embeds_2.default.activeGame, channelId, { fields }));
+                        if (isWin) {
+                            return;
+                        }
                     }
                     // HANDLE DEATH
-                    if (victim.hp <= 0 && attacker && !handlingDeath) {
-                        victim.dead = true;
-                    }
-                    // HANDLE WIN
-                    const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
-                    isWin = !!winningPlayer;
-                    if (isWin && winningPlayer && game.active) {
-                        (0, win_1.handleWin)(winningPlayer, winByTimeout, channel);
-                    }
-                    // REFRESH EMBED
-                    const attackField = {
-                        name: 'ATTACK',
-                        value: (0, attack_1.getAttackString)(attacker.asset.alias || attacker.asset.assetName, victim.username, damage),
-                    };
-                    const fields = [
-                        ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
-                        attackField,
-                    ].filter(Boolean);
-                    await game.arena.edit((0, embeds_1.default)(embeds_2.default.activeGame, channelId, { fields }));
-                    if (isWin) {
-                        return;
-                    }
                 }
             });
         }

@@ -50,46 +50,45 @@ export default async function runGame(channel: TextChannel) {
           } else {
             victim = game.players[getRandomVictimId(discordId, channelId)]
           }
-          const damage = doDamage(attacker, false, damagePerAowl, damageRange)
 
           if (victim) {
+            const damage = doDamage(attacker, false, damagePerAowl, damageRange)
             victim.hp -= damage
-          }
+            if (victim.hp <= 0 && attacker && !handlingDeath) {
+              victim.dead = true
+            }
 
+            // HANDLE WIN
+            const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
+            isWin = !!winningPlayer
+
+            if (isWin && winningPlayer && game.active) {
+              handleWin(winningPlayer, winByTimeout, channel)
+            }
+
+            // REFRESH EMBED
+            const attackField = {
+              name: 'ATTACK',
+              value: getAttackString(
+                attacker.asset.alias || attacker.asset.assetName,
+                victim.username,
+                damage
+              ),
+            }
+
+            const fields = [
+              ...mapPlayersForEmbed(playerArr, 'game'),
+              attackField,
+            ].filter(Boolean)
+
+            await game.arena.edit(
+              doEmbed(embeds.activeGame, channelId, { fields })
+            )
+            if (isWin) {
+              return
+            }
+          }
           // HANDLE DEATH
-          if (victim.hp <= 0 && attacker && !handlingDeath) {
-            victim.dead = true
-          }
-
-          // HANDLE WIN
-          const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
-          isWin = !!winningPlayer
-
-          if (isWin && winningPlayer && game.active) {
-            handleWin(winningPlayer, winByTimeout, channel)
-          }
-
-          // REFRESH EMBED
-          const attackField = {
-            name: 'ATTACK',
-            value: getAttackString(
-              attacker.asset.alias || attacker.asset.assetName,
-              victim.username,
-              damage
-            ),
-          }
-
-          const fields = [
-            ...mapPlayersForEmbed(playerArr, 'game'),
-            attackField,
-          ].filter(Boolean)
-
-          await game.arena.edit(
-            doEmbed(embeds.activeGame, channelId, { fields })
-          )
-          if (isWin) {
-            return
-          }
         }
       })
     }
