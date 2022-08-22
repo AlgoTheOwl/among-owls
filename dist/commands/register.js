@@ -12,7 +12,6 @@ const database_service_1 = require("../database/database.service");
 const algorand_1 = require("../utils/algorand");
 const helpers_1 = require("../utils/helpers");
 const user_1 = __importDefault(require("../models/user"));
-const settings_1 = __importDefault(require("../settings"));
 // Globals
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
 const unitName = process.env.UNIT_NAME;
@@ -28,8 +27,8 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.isChatInputCommand())
             return;
-        const { user, options, channelId } = interaction;
-        const { maxAssets } = settings_1.default[channelId];
+        const { user, options } = interaction;
+        const maxAssets = 20;
         // TODO: add ability to register for different games here
         const address = options.getString('address');
         if (address && !/^[a-zA-Z0-9]{58}$/.test(address)) {

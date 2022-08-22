@@ -11,7 +11,6 @@ import User from '../models/user'
 import { WithId } from 'mongodb'
 import { Interaction } from 'discord.js'
 import Asset from '../models/asset'
-import settings from '../settings'
 // Globals
 const optInAssetId: number = Number(process.env.OPT_IN_ASSET_ID)
 const unitName: string = process.env.UNIT_NAME
@@ -30,8 +29,8 @@ module.exports = {
   async execute(interaction: Interaction) {
     if (!interaction.isChatInputCommand()) return
 
-    const { user, options, channelId } = interaction
-    const { maxAssets } = settings[channelId]
+    const { user, options } = interaction
+    const maxAssets = 20
 
     // TODO: add ability to register for different games here
     const address = options.getString('address')
