@@ -86,7 +86,7 @@ if (env === 'PROD') {
             channelId: 984079278683598928,
             // Settings for native asa
             hootSettings: {
-                hootOnWin: 3,
+                hootOnWin: 5,
             },
         },
         '1009316590237528064': {
