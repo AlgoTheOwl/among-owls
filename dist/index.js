@@ -12,7 +12,6 @@ const node_path_1 = __importDefault(require("node:path"));
 // Helpers
 const database_service_1 = require("./database/database.service");
 // Globals
-// import settings from './settings'
 const database_service_2 = require("./database/database.service");
 // Schema
 const game_1 = __importDefault(require("./models/game"));
@@ -52,7 +51,12 @@ exports.client.once('ready', async () => {
 });
 const main = async () => {
     await (0, database_service_1.connectToDatabase)();
+    await setupTxns();
+    setupCommands();
+    startGames();
     console.log('Ye Among AOWLs - Server ready');
+};
+const setupTxns = async () => {
     let update = true;
     if (!node_fs_1.default.existsSync('dist/txnData/txnData.json')) {
         update = false;
@@ -60,6 +64,8 @@ const main = async () => {
     }
     const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, update);
     node_fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
+};
+const setupCommands = () => {
     exports.client.commands = new discord_js_1.Collection();
     const commandsPath = node_path_1.default.join(__dirname, 'commands');
     const commandFiles = node_fs_1.default
@@ -70,6 +76,8 @@ const main = async () => {
         const command = require(filePath);
         exports.client.commands.set(command.data.name, command);
     }
+};
+const startGames = async () => {
     const channelSettings = (await database_service_2.collections.settings
         .find({})
         .toArray());

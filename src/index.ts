@@ -12,7 +12,6 @@ import path from 'node:path'
 // Helpers
 import { connectToDatabase } from './database/database.service'
 // Globals
-// import settings from './settings'
 import { collections } from './database/database.service'
 // Schema
 import Game from './models/game'
@@ -59,8 +58,13 @@ client.once('ready', async () => {
 
 const main = async () => {
   await connectToDatabase()
+  await setupTxns()
+  setupCommands()
+  startGames()
   console.log('Ye Among AOWLs - Server ready')
+}
 
+const setupTxns = async () => {
   let update = true
   if (!fs.existsSync('dist/txnData/txnData.json')) {
     update = false
@@ -70,7 +74,9 @@ const main = async () => {
   const txnData = await convergeTxnData(creatorAddressArr, update)
 
   fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
+}
 
+const setupCommands = () => {
   client.commands = new Collection()
 
   const commandsPath = path.join(__dirname, 'commands')
@@ -83,7 +89,9 @@ const main = async () => {
     const command = require(filePath)
     client.commands.set(command.data.name, command)
   }
+}
 
+const startGames = async () => {
   const channelSettings = (await collections.settings
     .find({})
     .toArray()) as WithId<Settings>[]
