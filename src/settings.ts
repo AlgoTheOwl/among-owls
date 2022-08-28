@@ -1,20 +1,4 @@
-type Settings = {
-  channelName: string
-  hp: number
-  damageRange: number
-  damagePerAowl: number
-  imageDir: string
-  coolDownInterval: number
-  minCapacity: number
-  maxCapacity: number
-  assetCooldown: number
-  maxAssets: number
-  waitingRoomRefreshRate: number
-  channelId: number
-  hootSettings: {
-    hootOnWin: number
-  }
-}
+import { Settings } from './types/game'
 
 let settings: GlobalSettings = {}
 
@@ -43,7 +27,7 @@ if (env === 'DEV') {
       // How often we refersh the waiting room embed
       waitingRoomRefreshRate: 2000,
       // channel Id for config
-      channelId: 984079278683598928,
+      channelId: '984079278683598928',
       // Settings for native asa
       hootSettings: {
         hootOnWin: 5,
@@ -70,7 +54,7 @@ if (env === 'DEV') {
       // How often we refersh the waiting room embed
       waitingRoomRefreshRate: 2000,
       // channel Id for config
-      channelId: 984079278683598928,
+      channelId: '984079278683598928',
       // Settings for native asa
       hootSettings: {
         hootOnWin: 5,
@@ -101,7 +85,7 @@ if (env === 'PROD') {
       // How often we refersh the waiting room embed
       waitingRoomRefreshRate: 2000,
       // channel Id for config
-      channelId: 984079278683598928,
+      channelId: '984079278683598928',
       // Settings for native asa
       hootSettings: {
         hootOnWin: 5,
@@ -128,7 +112,7 @@ if (env === 'PROD') {
       // How often we refersh the waiting room embed
       waitingRoomRefreshRate: 2000,
       // channel Id for config
-      channelId: 984079278683598928,
+      channelId: '984079278683598928',
       // Settings for native asa
       hootSettings: {
         hootOnWin: 2,

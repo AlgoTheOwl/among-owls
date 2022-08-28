@@ -13,6 +13,7 @@ declare global {
       USERS_COLLECTION_NAME: string
       ASSETS_COLLECTION_NAME: string
       GAME_COLLECTION_NAME: string
+      SETTINGS_COLLECTION_NAME: string
       UNIT_NAME: string
       IPFS_GATEWAY: string
       ADMIN_ID: string

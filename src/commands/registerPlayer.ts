@@ -18,6 +18,7 @@ import fs from 'fs'
 // Globals
 import { games } from '../index'
 import settings from '../settings'
+import { getSettings } from '../utils/settings'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,7 +35,7 @@ module.exports = {
 
       const assetId = values[0]
       const { username, id } = user
-      const { imageDir, hp, maxCapacity } = settings[channelId]
+      const { imageDir, hp, maxCapacity } = await getSettings(channelId)
 
       // Check if user is another game
       if (checkIfRegisteredPlayer(games, assetId, id)) {

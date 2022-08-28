@@ -12,7 +12,6 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('stop')
         .setDescription('Stop the current game'),
-    enabled: true,
     async execute(interaction) {
         if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;

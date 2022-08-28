@@ -25,7 +25,7 @@ if (env === 'DEV') {
             // How often we refersh the waiting room embed
             waitingRoomRefreshRate: 2000,
             // channel Id for config
-            channelId: 984079278683598928,
+            channelId: '984079278683598928',
             // Settings for native asa
             hootSettings: {
                 hootOnWin: 5,
@@ -52,7 +52,7 @@ if (env === 'DEV') {
             // How often we refersh the waiting room embed
             waitingRoomRefreshRate: 2000,
             // channel Id for config
-            channelId: 984079278683598928,
+            channelId: '984079278683598928',
             // Settings for native asa
             hootSettings: {
                 hootOnWin: 5,
@@ -83,7 +83,7 @@ if (env === 'PROD') {
             // How often we refersh the waiting room embed
             waitingRoomRefreshRate: 2000,
             // channel Id for config
-            channelId: 984079278683598928,
+            channelId: '984079278683598928',
             // Settings for native asa
             hootSettings: {
                 hootOnWin: 5,
@@ -110,7 +110,7 @@ if (env === 'PROD') {
             // How often we refersh the waiting room embed
             waitingRoomRefreshRate: 2000,
             // channel Id for config
-            channelId: 984079278683598928,
+            channelId: '984079278683598928',
             // Settings for native asa
             hootSettings: {
                 hootOnWin: 2,

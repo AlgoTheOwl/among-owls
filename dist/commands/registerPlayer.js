@@ -14,7 +14,7 @@ const helpers_1 = require("../utils/helpers");
 const fs_1 = __importDefault(require("fs"));
 // Globals
 const index_1 = require("../index");
-const settings_1 = __importDefault(require("../settings"));
+const settings_1 = require("../utils/settings");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('register-player')
@@ -29,7 +29,7 @@ module.exports = {
                 return;
             const assetId = values[0];
             const { username, id } = user;
-            const { imageDir, hp, maxCapacity } = settings_1.default[channelId];
+            const { imageDir, hp, maxCapacity } = await (0, settings_1.getSettings)(channelId);
             // Check if user is another game
             if ((0, helpers_1.checkIfRegisteredPlayer)(index_1.games, assetId, id)) {
                 return interaction.reply({

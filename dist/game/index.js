@@ -10,15 +10,14 @@ const discord_js_1 = require("discord.js");
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
 const runGame_1 = __importDefault(require("./runGame"));
-// Globals
-const settings_1 = __importDefault(require("../settings"));
 const __1 = require("..");
 // Schemas
 const embeds_2 = __importDefault(require("../constants/embeds"));
+const settings_1 = require("../utils/settings");
 const startWaitingRoom = async (channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
-    const { maxCapacity } = settings_1.default[channelId];
+    const { maxCapacity } = await (0, settings_1.getSettings)(channelId);
     let capacity = maxCapacity;
     (0, helpers_1.resetGame)(false, channelId);
     game.megatron = await channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom, channelId));
