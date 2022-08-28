@@ -88,6 +88,7 @@ const main = async () => {
     .find({})
     .toArray()) as WithId<Settings>[]
 
+  console.log(channelSettings)
   // start game for each channel
   asyncForEach(channelSettings, async (settings: Settings) => {
     const { maxCapacity, channelId } = settings

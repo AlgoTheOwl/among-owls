@@ -73,6 +73,7 @@ const main = async () => {
     const channelSettings = (await database_service_2.collections.settings
         .find({})
         .toArray());
+    console.log(channelSettings);
     // start game for each channel
     (0, helpers_1.asyncForEach)(channelSettings, async (settings) => {
         const { maxCapacity, channelId } = settings;
