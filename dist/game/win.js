@@ -16,6 +16,7 @@ const _1 = require(".");
 // Globals
 const __1 = require("..");
 const settings_1 = require("../utils/settings");
+const encounter_1 = __importDefault(require("../models/encounter"));
 const handleWin = async (player, winByTimeout, channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
@@ -26,6 +27,7 @@ const handleWin = async (player, winByTimeout, channel) => {
     const winningUser = (await database_service_1.collections.users.findOne({
         _id: player.userId,
     }));
+    // Render death imagery
     const attachment = new discord_js_1.AttachmentBuilder('src/images/death.gif', {
         name: 'death.gif',
     });
@@ -41,10 +43,14 @@ const handleWin = async (player, winByTimeout, channel) => {
         $set: { yaoWins: updatedScore, hoot: updatedHoot, assets: updatedAssets },
     });
     const playerArr = Object.values(game.players);
+    // Save encounter
+    addEncounter(game, winningUser._id, player.asset.assetId, channelId);
+    // Reset state for new game
     (0, helpers_1.resetGame)(false, channelId);
     (0, settings_1.clearSettings)(channelId);
     (0, helpers_1.emptyDir)(imageDir);
     setAssetTimeout(playerArr, assetCooldown);
+    // Wait a couple of seconds before rendering winning embed
     await (0, helpers_1.wait)(2000);
     await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { winByTimeout, player, hootOnWin }));
     // Add new waiting room
@@ -71,4 +77,16 @@ const updateAsset = (winningUser, players) => {
     const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1;
     const updatedAsset = Object.assign(Object.assign({}, winningAsset), { wins: winningAssetWins });
     return Object.assign(Object.assign({}, winnerAssets), { [updatedAsset.assetId]: updatedAsset });
+};
+/**
+ * Adds encounter to database
+ *
+ * @param game
+ * @param winnerId
+ * @param winningAssetId
+ * @param channelId
+ */
+const addEncounter = (game, winnerId, winningAssetId, channelId) => {
+    const encounter = new encounter_1.default(game.players, game.rounds, winnerId, winningAssetId, game.startTime, Date.now(), channelId);
+    database_service_1.collections.encounters.insertOne(encounter);
 };

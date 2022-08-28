@@ -70,6 +70,7 @@ async function runGame(channel) {
                 }
             });
         }
+        game.rounds++;
     }
     catch (error) {
         console.log('****** ERROR RUNNNINGS GAME ******', error);

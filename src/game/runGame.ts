@@ -92,6 +92,8 @@ export default async function runGame(channel: TextChannel) {
         }
       })
     }
+
+    game.rounds++
   } catch (error) {
     console.log('****** ERROR RUNNNINGS GAME ******', error)
     resetGame(false, channelId)

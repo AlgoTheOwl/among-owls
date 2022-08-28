@@ -2,7 +2,7 @@
 import { AttachmentBuilder, TextChannel } from 'discord.js'
 // Schemas
 import Player from '../models/player'
-import { WithId } from 'mongodb'
+import { ObjectId, WithId } from 'mongodb'
 import User from '../models/user'
 import embeds from '../constants/embeds'
 // Data
@@ -13,8 +13,9 @@ import doEmbed from '../embeds'
 import { startWaitingRoom } from '.'
 // Globals
 import { games } from '..'
-import Game from '../models/game'
 import { clearSettings, getSettings } from '../utils/settings'
+import Encounter from '../models/encounter'
+import Game from '../models/game'
 
 export const handleWin = async (
   player: Player,
@@ -25,6 +26,7 @@ export const handleWin = async (
   const game = games[channelId]
   const { imageDir, hootSettings, assetCooldown } = await getSettings(channelId)
   const { hootOnWin } = hootSettings
+
   game.active = false
 
   // Increment score and hoot of winning player
@@ -32,9 +34,11 @@ export const handleWin = async (
     _id: player.userId,
   })) as WithId<User>
 
+  // Render death imagery
   const attachment = new AttachmentBuilder('src/images/death.gif', {
     name: 'death.gif',
   })
+
   await game.megatron.edit({
     files: [attachment],
   })
@@ -54,10 +58,15 @@ export const handleWin = async (
 
   const playerArr = Object.values(game.players)
 
+  // Save encounter
+  addEncounter(game, winningUser._id, player.asset.assetId, channelId)
+
+  // Reset state for new game
   resetGame(false, channelId)
   clearSettings(channelId)
   emptyDir(imageDir)
   setAssetTimeout(playerArr, assetCooldown)
+  // Wait a couple of seconds before rendering winning embed
   await wait(2000)
   await game.arena.edit(
     doEmbed(embeds.win, channelId, { winByTimeout, player, hootOnWin })
@@ -90,4 +99,30 @@ const updateAsset = (winningUser: User, players: { [key: string]: Player }) => {
   const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1
   const updatedAsset = { ...winningAsset, wins: winningAssetWins }
   return { ...winnerAssets, [updatedAsset.assetId]: updatedAsset }
+}
+
+/**
+ * Adds encounter to database
+ *
+ * @param game
+ * @param winnerId
+ * @param winningAssetId
+ * @param channelId
+ */
+const addEncounter = (
+  game: Game,
+  winnerId: ObjectId,
+  winningAssetId: number,
+  channelId: string
+) => {
+  const encounter = new Encounter(
+    game.players,
+    game.rounds,
+    winnerId,
+    winningAssetId,
+    game.startTime,
+    Date.now(),
+    channelId
+  )
+  collections.encounters.insertOne(encounter)
 }

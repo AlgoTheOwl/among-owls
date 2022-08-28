@@ -85,7 +85,7 @@ const startGames = async () => {
     (0, helpers_1.asyncForEach)(channelSettings, async (settings) => {
         const { maxCapacity, channelId } = settings;
         const channel = exports.client.channels.cache.get(channelId);
-        exports.games[channelId] = new game_1.default({}, false, false, maxCapacity, channelId);
+        exports.games[channelId] = new game_1.default({}, false, false, maxCapacity, 0, Date.now());
         (0, game_2.startWaitingRoom)(channel);
     });
 };
