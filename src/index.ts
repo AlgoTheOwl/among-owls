@@ -87,8 +87,6 @@ const main = async () => {
   const channelSettings = (await collections.settings
     .find({})
     .toArray()) as WithId<Settings>[]
-
-  console.log(channelSettings)
   // start game for each channel
   asyncForEach(channelSettings, async (settings: Settings) => {
     const { maxCapacity, channelId } = settings
