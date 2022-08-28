@@ -16,11 +16,12 @@ import { games } from '..'
 // Schemas
 import embeds from '../constants/embeds'
 import Player from '../models/player'
+import { getSettings } from '../utils/settings'
 
 export const startWaitingRoom = async (channel: TextChannel): Promise<void> => {
   const { id: channelId } = channel
   const game = games[channelId]
-  const { maxCapacity } = settings[channelId]
+  const { maxCapacity } = await getSettings(channelId)
   let capacity = maxCapacity
 
   resetGame(false, channelId)

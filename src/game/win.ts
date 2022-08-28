@@ -15,6 +15,7 @@ import { startWaitingRoom } from '.'
 import { games } from '..'
 import settings from '../settings'
 import Game from '../models/game'
+import { clearSettings } from '../utils/settings'
 
 export const handleWin = async (
   player: Player,
@@ -55,6 +56,7 @@ export const handleWin = async (
   const playerArr = Object.values(game.players)
 
   resetGame(false, channelId)
+  clearSettings(channelId)
   emptyDir(imageDir)
   setAssetTimeout(playerArr, assetCooldown)
   await wait(2000)

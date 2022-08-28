@@ -12,13 +12,16 @@ import path from 'node:path'
 // Helpers
 import { connectToDatabase } from './database/database.service'
 // Globals
-import settings from './settings'
+// import settings from './settings'
+import { collections } from './database/database.service'
 // Schema
 import Game from './models/game'
 // Helpers
 import { startWaitingRoom } from './game'
 import { convergeTxnData } from './utils/algorand'
 import { wait, asyncForEach } from './utils/helpers'
+import { WithId } from 'mongodb'
+import { Settings } from './types/game'
 
 const token = process.env.DISCORD_TOKEN
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE
@@ -78,22 +81,19 @@ const main = async () => {
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file)
     const command = require(filePath)
-
     client.commands.set(command.data.name, command)
   }
 
-  const channelIdArr = Object.keys(settings)
+  const channelSettings = (await collections.settings
+    .find({})
+    .toArray()) as WithId<Settings>[]
 
   // start game for each channel
-  asyncForEach(channelIdArr, async (channelId: string) => {
-    if (settings[channelId]) {
-      const channel = client.channels.cache.get(channelId) as TextChannel
-      const { maxCapacity } = settings[channelId]
-      games[channelId] = new Game({}, false, false, maxCapacity, channelId)
-      startWaitingRoom(channel)
-    } else {
-      console.log(`missing settings for channel ${channelId}`)
-    }
+  asyncForEach(channelSettings, async (settings: Settings) => {
+    const { maxCapacity, channelId } = settings
+    const channel = client.channels.cache.get(channelId) as TextChannel
+    games[channelId] = new Game({}, false, false, maxCapacity, channelId)
+    startWaitingRoom(channel)
   })
 }
 

@@ -14,6 +14,8 @@ import Asset from '../models/asset'
 // Globals
 import { games } from '..'
 import settings from '../settings'
+import { getSyntheticTrailingComments } from 'typescript'
+import { getSettings } from '../utils/settings'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -28,7 +30,7 @@ module.exports = {
 
       const game = games[channelId]
 
-      const { maxAssets } = settings[channelId]
+      const { maxAssets } = await getSettings(channelId)
 
       if (!game.waitingRoom) {
         return interaction.reply({

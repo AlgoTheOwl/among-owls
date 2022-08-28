@@ -16,6 +16,7 @@ const _1 = require(".");
 // Globals
 const __1 = require("..");
 const settings_1 = __importDefault(require("../settings"));
+const settings_2 = require("../utils/settings");
 const handleWin = async (player, winByTimeout, channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
@@ -42,6 +43,7 @@ const handleWin = async (player, winByTimeout, channel) => {
     });
     const playerArr = Object.values(game.players);
     (0, helpers_1.resetGame)(false, channelId);
+    (0, settings_2.clearSettings)(channelId);
     (0, helpers_1.emptyDir)(imageDir);
     setAssetTimeout(playerArr, assetCooldown);
     await (0, helpers_1.wait)(2000);

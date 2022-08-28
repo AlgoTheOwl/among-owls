@@ -1,7 +1,4 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 // Discord
 const discord_js_1 = require("discord.js");
@@ -10,7 +7,7 @@ const builders_1 = require("@discordjs/builders");
 const database_service_1 = require("../database/database.service");
 // Globals
 const __1 = require("..");
-const settings_1 = __importDefault(require("../settings"));
+const settings_1 = require("../utils/settings");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('select-attacker')
@@ -19,7 +16,7 @@ module.exports = {
         try {
             const { user: { id }, channelId, } = interaction;
             const game = __1.games[channelId];
-            const { maxAssets } = settings_1.default[channelId];
+            const { maxAssets } = await (0, settings_1.getSettings)(channelId);
             if (!game.waitingRoom) {
                 return interaction.reply({
                     content: 'Game is not currently active. Use the /start command to start the game',

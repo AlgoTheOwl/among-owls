@@ -12,7 +12,8 @@ const node_path_1 = __importDefault(require("node:path"));
 // Helpers
 const database_service_1 = require("./database/database.service");
 // Globals
-const settings_1 = __importDefault(require("./settings"));
+// import settings from './settings'
+const database_service_2 = require("./database/database.service");
 // Schema
 const game_1 = __importDefault(require("./models/game"));
 // Helpers
@@ -69,18 +70,15 @@ const main = async () => {
         const command = require(filePath);
         exports.client.commands.set(command.data.name, command);
     }
-    const channelIdArr = Object.keys(settings_1.default);
+    const channelSettings = (await database_service_2.collections.settings
+        .find({})
+        .toArray());
     // start game for each channel
-    (0, helpers_1.asyncForEach)(channelIdArr, async (channelId) => {
-        if (settings_1.default[channelId]) {
-            const channel = exports.client.channels.cache.get(channelId);
-            const { maxCapacity } = settings_1.default[channelId];
-            exports.games[channelId] = new game_1.default({}, false, false, maxCapacity, channelId);
-            (0, game_2.startWaitingRoom)(channel);
-        }
-        else {
-            console.log(`missing settings for channel ${channelId}`);
-        }
+    (0, helpers_1.asyncForEach)(channelSettings, async (settings) => {
+        const { maxCapacity, channelId } = settings;
+        const channel = exports.client.channels.cache.get(channelId);
+        exports.games[channelId] = new game_1.default({}, false, false, maxCapacity, channelId);
+        (0, game_2.startWaitingRoom)(channel);
     });
 };
 /*

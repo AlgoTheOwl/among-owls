@@ -22,7 +22,17 @@ export async function connectToDatabase() {
     process.env.USERS_COLLECTION_NAME
   )
 
+  const settingsCollections: mongoDB.Collection = db.collection(
+    process.env.SETTINGS_COLLECTION_NAME
+  )
+
+  const assetsCollection: mongoDB.Collection = db.collection(
+    process.env.ASSETS_COLLECTION_NAME
+  )
+
   collections.users = usersCollection
+  collections.settings = settingsCollections
+  collections.assets = assetsCollection
 
   console.log(`Successfully connected to database: ${db.databaseName}`)
 }

@@ -5,6 +5,7 @@ import { ButtonInteraction } from 'discord.js'
 import { games } from '..'
 import settings from '../settings'
 import { confirmRole } from '../utils/helpers'
+import { getSettings } from '../utils/settings'
 
 const adminId = process.env.ADMIN_ID
 
@@ -14,7 +15,7 @@ module.exports = {
     .setDescription('begin the game'),
   async execute(interaction: ButtonInteraction) {
     const { user, channelId } = interaction
-    const { minCapacity } = settings[channelId]
+    const { minCapacity } = await getSettings(channelId)
     const game = games[channelId]
     const playerArr = Object.values(game.players)
 
