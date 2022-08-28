@@ -3,7 +3,6 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { ButtonInteraction } from 'discord.js'
 // Globals
 import { games } from '..'
-import settings from '../settings'
 import { confirmRole } from '../utils/helpers'
 import { getSettings } from '../utils/settings'
 

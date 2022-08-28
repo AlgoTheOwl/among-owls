@@ -3,7 +3,6 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import {
   SelectMenuBuilder,
   Interaction,
-  MessageActionRowComponent,
   EmbedBuilder,
   InteractionType,
   ActionRowBuilder,
@@ -17,8 +16,8 @@ import User from '../models/user'
 import embeds from '../constants/embeds'
 // Helpers
 import doEmbed from '../embeds'
+import { getSettings } from '../utils/settings'
 // Globals
-import settings from '../settings'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -30,7 +29,7 @@ module.exports = {
       if (interaction.type !== InteractionType.ApplicationCommand) return
 
       const { user, channelId } = interaction
-      const { maxAssets } = settings[channelId]
+      const { maxAssets } = await getSettings(channelId)
 
       await interaction.deferReply()
 

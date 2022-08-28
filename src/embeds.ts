@@ -16,7 +16,7 @@ import embeds from './constants/embeds'
 import { games } from '.'
 // Helpers
 import { mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
-import settings from './settings'
+import { getSettings } from './utils/settings'
 
 const defaultEmbedValues: EmbedData = {
   title: '🔥 Ye Among AOWLs 🔥',
@@ -110,13 +110,10 @@ export default function doEmbed(
 
   // Win
   if (options && type === embeds.win) {
-    const { player, winByTimeout } = options
+    const { player, winByTimeout, hootOnWin } = options
     const asserUrl = player.asset.assetUrl
     const { asset, username } = player
     const { alias, assetName } = asset
-    const {
-      hootSettings: { hootOnWin },
-    } = settings[channelId]
 
     data = {
       title: 'WINNER!!!',

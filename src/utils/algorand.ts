@@ -2,12 +2,10 @@ import Asset from '../models/asset'
 import { AlgoAsset, AlgoAssetData, Txn, TxnData } from '../types/user'
 import { asyncForEach, wait } from './helpers'
 import algosdk from 'algosdk'
-import settings from '../settings'
 import fs from 'fs'
 
 // import txnDataJson from '../txnData/txnData.json'
 import { creatorAddressArr } from '..'
-import { CommandInteractionOptionResolver } from 'discord.js'
 
 const algoNode = process.env.ALGO_NODE
 const pureStakeApi = process.env.PURESTAKE_API

@@ -11,13 +11,13 @@ const embeds_1 = __importDefault(require("../embeds"));
 // Globals
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
-const settings_1 = __importDefault(require("../settings"));
+const settings_1 = require("../utils/settings");
 async function runGame(channel) {
     const { id: channelId } = channel;
     try {
         const game = __1.games[channelId];
         const playerArr = Object.values(game.players);
-        const { damagePerAowl, damageRange } = settings_1.default[channelId];
+        const { damagePerAowl, damageRange } = await (0, settings_1.getSettings)(channelId);
         let isWin = false;
         let handlingDeath = false;
         // MAIN GAME LOOP

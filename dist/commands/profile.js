@@ -11,8 +11,8 @@ const database_service_1 = require("../database/database.service");
 const embeds_1 = __importDefault(require("../constants/embeds"));
 // Helpers
 const embeds_2 = __importDefault(require("../embeds"));
+const settings_1 = require("../utils/settings");
 // Globals
-const settings_1 = __importDefault(require("../settings"));
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('profile')
@@ -24,7 +24,7 @@ module.exports = {
             if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
                 return;
             const { user, channelId } = interaction;
-            const { maxAssets } = settings_1.default[channelId];
+            const { maxAssets } = await (0, settings_1.getSettings)(channelId);
             await interaction.deferReply();
             const userData = (await database_service_1.collections.users.findOne({
                 discordId: user.id,

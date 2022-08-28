@@ -10,7 +10,6 @@ const embeds_1 = __importDefault(require("./constants/embeds"));
 const _1 = require(".");
 // Helpers
 const helpers_1 = require("./utils/helpers");
-const settings_1 = __importDefault(require("./settings"));
 const defaultEmbedValues = {
     title: '🔥 Ye Among AOWLs 🔥',
     description: '💀 Who will survive? 💀',
@@ -80,11 +79,10 @@ function doEmbed(type, channelId, options) {
     }
     // Win
     if (options && type === embeds_1.default.win) {
-        const { player, winByTimeout } = options;
+        const { player, winByTimeout, hootOnWin } = options;
         const asserUrl = player.asset.assetUrl;
         const { asset, username } = player;
         const { alias, assetName } = asset;
-        const { hootSettings: { hootOnWin }, } = settings_1.default[channelId];
         data = {
             title: 'WINNER!!!',
             description: `${username}'s ${alias || assetName} ${winByTimeout

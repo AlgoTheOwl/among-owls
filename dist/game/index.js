@@ -10,6 +10,7 @@ const discord_js_1 = require("discord.js");
 const helpers_1 = require("../utils/helpers");
 const embeds_1 = __importDefault(require("../embeds"));
 const runGame_1 = __importDefault(require("./runGame"));
+// Globals
 const __1 = require("..");
 // Schemas
 const embeds_2 = __importDefault(require("../constants/embeds"));

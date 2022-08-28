@@ -15,12 +15,11 @@ const embeds_2 = __importDefault(require("../embeds"));
 const _1 = require(".");
 // Globals
 const __1 = require("..");
-const settings_1 = __importDefault(require("../settings"));
-const settings_2 = require("../utils/settings");
+const settings_1 = require("../utils/settings");
 const handleWin = async (player, winByTimeout, channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
-    const { imageDir, hootSettings, assetCooldown } = settings_1.default[channelId];
+    const { imageDir, hootSettings, assetCooldown } = await (0, settings_1.getSettings)(channelId);
     const { hootOnWin } = hootSettings;
     game.active = false;
     // Increment score and hoot of winning player
@@ -43,11 +42,11 @@ const handleWin = async (player, winByTimeout, channel) => {
     });
     const playerArr = Object.values(game.players);
     (0, helpers_1.resetGame)(false, channelId);
-    (0, settings_2.clearSettings)(channelId);
+    (0, settings_1.clearSettings)(channelId);
     (0, helpers_1.emptyDir)(imageDir);
     setAssetTimeout(playerArr, assetCooldown);
     await (0, helpers_1.wait)(2000);
-    await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { winByTimeout, player }));
+    await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { winByTimeout, player, hootOnWin }));
     // Add new waiting room
     (0, _1.startWaitingRoom)(channel);
 };

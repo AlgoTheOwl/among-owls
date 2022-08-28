@@ -13,9 +13,8 @@ import doEmbed from '../embeds'
 import { startWaitingRoom } from '.'
 // Globals
 import { games } from '..'
-import settings from '../settings'
 import Game from '../models/game'
-import { clearSettings } from '../utils/settings'
+import { clearSettings, getSettings } from '../utils/settings'
 
 export const handleWin = async (
   player: Player,
@@ -24,7 +23,7 @@ export const handleWin = async (
 ) => {
   const { id: channelId } = channel
   const game = games[channelId]
-  const { imageDir, hootSettings, assetCooldown } = settings[channelId]
+  const { imageDir, hootSettings, assetCooldown } = await getSettings(channelId)
   const { hootOnWin } = hootSettings
   game.active = false
 
@@ -61,7 +60,7 @@ export const handleWin = async (
   setAssetTimeout(playerArr, assetCooldown)
   await wait(2000)
   await game.arena.edit(
-    doEmbed(embeds.win, channelId, { winByTimeout, player })
+    doEmbed(embeds.win, channelId, { winByTimeout, player, hootOnWin })
   )
   // Add new waiting room
   startWaitingRoom(channel)

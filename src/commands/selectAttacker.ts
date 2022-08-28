@@ -13,7 +13,6 @@ import { WithId } from 'mongodb'
 import Asset from '../models/asset'
 // Globals
 import { games } from '..'
-import settings from '../settings'
 import { getSyntheticTrailingComments } from 'typescript'
 import { getSettings } from '../utils/settings'
 

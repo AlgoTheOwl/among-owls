@@ -11,7 +11,6 @@ import { resetGame, wait } from '../utils/helpers'
 import doEmbed from '../embeds'
 import runGame from './runGame'
 // Globals
-import settings from '../settings'
 import { games } from '..'
 // Schemas
 import embeds from '../constants/embeds'

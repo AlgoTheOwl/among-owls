@@ -17,7 +17,6 @@ import {
 import fs from 'fs'
 // Globals
 import { games } from '../index'
-import settings from '../settings'
 import { getSettings } from '../utils/settings'
 
 module.exports = {

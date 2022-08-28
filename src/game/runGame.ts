@@ -15,15 +15,15 @@ import { games } from '..'
 // Schemas
 import Player from '../models/player'
 import embeds from '../constants/embeds'
-import settings from '../settings'
 import { TextChannel } from 'discord.js'
+import { getSettings } from '../utils/settings'
 
 export default async function runGame(channel: TextChannel) {
   const { id: channelId } = channel
   try {
     const game = games[channelId]
     const playerArr = Object.values(game.players)
-    const { damagePerAowl, damageRange } = settings[channelId]
+    const { damagePerAowl, damageRange } = await getSettings(channelId)
 
     let isWin = false
     let handlingDeath = false
