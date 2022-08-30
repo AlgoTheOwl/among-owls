@@ -87,7 +87,9 @@ export const determineOwnership = async function (
 
         if (params[`unit-name`]?.includes(unitPrefix)) {
           const { name, url } = params
-          nftsOwned.push(new Asset(assetId, name, url, params['unit-name']))
+          nftsOwned.push(
+            new Asset(assetId, name, url, params['unit-name'], 0, 0)
+          )
         }
       }
       await wait(250)

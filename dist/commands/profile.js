@@ -43,6 +43,14 @@ module.exports = {
                     content: 'You have no AOWLS to profile.',
                 });
             }
+            const wins = assetArray.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.wins;
+            }, 0);
+            const losses = assetArray.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.losses;
+            }, 0);
+            console.log(wins);
+            console.log(losses);
             const options = assetArray
                 .map((asset, i) => {
                 var _a;
@@ -86,3 +94,4 @@ module.exports = {
         }
     },
 };
+const getAssetRounds = (asset) => asset.wins + asset.losses;

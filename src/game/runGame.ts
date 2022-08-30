@@ -88,7 +88,6 @@ export default async function runGame(channel: TextChannel) {
               return
             }
           }
-          // HANDLE DEATH
         }
       })
     }

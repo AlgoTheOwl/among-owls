@@ -66,7 +66,6 @@ async function runGame(channel) {
                             return;
                         }
                     }
-                    // HANDLE DEATH
                 }
             });
         }

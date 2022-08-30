@@ -6,9 +6,10 @@ export default class Asset {
     public assetName: string,
     public assetUrl: string,
     public unitName: string,
+    public wins: number,
+    public losses: number,
     public userId?: ObjectId,
     public localPath?: string,
-    public wins?: number,
     public alias?: string
   ) {}
 }

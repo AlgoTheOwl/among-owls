@@ -14,11 +14,13 @@ export default class Player {
     public rolledRecently?: boolean,
     public timedOut?: boolean,
     public dead?: boolean,
-    public victimId?: string
+    public victimId?: string,
+    public win?: boolean
   ) {
     this.rolledRecently = false
     this.timedOut = false
     this.coolDownTimeLeft = 0
     this.dead = false
+    this.win = false
   }
 }

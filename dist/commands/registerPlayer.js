@@ -72,7 +72,7 @@ module.exports = {
                 if (!localPath) {
                     return;
                 }
-                const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, _id, localPath, undefined, asset.alias);
+                const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, asset.wins || 0, asset.losses || 0, _id, localPath, asset.alias);
                 // check again for capacity once added
                 if (Object.values(game.players).length >= maxCapacity &&
                     !game.players[id]) {

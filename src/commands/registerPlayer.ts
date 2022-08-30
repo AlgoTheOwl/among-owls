@@ -96,9 +96,10 @@ module.exports = {
           asset.assetName,
           asset.assetUrl,
           asset.unitName,
+          asset.wins || 0,
+          asset.losses || 0,
           _id,
           localPath,
-          undefined,
           asset.alias
         )
 

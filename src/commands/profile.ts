@@ -56,6 +56,23 @@ module.exports = {
         })
       }
 
+      const wins = assetArray.reduce(
+        (accumulator: number, currentValue: Asset) => {
+          return accumulator + currentValue.wins
+        },
+        0
+      )
+
+      const losses = assetArray.reduce(
+        (accumulator: number, currentValue: Asset) => {
+          return accumulator + currentValue.losses
+        },
+        0
+      )
+
+      console.log(wins)
+      console.log(losses)
+
       const options = assetArray
         .map((asset: Asset, i: number) => {
           if (i < maxAssets) {
@@ -110,3 +127,5 @@ module.exports = {
     }
   },
 }
+
+const getAssetRounds = (asset: Asset) => asset.wins + asset.losses
