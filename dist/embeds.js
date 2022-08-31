@@ -79,15 +79,13 @@ function doEmbed(type, channelId, options) {
     }
     // Win
     if (options && type === embeds_1.default.win) {
-        const { player, winByTimeout, hootOnWin } = options;
+        const { player, hootOnWin } = options;
         const asserUrl = player.asset.assetUrl;
         const { asset, username } = player;
         const { alias, assetName } = asset;
         data = {
             title: 'WINNER!!!',
-            description: `${username}'s ${alias || assetName} ${winByTimeout
-                ? 'won by default - all other players timed out!'
-                : `destroyed the competition and won ${hootOnWin} hoot!`}`,
+            description: `${username}'s ${alias || assetName} ${`destroyed the competition and won ${hootOnWin} hoot!`}`,
             color: 'DarkAqua',
             image: (0, helpers_1.normalizeIpfsUrl)(asserUrl),
         };

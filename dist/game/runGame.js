@@ -17,9 +17,8 @@ async function runGame(channel) {
     try {
         const game = __1.games[channelId];
         const playerArr = Object.values(game.players);
-        const { damagePerAowl, damageRange } = await (0, settings_1.getSettings)(channelId);
+        const { damageRange } = await (0, settings_1.getSettings)(channelId);
         let isWin = false;
-        let handlingDeath = false;
         // MAIN GAME LOOP
         while (!game.stopped &&
             !game.waitingRoom &&
@@ -33,7 +32,8 @@ async function runGame(channel) {
                 const attacker = game.players[discordId];
                 let victim;
                 // DO DAMAGE
-                if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.timedOut) && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead) && game.active) {
+                if (attacker && !(attacker === null || attacker === void 0 ? void 0 : attacker.dead) && game.active) {
+                    // SELECT VICTIM
                     if (player.victimId && !game.players[player.victimId].dead) {
                         victim = game.players[player.victimId];
                     }
@@ -41,16 +41,17 @@ async function runGame(channel) {
                         victim = game.players[(0, attack_1.getRandomVictimId)(discordId, channelId)];
                     }
                     if (victim) {
-                        const damage = (0, helpers_1.doDamage)(attacker, false, damagePerAowl, damageRange);
+                        const damage = (0, helpers_1.doDamage)(damageRange);
                         victim.hp -= damage;
-                        if (victim.hp <= 0 && attacker && !handlingDeath) {
+                        if (victim.hp <= 0 && attacker) {
                             victim.dead = true;
+                            attacker.asset.kos++;
                         }
                         // HANDLE WIN
-                        const { winningPlayer, winByTimeout } = (0, helpers_1.getWinningPlayer)(playerArr);
+                        const winningPlayer = (0, helpers_1.getWinningPlayer)(playerArr);
                         isWin = !!winningPlayer;
                         if (isWin && winningPlayer && game.active) {
-                            (0, win_1.handleWin)(winningPlayer, winByTimeout, channel);
+                            (0, win_1.handleWin)(winningPlayer, channel);
                         }
                         // REFRESH EMBED
                         const attackField = {

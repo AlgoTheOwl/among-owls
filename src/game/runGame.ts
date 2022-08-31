@@ -23,10 +23,9 @@ export default async function runGame(channel: TextChannel) {
   try {
     const game = games[channelId]
     const playerArr = Object.values(game.players)
-    const { damagePerAowl, damageRange } = await getSettings(channelId)
+    const { damageRange } = await getSettings(channelId)
 
     let isWin = false
-    let handlingDeath = false
 
     // MAIN GAME LOOP
     while (
@@ -44,7 +43,8 @@ export default async function runGame(channel: TextChannel) {
         let victim
 
         // DO DAMAGE
-        if (attacker && !attacker?.timedOut && !attacker?.dead && game.active) {
+        if (attacker && !attacker?.dead && game.active) {
+          // SELECT VICTIM
           if (player.victimId && !game.players[player.victimId].dead) {
             victim = game.players[player.victimId]
           } else {
@@ -52,18 +52,19 @@ export default async function runGame(channel: TextChannel) {
           }
 
           if (victim) {
-            const damage = doDamage(attacker, false, damagePerAowl, damageRange)
+            const damage = doDamage(damageRange)
             victim.hp -= damage
-            if (victim.hp <= 0 && attacker && !handlingDeath) {
+            if (victim.hp <= 0 && attacker) {
               victim.dead = true
+              attacker.asset.kos++
             }
 
             // HANDLE WIN
-            const { winningPlayer, winByTimeout } = getWinningPlayer(playerArr)
+            const winningPlayer = getWinningPlayer(playerArr)
             isWin = !!winningPlayer
 
             if (isWin && winningPlayer && game.active) {
-              handleWin(winningPlayer, winByTimeout, channel)
+              handleWin(winningPlayer, channel)
             }
 
             // REFRESH EMBED

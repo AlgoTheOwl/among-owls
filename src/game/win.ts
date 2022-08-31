@@ -17,11 +17,7 @@ import { clearSettings, getSettings } from '../utils/settings'
 import Encounter from '../models/encounter'
 import Game from '../models/game'
 
-export const handleWin = async (
-  player: Player,
-  winByTimeout: boolean,
-  channel: TextChannel
-) => {
+export const handleWin = async (player: Player, channel: TextChannel) => {
   const { id: channelId } = channel
   const game = games[channelId]
   const { imageDir, hootSettings, assetCooldown } = await getSettings(channelId)
@@ -56,9 +52,7 @@ export const handleWin = async (
   emptyDir(imageDir)
   // Wait a couple of seconds before rendering winning embed
   await wait(2000)
-  await game.arena.edit(
-    doEmbed(embeds.win, channelId, { winByTimeout, player, hootOnWin })
-  )
+  await game.arena.edit(doEmbed(embeds.win, channelId, { player, hootOnWin }))
   // Add new waiting room
   startWaitingRoom(channel)
 }
@@ -95,6 +89,7 @@ const endGameMutation = async (
       ...asset,
       wins,
       losses,
+      kos: asset.kos,
     }
 
     const userData: User = {

@@ -72,7 +72,7 @@ const determineOwnership = async function (address, maxAssets) {
                 const { params } = assetData;
                 if ((_a = params[`unit-name`]) === null || _a === void 0 ? void 0 : _a.includes(unitPrefix)) {
                     const { name, url } = params;
-                    nftsOwned.push(new asset_1.default(assetId, name, url, params['unit-name'], 0, 0));
+                    nftsOwned.push(new asset_1.default(assetId, name, url, params['unit-name'], 0, 0, 0));
                 }
             }
             await (0, helpers_1.wait)(250);

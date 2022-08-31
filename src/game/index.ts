@@ -74,7 +74,7 @@ const sendVictimSelectMenu = async (
   const playerArr = Object.values(players)
 
   const victims = playerArr
-    .filter((player: Player) => !player.timedOut && !player.dead)
+    .filter((player: Player) => !player.dead)
     .map((player: Player) => ({
       label: `Attack ${player.username}`,
       description: ' ',

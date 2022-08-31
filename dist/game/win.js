@@ -17,7 +17,7 @@ const _1 = require(".");
 const __1 = require("..");
 const settings_1 = require("../utils/settings");
 const encounter_1 = __importDefault(require("../models/encounter"));
-const handleWin = async (player, winByTimeout, channel) => {
+const handleWin = async (player, channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
     const { imageDir, hootSettings, assetCooldown } = await (0, settings_1.getSettings)(channelId);
@@ -45,7 +45,7 @@ const handleWin = async (player, winByTimeout, channel) => {
     (0, helpers_1.emptyDir)(imageDir);
     // Wait a couple of seconds before rendering winning embed
     await (0, helpers_1.wait)(2000);
-    await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { winByTimeout, player, hootOnWin }));
+    await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { player, hootOnWin }));
     // Add new waiting room
     (0, _1.startWaitingRoom)(channel);
 };
@@ -73,7 +73,7 @@ const endGameMutation = async (players, assetCooldown, hootOnWin) => {
         const losses = win ? asset.losses : asset.losses + 1;
         const hoot = win ? user.hoot + hootOnWin : user.hoot;
         const updatedAsset = Object.assign(Object.assign({}, asset), { wins,
-            losses });
+            losses, kos: asset.kos });
         const userData = Object.assign(Object.assign({}, user), { coolDowns: Object.assign(Object.assign({}, user === null || user === void 0 ? void 0 : user.coolDowns), { [assetId]: coolDownDoneDate }), assets: Object.assign(Object.assign({}, user.assets), { [assetId]: updatedAsset }), hoot,
             yaoWins });
         await database_service_1.collections.users.findOneAndReplace({ _id: userId }, userData);

@@ -133,15 +133,8 @@ exports.getPlayerArray = getPlayerArray;
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 exports.randomNumber = randomNumber;
 const getWinningPlayer = (playerArr) => {
-    const activePlayers = playerArr.filter((player) => !player.timedOut && !player.dead);
-    let winByTimeout = false;
-    const timedOutPlayers = playerArr.filter((player) => player.timedOut);
-    if (timedOutPlayers.length === playerArr.length - 1) {
-        winByTimeout = true;
-    }
-    return activePlayers.length === 1
-        ? { winningPlayer: activePlayers[0], winByTimeout }
-        : { winningPlayer: undefined, winByTimeout: false };
+    const activePlayers = playerArr.filter((player) => !player.dead);
+    return activePlayers.length === 1 ? activePlayers[0] : undefined;
 };
 exports.getWinningPlayer = getWinningPlayer;
 const randomSort = (arr) => {
@@ -170,15 +163,8 @@ const resetGame = (stopped = false, channelId) => {
     }
 };
 exports.resetGame = resetGame;
-const doDamage = (player, withMultiplier = false, damagePerAowl, damageRange) => {
-    if (withMultiplier) {
-        const { assetMultiplier } = player;
-        const multiplierDamage = (assetMultiplier >= 20 ? 20 : assetMultiplier) * damagePerAowl;
-        return Math.floor(Math.random() * damageRange) + multiplierDamage;
-    }
-    else {
-        return Math.floor(Math.random() * damageRange);
-    }
+const doDamage = (damageRange) => {
+    return Math.floor(Math.random() * damageRange);
 };
 exports.doDamage = doDamage;
 const getUsersFromPlayers = async (players) => {

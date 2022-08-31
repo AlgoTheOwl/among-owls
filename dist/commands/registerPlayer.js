@@ -72,13 +72,13 @@ module.exports = {
                 if (!localPath) {
                     return;
                 }
-                const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, asset.wins || 0, asset.losses || 0, _id, localPath, asset.alias);
+                const gameAsset = new asset_1.default(asset.assetId, asset.assetName, asset.assetUrl, asset.unitName, asset.wins || 0, asset.losses || 0, asset.kos || 0, _id, localPath, asset.alias);
                 // check again for capacity once added
                 if (Object.values(game.players).length >= maxCapacity &&
                     !game.players[id]) {
                     return interaction.editReply('Sorry, the game is at capacity, please wait until the next round');
                 }
-                game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp, Object.values(assets).length, 0);
+                game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp);
                 await interaction.editReply(`${asset.alias || asset.assetName} has entered the game`);
                 (0, helpers_1.updateGame)(channelId);
             }

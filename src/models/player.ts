@@ -2,6 +2,11 @@ import { ObjectId } from 'mongodb'
 import Asset from './asset'
 
 export default class Player {
+  win: boolean
+  dead: boolean
+  kos: number
+  coolDownTimeLeft: number
+
   constructor(
     public username: string,
     public discordId: string,
@@ -9,18 +14,11 @@ export default class Player {
     public asset: Asset,
     public userId: ObjectId,
     public hp: number,
-    public assetMultiplier: number,
-    public coolDownTimeLeft: number,
-    public rolledRecently?: boolean,
-    public timedOut?: boolean,
-    public dead?: boolean,
-    public victimId?: string,
-    public win?: boolean
+    public victimId?: string // public win?: boolean
   ) {
-    this.rolledRecently = false
-    this.timedOut = false
     this.coolDownTimeLeft = 0
     this.dead = false
     this.win = false
+    this.kos = 0
   }
 }

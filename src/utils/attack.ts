@@ -26,8 +26,7 @@ export const getRandomVictimId = (
 ): string => {
   const game = games[channelId]
   const filteredPlayerArray = Object.values(game.players).filter(
-    (player) =>
-      player?.discordId !== attackerId && !player.timedOut && !player.dead
+    (player) => player?.discordId !== attackerId && !player.dead
   )
   const randomIndex = Math.floor(Math.random() * filteredPlayerArray.length)
   return filteredPlayerArray[randomIndex]?.discordId as string

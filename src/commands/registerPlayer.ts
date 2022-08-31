@@ -98,6 +98,7 @@ module.exports = {
           asset.unitName,
           asset.wins || 0,
           asset.losses || 0,
+          asset.kos || 0,
           _id,
           localPath,
           asset.alias
@@ -113,16 +114,8 @@ module.exports = {
           )
         }
 
-        game.players[id] = new Player(
-          username,
-          id,
-          address,
-          gameAsset,
-          _id,
-          hp,
-          Object.values(assets).length,
-          0
-        )
+        game.players[id] = new Player(username, id, address, gameAsset, _id, hp)
+
         await interaction.editReply(
           `${asset.alias || asset.assetName} has entered the game`
         )
