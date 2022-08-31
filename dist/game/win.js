@@ -17,6 +17,11 @@ const _1 = require(".");
 const __1 = require("..");
 const settings_1 = require("../utils/settings");
 const encounter_1 = __importDefault(require("../models/encounter"));
+/**
+ * Handle game state when win occurs
+ * @param player
+ * @param channel
+ */
 const handleWin = async (player, channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
@@ -52,13 +57,11 @@ const handleWin = async (player, channel) => {
 exports.handleWin = handleWin;
 /**
  * Update user state in accordance with game result
- *
  * @param players
  * @param assetCooldown
  * @param hootOnWin
  */
 const endGameMutation = async (players, assetCooldown, hootOnWin) => {
-    // For each player set Asset timeout on user
     await (0, helpers_1.asyncForEach)(players, async (player) => {
         const { userId, asset, win } = player;
         const assetId = asset.assetId.toString();
@@ -74,6 +77,7 @@ const endGameMutation = async (players, assetCooldown, hootOnWin) => {
         const hoot = win ? user.hoot + hootOnWin : user.hoot;
         const updatedAsset = Object.assign(Object.assign({}, asset), { wins,
             losses, kos: asset.kos });
+        // Add cooldowns, update user asset
         const userData = Object.assign(Object.assign({}, user), { coolDowns: Object.assign(Object.assign({}, user === null || user === void 0 ? void 0 : user.coolDowns), { [assetId]: coolDownDoneDate }), assets: Object.assign(Object.assign({}, user.assets), { [assetId]: updatedAsset }), hoot,
             yaoWins });
         await database_service_1.collections.users.findOneAndReplace({ _id: userId }, userData);
@@ -81,7 +85,6 @@ const endGameMutation = async (players, assetCooldown, hootOnWin) => {
 };
 /**
  * Adds encounter to database
- *
  * @param game
  * @param winnerId
  * @param winningAssetId

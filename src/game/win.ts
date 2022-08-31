@@ -17,6 +17,11 @@ import { clearSettings, getSettings } from '../utils/settings'
 import Encounter from '../models/encounter'
 import Game from '../models/game'
 
+/**
+ * Handle game state when win occurs
+ * @param player
+ * @param channel
+ */
 export const handleWin = async (player: Player, channel: TextChannel) => {
   const { id: channelId } = channel
   const game = games[channelId]
@@ -59,7 +64,6 @@ export const handleWin = async (player: Player, channel: TextChannel) => {
 
 /**
  * Update user state in accordance with game result
- *
  * @param players
  * @param assetCooldown
  * @param hootOnWin
@@ -69,7 +73,6 @@ const endGameMutation = async (
   assetCooldown: number,
   hootOnWin: number
 ) => {
-  // For each player set Asset timeout on user
   await asyncForEach(players, async (player: Player) => {
     const { userId, asset, win } = player
     const assetId = asset.assetId.toString()
@@ -92,6 +95,7 @@ const endGameMutation = async (
       kos: asset.kos,
     }
 
+    // Add cooldowns, update user asset
     const userData: User = {
       ...user,
       coolDowns: { ...user?.coolDowns, [assetId]: coolDownDoneDate },
@@ -109,7 +113,6 @@ const endGameMutation = async (
 
 /**
  * Adds encounter to database
- *
  * @param game
  * @param winnerId
  * @param winningAssetId
