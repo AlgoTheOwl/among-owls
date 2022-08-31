@@ -17,7 +17,7 @@ module.exports = {
         if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
         const { user: { id }, } = interaction;
-        const hasRole = await (0, helpers_1.confirmRole)(roleId, interaction, id);
+        const hasRole = (0, helpers_1.confirmRole)(roleId, interaction, id);
         if (!hasRole) {
             return interaction.reply({
                 content: 'You do not have the required role to use this command',
