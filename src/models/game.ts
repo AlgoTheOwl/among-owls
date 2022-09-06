@@ -6,6 +6,8 @@ export default class Game {
     public active: boolean,
     public win: false,
     public coolDown: number,
+    public rounds: number,
+    public startTime: number,
     public embed?: any,
     public attackEngaged?: boolean,
     public waitingRoom?: boolean,

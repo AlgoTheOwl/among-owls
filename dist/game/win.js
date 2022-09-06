@@ -16,59 +16,81 @@ const _1 = require(".");
 // Globals
 const __1 = require("..");
 const settings_1 = require("../utils/settings");
-const handleWin = async (player, winByTimeout, channel) => {
+const encounter_1 = __importDefault(require("../models/encounter"));
+/**
+ * Handle game state when win occurs
+ * @param player
+ * @param channel
+ */
+const handleWin = async (player, channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
     const { imageDir, hootSettings, assetCooldown } = await (0, settings_1.getSettings)(channelId);
     const { hootOnWin } = hootSettings;
     game.active = false;
+    player.win = true;
     // Increment score and hoot of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
         _id: player.userId,
     }));
+    // Render death imagery
     const attachment = new discord_js_1.AttachmentBuilder('src/images/death.gif', {
         name: 'death.gif',
     });
     await game.megatron.edit({
         files: [attachment],
     });
-    // Update user stats
-    const currentHoot = winningUser.hoot ? winningUser.hoot : 0;
-    const updatedHoot = currentHoot + hootOnWin;
-    const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1;
-    const updatedAssets = updateAsset(winningUser, game.players);
-    await database_service_1.collections.users.findOneAndUpdate({ _id: player.userId }, {
-        $set: { yaoWins: updatedScore, hoot: updatedHoot, assets: updatedAssets },
-    });
     const playerArr = Object.values(game.players);
+    // Save encounter
+    addEncounter(game, winningUser._id, player.asset.assetId, channelId);
+    // Reset state for new game
+    endGameMutation(playerArr, assetCooldown, hootOnWin);
     (0, helpers_1.resetGame)(false, channelId);
     (0, settings_1.clearSettings)(channelId);
     (0, helpers_1.emptyDir)(imageDir);
-    setAssetTimeout(playerArr, assetCooldown);
+    // Wait a couple of seconds before rendering winning embed
     await (0, helpers_1.wait)(2000);
-    await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { winByTimeout, player, hootOnWin }));
+    await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { player, hootOnWin }));
     // Add new waiting room
     (0, _1.startWaitingRoom)(channel);
 };
 exports.handleWin = handleWin;
-const setAssetTimeout = async (players, assetCooldown) => {
-    // For each player set Asset timeout on user
+/**
+ * Update user state in accordance with game result
+ * @param players
+ * @param assetCooldown
+ * @param hootOnWin
+ */
+const endGameMutation = async (players, assetCooldown, hootOnWin) => {
     await (0, helpers_1.asyncForEach)(players, async (player) => {
-        const { userId, asset } = player;
-        const { assetId } = asset;
+        const { userId, asset, win } = player;
+        const assetId = asset.assetId.toString();
         const coolDownDoneDate = Date.now() + assetCooldown * 60000;
-        const user = await database_service_1.collections.users.findOne({ _id: userId });
-        await database_service_1.collections.users.findOneAndUpdate({ _id: userId }, {
-            $set: {
-                coolDowns: Object.assign(Object.assign({}, user === null || user === void 0 ? void 0 : user.coolDowns), { [assetId]: coolDownDoneDate }),
-            },
-        });
+        const user = (await database_service_1.collections.users.findOne({
+            _id: userId,
+        }));
+        // Increment values and provided fallbacks when needed
+        const userYaoWins = user.yaoWins || 0;
+        const yaoWins = win ? userYaoWins + 1 : userYaoWins;
+        const wins = win ? asset.wins + 1 : asset.wins;
+        const losses = win ? asset.losses : asset.losses + 1;
+        const hoot = win ? user.hoot + hootOnWin : user.hoot;
+        const updatedAsset = Object.assign(Object.assign({}, asset), { wins,
+            losses, kos: asset.kos });
+        // Add cooldowns, update user asset
+        const userData = Object.assign(Object.assign({}, user), { coolDowns: Object.assign(Object.assign({}, user === null || user === void 0 ? void 0 : user.coolDowns), { [assetId]: coolDownDoneDate }), assets: Object.assign(Object.assign({}, user.assets), { [assetId]: updatedAsset }), hoot,
+            yaoWins });
+        await database_service_1.collections.users.findOneAndReplace({ _id: userId }, userData);
     });
 };
-const updateAsset = (winningUser, players) => {
-    const winnerAssets = winningUser.assets;
-    const winningAsset = players[winningUser.discordId].asset;
-    const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1;
-    const updatedAsset = Object.assign(Object.assign({}, winningAsset), { wins: winningAssetWins });
-    return Object.assign(Object.assign({}, winnerAssets), { [updatedAsset.assetId]: updatedAsset });
+/**
+ * Adds encounter to database
+ * @param game
+ * @param winnerId
+ * @param winningAssetId
+ * @param channelId
+ */
+const addEncounter = (game, winnerId, winningAssetId, channelId) => {
+    const encounter = new encounter_1.default(game.players, game.rounds, winnerId, winningAssetId, game.startTime, Date.now(), channelId);
+    database_service_1.collections.encounters.insertOne(encounter);
 };

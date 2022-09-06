@@ -55,7 +55,7 @@ exports.startWaitingRoom = startWaitingRoom;
 const sendVictimSelectMenu = async (players, channel) => {
     const playerArr = Object.values(players);
     const victims = playerArr
-        .filter((player) => !player.timedOut && !player.dead)
+        .filter((player) => !player.dead)
         .map((player) => ({
         label: `Attack ${player.username}`,
         description: ' ',

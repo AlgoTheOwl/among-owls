@@ -19,7 +19,7 @@ module.exports = {
       user: { id },
     } = interaction
 
-    const hasRole = await confirmRole(roleId, interaction, id)
+    const hasRole = confirmRole(roleId, interaction, id)
 
     if (!hasRole) {
       return interaction.reply({

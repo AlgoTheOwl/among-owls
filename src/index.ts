@@ -99,7 +99,7 @@ const startGames = async () => {
   asyncForEach(channelSettings, async (settings: Settings) => {
     const { maxCapacity, channelId } = settings
     const channel = client.channels.cache.get(channelId) as TextChannel
-    games[channelId] = new Game({}, false, false, maxCapacity, channelId)
+    games[channelId] = new Game({}, false, false, maxCapacity, 0, Date.now())
     startWaitingRoom(channel)
   })
 }

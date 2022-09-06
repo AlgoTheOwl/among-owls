@@ -2,7 +2,7 @@
 import { AttachmentBuilder, TextChannel } from 'discord.js'
 // Schemas
 import Player from '../models/player'
-import { WithId } from 'mongodb'
+import { ObjectId, WithId } from 'mongodb'
 import User from '../models/user'
 import embeds from '../constants/embeds'
 // Data
@@ -13,81 +13,125 @@ import doEmbed from '../embeds'
 import { startWaitingRoom } from '.'
 // Globals
 import { games } from '..'
-import Game from '../models/game'
 import { clearSettings, getSettings } from '../utils/settings'
+import Encounter from '../models/encounter'
+import Game from '../models/game'
 
-export const handleWin = async (
-  player: Player,
-  winByTimeout: boolean,
-  channel: TextChannel
-) => {
+/**
+ * Handle game state when win occurs
+ * @param player
+ * @param channel
+ */
+export const handleWin = async (player: Player, channel: TextChannel) => {
   const { id: channelId } = channel
   const game = games[channelId]
   const { imageDir, hootSettings, assetCooldown } = await getSettings(channelId)
   const { hootOnWin } = hootSettings
+
   game.active = false
+  player.win = true
 
   // Increment score and hoot of winning player
   const winningUser = (await collections.users.findOne({
     _id: player.userId,
   })) as WithId<User>
 
+  // Render death imagery
   const attachment = new AttachmentBuilder('src/images/death.gif', {
     name: 'death.gif',
   })
+
   await game.megatron.edit({
     files: [attachment],
   })
 
-  // Update user stats
-  const currentHoot = winningUser.hoot ? winningUser.hoot : 0
-  const updatedHoot = currentHoot + hootOnWin
-  const updatedScore = winningUser.yaoWins ? winningUser.yaoWins + 1 : 1
-  const updatedAssets = updateAsset(winningUser, game.players)
-
-  await collections.users.findOneAndUpdate(
-    { _id: player.userId },
-    {
-      $set: { yaoWins: updatedScore, hoot: updatedHoot, assets: updatedAssets },
-    }
-  )
-
   const playerArr = Object.values(game.players)
 
+  // Save encounter
+  addEncounter(game, winningUser._id, player.asset.assetId, channelId)
+
+  // Reset state for new game
+  endGameMutation(playerArr, assetCooldown, hootOnWin)
   resetGame(false, channelId)
   clearSettings(channelId)
   emptyDir(imageDir)
-  setAssetTimeout(playerArr, assetCooldown)
+  // Wait a couple of seconds before rendering winning embed
   await wait(2000)
-  await game.arena.edit(
-    doEmbed(embeds.win, channelId, { winByTimeout, player, hootOnWin })
-  )
+  await game.arena.edit(doEmbed(embeds.win, channelId, { player, hootOnWin }))
   // Add new waiting room
   startWaitingRoom(channel)
 }
 
-const setAssetTimeout = async (players: Player[], assetCooldown: number) => {
-  // For each player set Asset timeout on user
+/**
+ * Update user state in accordance with game result
+ * @param players
+ * @param assetCooldown
+ * @param hootOnWin
+ */
+const endGameMutation = async (
+  players: Player[],
+  assetCooldown: number,
+  hootOnWin: number
+) => {
   await asyncForEach(players, async (player: Player) => {
-    const { userId, asset } = player
-    const { assetId } = asset
+    const { userId, asset, win } = player
+    const assetId = asset.assetId.toString()
     const coolDownDoneDate = Date.now() + assetCooldown * 60000
-    const user = await collections.users.findOne({ _id: userId })
-    await collections.users.findOneAndUpdate(
-      { _id: userId },
-      {
-        $set: {
-          coolDowns: { ...user?.coolDowns, [assetId]: coolDownDoneDate },
-        },
-      }
-    )
+    const user = (await collections.users.findOne({
+      _id: userId,
+    })) as WithId<User>
+
+    // Increment values and provided fallbacks when needed
+    const userYaoWins = user.yaoWins || 0
+    const yaoWins = win ? userYaoWins + 1 : userYaoWins
+    const wins = win ? asset.wins + 1 : asset.wins
+    const losses = win ? asset.losses : asset.losses + 1
+    const hoot = win ? user.hoot + hootOnWin : user.hoot
+
+    const updatedAsset = {
+      ...asset,
+      wins,
+      losses,
+      kos: asset.kos,
+    }
+
+    // Add cooldowns, update user asset
+    const userData: User = {
+      ...user,
+      coolDowns: { ...user?.coolDowns, [assetId]: coolDownDoneDate },
+      assets: {
+        ...user.assets,
+        [assetId]: updatedAsset,
+      },
+      hoot,
+      yaoWins,
+    }
+
+    await collections.users.findOneAndReplace({ _id: userId }, userData)
   })
 }
 
-const updateAsset = (winningUser: User, players: { [key: string]: Player }) => {
-  const winnerAssets = winningUser.assets
-  const winningAsset = players[winningUser.discordId].asset
-  const winningAssetWins = winningAsset.wins ? winningAsset.wins + 1 : 1
-  const updatedAsset = { ...winningAsset, wins: winningAssetWins }
-  return { ...winnerAssets, [updatedAsset.assetId]: updatedAsset }
+/**
+ * Adds encounter to database
+ * @param game
+ * @param winnerId
+ * @param winningAssetId
+ * @param channelId
+ */
+const addEncounter = (
+  game: Game,
+  winnerId: ObjectId,
+  winningAssetId: number,
+  channelId: string
+) => {
+  const encounter = new Encounter(
+    game.players,
+    game.rounds,
+    winnerId,
+    winningAssetId,
+    game.startTime,
+    Date.now(),
+    channelId
+  )
+  collections.encounters.insertOne(encounter)
 }

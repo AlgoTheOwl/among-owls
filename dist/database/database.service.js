@@ -38,9 +38,11 @@ async function connectToDatabase() {
     const usersCollection = db.collection(process.env.USERS_COLLECTION_NAME);
     const settingsCollections = db.collection(process.env.SETTINGS_COLLECTION_NAME);
     const assetsCollection = db.collection(process.env.ASSETS_COLLECTION_NAME);
+    const encountersCollection = db.collection(process.env.ENCOUNTERS_COLLECTION_NAME);
     exports.collections.users = usersCollection;
     exports.collections.settings = settingsCollections;
     exports.collections.assets = assetsCollection;
+    exports.collections.encounters = encountersCollection;
     console.log(`Successfully connected to database: ${db.databaseName}`);
 }
 exports.connectToDatabase = connectToDatabase;

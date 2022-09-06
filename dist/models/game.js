@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Game {
-    constructor(players, active, win, coolDown, embed, attackEngaged, waitingRoom, stopped, megatron, arena, update) {
+    constructor(players, active, win, coolDown, rounds, startTime, embed, attackEngaged, waitingRoom, stopped, megatron, arena, update) {
         this.players = players;
         this.active = active;
         this.win = win;
         this.coolDown = coolDown;
+        this.rounds = rounds;
+        this.startTime = startTime;
         this.embed = embed;
         this.attackEngaged = attackEngaged;
         this.waitingRoom = waitingRoom;
