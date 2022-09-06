@@ -16,13 +16,13 @@ module.exports = {
             return;
         const options = [
             {
-                label: '',
-                description: '',
-                value: '',
+                label: 'KOs',
+                description: 'See AOWLs ranked by KOs',
+                value: 'leaderboard-kos',
             },
             {
-                label: '',
-                description: '',
+                label: 'Wins',
+                description: 'See AOWLs ranked by wins',
                 value: '',
             },
             {
