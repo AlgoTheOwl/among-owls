@@ -1,7 +1,15 @@
 import { ObjectId } from 'mongodb'
 import Asset from './asset'
 
+interface Indexable {
+  [key: string]: any
+}
+
 export default class User {
+  public getStaticProperty(propertyName: string): number {
+    return (User as Indexable)[propertyName]
+  }
+
   constructor(
     public username: string,
     public discordId: string,
