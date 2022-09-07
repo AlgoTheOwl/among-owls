@@ -63,15 +63,20 @@ exports.handleWin = handleWin;
  */
 const endGameMutation = async (players, assetCooldown, hootOnWin) => {
     await (0, helpers_1.asyncForEach)(players, async (player) => {
-        const { userId, asset, win } = player;
+        const { userId, asset, win, kos } = player;
         const assetId = asset.assetId.toString();
         const coolDownDoneDate = Date.now() + assetCooldown * 60000;
         const user = (await database_service_1.collections.users.findOne({
             _id: userId,
         }));
-        // Increment values and provided fallbacks when needed
+        // Provide fallbacks for null values
         const userYaoWins = user.yaoWins || 0;
+        const userYaoLosses = user.yaoLosses || 0;
+        const userYaoKos = user.yaoKos || 0;
+        // Increment values
+        const yaoLosses = win ? user.yaoLosses : userYaoLosses + 1;
         const yaoWins = win ? userYaoWins + 1 : userYaoWins;
+        const yaoKos = win ? userYaoKos + kos : userYaoKos;
         const wins = win ? asset.wins + 1 : asset.wins;
         const losses = win ? asset.losses : asset.losses + 1;
         const hoot = win ? user.hoot + hootOnWin : user.hoot;
@@ -79,7 +84,9 @@ const endGameMutation = async (players, assetCooldown, hootOnWin) => {
             losses, kos: asset.kos });
         // Add cooldowns, update user asset
         const userData = Object.assign(Object.assign({}, user), { coolDowns: Object.assign(Object.assign({}, user === null || user === void 0 ? void 0 : user.coolDowns), { [assetId]: coolDownDoneDate }), assets: Object.assign(Object.assign({}, user.assets), { [assetId]: updatedAsset }), hoot,
-            yaoWins });
+            yaoWins,
+            yaoLosses,
+            yaoKos });
         await database_service_1.collections.users.findOneAndReplace({ _id: userId }, userData);
     });
 };

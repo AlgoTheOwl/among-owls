@@ -46,6 +46,7 @@ async function runGame(channel) {
                         if (victim.hp <= 0 && attacker) {
                             victim.dead = true;
                             attacker.asset.kos++;
+                            player.kos++;
                         }
                         // HANDLE WIN
                         const winningPlayer = (0, helpers_1.getWinningPlayer)(playerArr);

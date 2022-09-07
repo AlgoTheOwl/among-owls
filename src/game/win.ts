@@ -74,16 +74,22 @@ const endGameMutation = async (
   hootOnWin: number
 ) => {
   await asyncForEach(players, async (player: Player) => {
-    const { userId, asset, win } = player
+    const { userId, asset, win, kos } = player
     const assetId = asset.assetId.toString()
     const coolDownDoneDate = Date.now() + assetCooldown * 60000
     const user = (await collections.users.findOne({
       _id: userId,
     })) as WithId<User>
 
-    // Increment values and provided fallbacks when needed
+    // Provide fallbacks for null values
     const userYaoWins = user.yaoWins || 0
+    const userYaoLosses = user.yaoLosses || 0
+    const userYaoKos = user.yaoKos || 0
+
+    // Increment values
+    const yaoLosses = win ? user.yaoLosses : userYaoLosses + 1
     const yaoWins = win ? userYaoWins + 1 : userYaoWins
+    const yaoKos = win ? userYaoKos + kos : userYaoKos
     const wins = win ? asset.wins + 1 : asset.wins
     const losses = win ? asset.losses : asset.losses + 1
     const hoot = win ? user.hoot + hootOnWin : user.hoot
@@ -105,6 +111,8 @@ const endGameMutation = async (
       },
       hoot,
       yaoWins,
+      yaoLosses,
+      yaoKos,
     }
 
     await collections.users.findOneAndReplace({ _id: userId }, userData)

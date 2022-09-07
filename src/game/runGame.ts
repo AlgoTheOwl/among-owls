@@ -57,6 +57,7 @@ export default async function runGame(channel: TextChannel) {
             if (victim.hp <= 0 && attacker) {
               victim.dead = true
               attacker.asset.kos++
+              player.kos++
             }
 
             // HANDLE WIN
