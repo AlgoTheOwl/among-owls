@@ -14,23 +14,38 @@ module.exports = {
     const { values } = interaction
     const leaderboardType = values[0]
 
-    let data
-    if (leaderboardType === LeadersBoards.WINS) {
-      data = (await collections.users
-        .find({ yaoWins: { $gt: 0 } })
-        .limit(10)
-        .sort({ yaoWins: 'desc' })
-        .toArray()) as WithId<User>[]
-    }
+    await interaction.deferReply()
+
+    let queryKey = 'yaoWins'
     if (leaderboardType === LeadersBoards.KOS) {
+      queryKey = 'yaoKos'
     }
     if (leaderboardType === LeadersBoards.KOD) {
+      queryKey = 'yaoKod'
     }
 
-    await interaction.deferReply()
+    const data = (await collections.users
+      .find({ [queryKey]: { $gt: 0 } })
+      .limit(10)
+      .sort({ [queryKey]: 'desc' })
+      .toArray()) as WithId<User>[]
+
+    if (!data.length) {
+      return interaction.editReply('Not rankings yet')
+    }
+
+    const fields = data?.map((user, i) => {
+      const place = i + 1
+      const rankNumber = user.getStaticProperty(queryKey)
+      const win = rankNumber === 1 ? 'win' : 'wins'
+      return {
+        name: `#${place}: ${user.username}`,
+        value: `${rankNumber} ${win}`,
+      }
+    })
+
+    console.log(fields)
 
     interaction.editReply('done')
   },
 }
-
-const findKos = () => {}

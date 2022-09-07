@@ -28,3 +28,4 @@ module.exports = {
         interaction.editReply('done');
     },
 };
+const findKos = () => { };
