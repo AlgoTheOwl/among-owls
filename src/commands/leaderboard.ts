@@ -1,6 +1,11 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { Interaction, InteractionType, SelectMenuBuilder } from 'discord.js'
+import {
+  ActionRowBuilder,
+  Interaction,
+  InteractionType,
+  SelectMenuBuilder,
+} from 'discord.js'
 
 // Data
 
@@ -25,19 +30,26 @@ module.exports = {
       {
         label: 'Wins',
         description: 'See AOWLs ranked by wins',
-        value: '',
+        value: 'leaderboard-wins',
       },
       {
-        label: '',
-        description: '',
-        value: '',
+        label: 'KOd',
+        description: 'See AOWLs ranked by losses',
+        value: 'leaderboard-kod',
       },
     ]
 
     const selectMenu = new SelectMenuBuilder()
       .setCustomId('leaderboard-select')
       .setPlaceholder('Select leaderboard')
-      .addOptions()
+      .addOptions(options)
+
+    const row = new ActionRowBuilder().addComponents(selectMenu)
+    interaction.reply({
+      content: 'Choose leaderboard type',
+      //@ts-ignore
+      components: [row],
+    })
     // const { channelId } = interaction
 
     // const winningUsers = (await collections.users
