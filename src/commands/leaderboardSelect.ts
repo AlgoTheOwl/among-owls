@@ -1,9 +1,21 @@
-import { LeadersBoards } from '../constants/leaderboard'
-import { SelectMenuInteraction } from 'discord.js'
+import doEmbed from '../embeds'
+import embeds from '../constants/embeds'
+import { SelectMenuInteraction, InteractionReplyOptions } from 'discord.js'
 import { collections } from '../database/database.service'
-import { WithId } from 'mongodb'
-import User from '../models/user'
 import { SlashCommandBuilder } from '@discordjs/builders'
+
+export enum LeaderBoards {
+  KOS = 'leaderboard-kos',
+  KOD = 'leaderboard-kod',
+  WINS = 'leaderboard-wins',
+}
+
+interface LeaderBoardTypeData {
+  queryKey: string
+  singularVerb: string
+  plurlaVerb: string
+  description: string
+}
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -11,41 +23,67 @@ module.exports = {
     .setDescription('show leaderboards'),
   async execute(interaction: SelectMenuInteraction) {
     if (!interaction.isSelectMenu()) return
-    const { values } = interaction
-    const leaderboardType = values[0]
+    try {
+      const { values, channelId } = interaction
+      const leaderboardType = values[0]
 
-    await interaction.deferReply()
+      await interaction.deferReply()
 
-    let queryKey = 'yaoWins'
-    if (leaderboardType === LeadersBoards.KOS) {
-      queryKey = 'yaoKos'
-    }
-    if (leaderboardType === LeadersBoards.KOD) {
-      queryKey = 'yaoKod'
-    }
-
-    const data = (await collections.users
-      .find({ [queryKey]: { $gt: 0 } })
-      .limit(10)
-      .sort({ [queryKey]: 'desc' })
-      .toArray()) as WithId<User>[]
-
-    if (!data.length) {
-      return interaction.editReply('Not rankings yet')
-    }
-
-    const fields = data?.map((user, i) => {
-      const place = i + 1
-      const rankNumber = user.getStaticProperty(queryKey)
-      const win = rankNumber === 1 ? 'win' : 'wins'
-      return {
-        name: `#${place}: ${user.username}`,
-        value: `${rankNumber} ${win}`,
+      let leaderboardData: LeaderBoardTypeData = {
+        queryKey: 'yaoWins',
+        singularVerb: 'win',
+        plurlaVerb: 'wins',
+        description: 'Which AOWLs rule them all?',
       }
-    })
 
-    console.log(fields)
+      if (leaderboardType === LeaderBoards.KOS) {
+        leaderboardData = {
+          queryKey: 'yaoKos',
+          singularVerb: 'KO',
+          plurlaVerb: 'KOs',
+          description: 'Which AOWLs bring the ruckus?',
+        }
+      }
+      if (leaderboardType === LeaderBoards.KOD) {
+        leaderboardData = {
+          queryKey: 'yaoLosses',
+          singularVerb: 'loss',
+          plurlaVerb: 'losses',
+          description: 'Which AOWLs get wrecked?',
+        }
+      }
 
-    interaction.editReply('done')
+      const data = await collections.users
+        .find({ [leaderboardData.queryKey]: { $gt: 0 } })
+        .limit(10)
+        .sort({ [leaderboardData.queryKey]: 'desc' })
+        .toArray()
+
+      if (!data.length) {
+        return interaction.editReply('Not rankings yet')
+      }
+
+      const fields = data?.map((user, i) => {
+        const place = i + 1
+        const numberOf = user[leaderboardData.queryKey]
+        const win =
+          numberOf === 1
+            ? leaderboardData.singularVerb
+            : leaderboardData.plurlaVerb
+        return {
+          name: `#${place}: ${user.username}`,
+          value: `${numberOf} ${win}`,
+        }
+      })
+
+      await interaction.editReply(
+        doEmbed(embeds.leaderBoard, channelId, {
+          fields,
+          description: leaderboardData.description,
+        }) as InteractionReplyOptions
+      )
+    } catch (error) {
+      console.log('****** LEADERBOARD SELECT ERROR *******', error)
+    }
   },
 }

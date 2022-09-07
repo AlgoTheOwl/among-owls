@@ -92,10 +92,10 @@ function doEmbed(type, channelId, options) {
     }
     // Leaderboard
     if (options && type === embeds_1.default.leaderBoard) {
-        const { fields } = options;
+        const { fields, description } = options;
         data = {
             title: 'Leaderboard',
-            description: 'Which AOWLs rule them all?',
+            description,
             fields,
         };
     }
