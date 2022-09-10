@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.processRegistration = void 0;
+exports.findOrRefreshUser = exports.processRegistration = void 0;
 const algorand_1 = require("./algorand");
 const settings_1 = require("./settings");
 const user_1 = __importDefault(require("../models/user"));
@@ -114,3 +114,32 @@ const keyNfts = (nftArr) => {
     });
     return keyedNfts;
 };
+/**
+ *
+ * @param discordId
+ * @param channelId
+ * @returns {User}
+ */
+const findOrRefreshUser = async (discordId, channelId, interaction) => {
+    // find user
+    let user;
+    const dbUser = (await database_service_1.collections.users.findOne({
+        discordId,
+    }));
+    if (!dbUser) {
+        return;
+    }
+    user = dbUser;
+    if (dbUser.holdingsRefreshDate < Date.now() || !dbUser) {
+        interaction.editReply('Updating your nft holdings...');
+        const { username, address } = dbUser;
+        console.log(`refreshing ${username}`);
+        // update user assets and add new holdingsRefreshDate
+        const { registeredUser } = await (0, exports.processRegistration)(username, discordId, address, channelId);
+        if (registeredUser) {
+            user = registeredUser;
+        }
+    }
+    return user;
+};
+exports.findOrRefreshUser = findOrRefreshUser;

@@ -5,6 +5,7 @@ import User from '../models/user'
 import { WithId } from 'mongodb'
 import { collections } from '../database/database.service'
 import { RegistrationResult } from '../types/user'
+import { ButtonInteraction } from 'discord.js'
 
 // Globals
 const optInAssetId: number = Number(process.env.OPT_IN_ASSET_ID)
@@ -140,4 +141,42 @@ const keyNfts = (nftArr: Asset[]): KeyedAssets => {
     keyedNfts[nft.assetId] = nft
   })
   return keyedNfts
+}
+
+/**
+ *
+ * @param discordId
+ * @param channelId
+ * @returns {User}
+ */
+export const findOrRefreshUser = async (
+  discordId: string,
+  channelId: string,
+  interaction: ButtonInteraction
+): Promise<User | undefined> => {
+  // find user
+  let user
+  const dbUser = (await collections.users.findOne({
+    discordId,
+  })) as WithId<User>
+  if (!dbUser) {
+    return
+  }
+  user = dbUser
+  if (dbUser.holdingsRefreshDate < Date.now() || !dbUser) {
+    interaction.editReply('Updating your nft holdings...')
+    const { username, address } = dbUser
+    console.log(`refreshing ${username}`)
+    // update user assets and add new holdingsRefreshDate
+    const { registeredUser } = await processRegistration(
+      username,
+      discordId,
+      address,
+      channelId
+    )
+    if (registeredUser) {
+      user = registeredUser
+    }
+  }
+  return user
 }
