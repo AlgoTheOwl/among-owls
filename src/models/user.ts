@@ -1,13 +1,14 @@
 import { ObjectId } from 'mongodb'
-import Asset from './asset'
+import { KeyedAssets } from './asset'
 
 export default class User {
   constructor(
     public username: string,
     public discordId: string,
     public address: string,
-    public assets: { [key: string]: Asset }, // assetId
+    public assets: KeyedAssets,
     public hoot: number,
+    public holdingsRefreshDate: number, // timestamp
     public _id?: ObjectId,
     public yaoWins?: number,
     public yaoLosses?: number,

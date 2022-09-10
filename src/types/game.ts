@@ -42,21 +42,3 @@ export interface Intervals {
   autoGameInterval: ReturnType<typeof setInterval> | null
   playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> }
 }
-
-export type Settings = {
-  channelName: string
-  hp: number
-  damageRange: number
-  damagePerAowl: number
-  imageDir: string
-  coolDownInterval: number
-  minCapacity: number
-  maxCapacity: number
-  assetCooldown: number
-  maxAssets: number
-  waitingRoomRefreshRate: number
-  channelId: string
-  hootSettings: {
-    hootOnWin: number
-  }
-}

@@ -11,6 +11,7 @@ const asset_1 = __importDefault(require("../models/asset"));
 const player_1 = __importDefault(require("../models/player"));
 // Helpers
 const helpers_1 = require("../utils/helpers");
+const register_1 = require("../utils/register");
 const fs_1 = __importDefault(require("fs"));
 // Globals
 const index_1 = require("../index");
@@ -42,9 +43,7 @@ module.exports = {
             if (Object.values(game.players).length < maxCapacity ||
                 game.players[id]) {
                 await interaction.deferReply({ ephemeral: true });
-                const { assets, address, _id, coolDowns } = (await database_service_1.collections.users.findOne({
-                    discordId: user.id,
-                }));
+                const { assets, coolDowns, _id, address } = await findOrRefreshUser(id, channelId);
                 const asset = assets[assetId];
                 if (!asset) {
                     return;
@@ -78,7 +77,7 @@ module.exports = {
                     !game.players[id]) {
                     return interaction.editReply('Sorry, the game is at capacity, please wait until the next round');
                 }
-                game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp);
+                game.players[id] = new player_1.default(username, id, address, gameAsset, hp);
                 await interaction.editReply(`${asset.alias || asset.assetName} has entered the game`);
                 (0, helpers_1.updateGame)(channelId);
             }
@@ -93,4 +92,28 @@ module.exports = {
             console.log('****** ERROR REGISTERING ******', error);
         }
     },
+};
+/**
+ *
+ * @param discordId
+ * @param channelId
+ * @returns {User}
+ */
+const findOrRefreshUser = async (discordId, channelId) => {
+    // find user
+    let user;
+    const dbUser = (await database_service_1.collections.users.findOne({
+        discordId,
+    }));
+    user = dbUser;
+    if (dbUser.holdingsRefreshDate < Date.now() || !dbUser) {
+        const { username, address } = dbUser;
+        console.log(`refreshing ${username}`);
+        // update user assets and add new holdingsRefreshDate
+        const { registeredUser } = await (0, register_1.processRegistration)(username, discordId, address, channelId);
+        if (registeredUser) {
+            user = registeredUser;
+        }
+    }
+    return user;
 };

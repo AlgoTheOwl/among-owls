@@ -1,6 +1,24 @@
 import { collections } from '../database/database.service'
-import { Settings } from '../types/game'
 import { WithId } from 'mongodb'
+
+export type Settings = {
+  channelName: string
+  hp: number
+  damageRange: number
+  damagePerAowl: number
+  imageDir: string
+  coolDownInterval: number
+  minCapacity: number
+  maxCapacity: number
+  assetCooldown: number
+  maxAssets: number
+  waitingRoomRefreshRate: number
+  channelId: string
+  holdingsRefreshTime: number
+  hootSettings: {
+    hootOnWin: number
+  }
+}
 
 const fallbackSettings = {
   channelName: 'testChannel1',
@@ -24,11 +42,13 @@ const fallbackSettings = {
   waitingRoomRefreshRate: 2000,
   // channel Id for config
   channelId: '',
+  // number in days before bot refreshes users asset holdings
+  holdingsRefreshTime: 5,
   // Settings for native asa
   hootSettings: {
     hootOnWin: 5,
   },
-}
+} as Settings
 
 export let settings: { [key: string]: Settings } = {}
 

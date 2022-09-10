@@ -14,6 +14,7 @@ import {
   updateGame,
   checkIfRegisteredPlayer,
 } from '../utils/helpers'
+import { processRegistration } from '../utils/register'
 import fs from 'fs'
 // Globals
 import { games } from '../index'
@@ -52,10 +53,10 @@ module.exports = {
       ) {
         await interaction.deferReply({ ephemeral: true })
 
-        const { assets, address, _id, coolDowns } =
-          (await collections.users.findOne({
-            discordId: user.id,
-          })) as WithId<User>
+        const { assets, coolDowns, _id, address } = await findOrRefreshUser(
+          id,
+          channelId
+        )
 
         const asset = assets[assetId]
 
@@ -114,7 +115,7 @@ module.exports = {
           )
         }
 
-        game.players[id] = new Player(username, id, address, gameAsset, _id, hp)
+        game.players[id] = new Player(username, id, address, gameAsset, hp)
 
         await interaction.editReply(
           `${asset.alias || asset.assetName} has entered the game`
@@ -131,4 +132,37 @@ module.exports = {
       console.log('****** ERROR REGISTERING ******', error)
     }
   },
+}
+
+/**
+ *
+ * @param discordId
+ * @param channelId
+ * @returns {User}
+ */
+const findOrRefreshUser = async (
+  discordId: string,
+  channelId: string
+): Promise<User> => {
+  // find user
+  let user
+  const dbUser = (await collections.users.findOne({
+    discordId,
+  })) as WithId<User>
+  user = dbUser
+  if (dbUser.holdingsRefreshDate < Date.now() || !dbUser) {
+    const { username, address } = dbUser
+    console.log(`refreshing ${username}`)
+    // update user assets and add new holdingsRefreshDate
+    const { registeredUser } = await processRegistration(
+      username,
+      discordId,
+      address,
+      channelId
+    )
+    if (registeredUser) {
+      user = registeredUser
+    }
+  }
+  return user
 }

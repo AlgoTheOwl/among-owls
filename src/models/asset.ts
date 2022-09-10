@@ -14,3 +14,6 @@ export default class Asset {
     public alias?: string
   ) {}
 }
+
+// Assets keyed by assetId
+export type KeyedAssets = { [key: string]: Asset }

@@ -20,7 +20,7 @@ import { startWaitingRoom } from './game'
 import { convergeTxnData } from './utils/algorand'
 import { wait, asyncForEach } from './utils/helpers'
 import { WithId } from 'mongodb'
-import { Settings } from './types/game'
+import { Settings } from './utils/settings'
 
 const token = process.env.DISCORD_TOKEN
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE

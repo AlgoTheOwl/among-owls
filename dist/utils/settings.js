@@ -24,6 +24,8 @@ const fallbackSettings = {
     waitingRoomRefreshRate: 2000,
     // channel Id for config
     channelId: '',
+    // number in days before bot refreshes users asset holdings
+    holdingsRefreshTime: 5,
     // Settings for native asa
     hootSettings: {
         hootOnWin: 5,

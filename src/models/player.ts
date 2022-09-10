@@ -12,7 +12,6 @@ export default class Player {
     public discordId: string,
     public address: string,
     public asset: Asset,
-    public userId: ObjectId,
     public hp: number,
     public victimId?: string // public win?: boolean
   ) {

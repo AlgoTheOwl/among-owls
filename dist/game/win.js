@@ -31,7 +31,7 @@ const handleWin = async (player, channel) => {
     player.win = true;
     // Increment score and hoot of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
-        _id: player.userId,
+        discordId: player.discordId,
     }));
     // Render death imagery
     const attachment = new discord_js_1.AttachmentBuilder('src/images/death.gif', {
@@ -63,11 +63,11 @@ exports.handleWin = handleWin;
  */
 const endGameMutation = async (players, assetCooldown, hootOnWin) => {
     await (0, helpers_1.asyncForEach)(players, async (player) => {
-        const { userId, asset, win, kos } = player;
+        const { asset, win, kos, discordId } = player;
         const assetId = asset.assetId.toString();
         const coolDownDoneDate = Date.now() + assetCooldown * 60000;
         const user = (await database_service_1.collections.users.findOne({
-            _id: userId,
+            discordId,
         }));
         // Provide fallbacks for null values
         const userYaoWins = user.yaoWins || 0;
@@ -87,7 +87,7 @@ const endGameMutation = async (players, assetCooldown, hootOnWin) => {
             yaoWins,
             yaoLosses,
             yaoKos });
-        await database_service_1.collections.users.findOneAndReplace({ _id: userId }, userData);
+        await database_service_1.collections.users.findOneAndReplace({ discordId }, userData);
     });
 };
 /**

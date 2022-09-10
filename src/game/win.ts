@@ -33,7 +33,7 @@ export const handleWin = async (player: Player, channel: TextChannel) => {
 
   // Increment score and hoot of winning player
   const winningUser = (await collections.users.findOne({
-    _id: player.userId,
+    discordId: player.discordId,
   })) as WithId<User>
 
   // Render death imagery
@@ -74,11 +74,11 @@ const endGameMutation = async (
   hootOnWin: number
 ) => {
   await asyncForEach(players, async (player: Player) => {
-    const { userId, asset, win, kos } = player
+    const { asset, win, kos, discordId } = player
     const assetId = asset.assetId.toString()
     const coolDownDoneDate = Date.now() + assetCooldown * 60000
     const user = (await collections.users.findOne({
-      _id: userId,
+      discordId,
     })) as WithId<User>
 
     // Provide fallbacks for null values
@@ -115,7 +115,7 @@ const endGameMutation = async (
       yaoKos,
     }
 
-    await collections.users.findOneAndReplace({ _id: userId }, userData)
+    await collections.users.findOneAndReplace({ discordId }, userData)
   })
 }
 
