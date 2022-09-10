@@ -4,7 +4,7 @@ import { SelectMenuInteraction, InteractionReplyOptions } from 'discord.js'
 import { collections } from '../database/database.service'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
-export enum LeaderBoards {
+enum LeaderBoards {
   KOS = 'leaderboard-kos',
   KOD = 'leaderboard-kod',
   WINS = 'leaderboard-wins',
