@@ -44,13 +44,17 @@ module.exports = {
         }
         const asset = userData.assets[assetId];
         if (asset) {
-            const { assetUrl, assetName, unitName, assetId, wins, alias } = asset;
+            const { assetUrl, assetName, unitName, assetId, wins, alias, kos, losses, } = asset;
             const winNumber = wins ? wins : 0;
+            const lossNumber = losses ? losses : 0;
+            const koNumber = kos ? kos : 0;
             const fields = [
                 { name: 'Unit name', value: unitName },
                 { name: 'Asset name', value: assetName.slice(0, 100) },
                 { name: 'Asset ID', value: assetId.toString() },
                 { name: 'Wins', value: winNumber.toString() },
+                { name: 'Losses', value: lossNumber.toString() },
+                { name: 'KOs', value: koNumber.toString() },
             ];
             if (alias) {
                 fields.splice(1, 0, { name: 'Custom name', value: alias.slice(0, 100) });

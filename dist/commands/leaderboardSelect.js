@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LeaderBoards = void 0;
 const embeds_1 = __importDefault(require("../embeds"));
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const database_service_1 = require("../database/database.service");
@@ -13,7 +12,7 @@ var LeaderBoards;
     LeaderBoards["KOS"] = "leaderboard-kos";
     LeaderBoards["KOD"] = "leaderboard-kod";
     LeaderBoards["WINS"] = "leaderboard-wins";
-})(LeaderBoards = exports.LeaderBoards || (exports.LeaderBoards = {}));
+})(LeaderBoards || (LeaderBoards = {}));
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('leaderboard-select')

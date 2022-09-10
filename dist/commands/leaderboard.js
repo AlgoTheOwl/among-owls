@@ -37,6 +37,7 @@ module.exports = {
             content: 'Choose leaderboard type',
             //@ts-ignore
             components: [row],
+            ephemeral: true,
         });
     },
 };

@@ -10,6 +10,7 @@ import User from '../models/user'
 import doEmbed from '../embeds'
 // MongoDb
 import { WithId } from 'mongodb'
+import Asset from '../models/asset'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -50,17 +51,30 @@ module.exports = {
       })
     }
 
-    const asset = userData.assets[assetId]
+    const asset: Asset = userData.assets[assetId]
     if (asset) {
-      const { assetUrl, assetName, unitName, assetId, wins, alias } = asset
+      const {
+        assetUrl,
+        assetName,
+        unitName,
+        assetId,
+        wins,
+        alias,
+        kos,
+        losses,
+      } = asset
 
       const winNumber = wins ? wins : 0
+      const lossNumber = losses ? losses : 0
+      const koNumber = kos ? kos : 0
 
       const fields = [
         { name: 'Unit name', value: unitName },
         { name: 'Asset name', value: assetName.slice(0, 100) },
         { name: 'Asset ID', value: assetId.toString() },
         { name: 'Wins', value: winNumber.toString() },
+        { name: 'Losses', value: lossNumber.toString() },
+        { name: 'KOs', value: koNumber.toString() },
       ]
 
       if (alias) {
