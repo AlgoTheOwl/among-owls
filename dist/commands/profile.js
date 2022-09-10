@@ -49,8 +49,6 @@ module.exports = {
             const losses = assetArray.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.losses;
             }, 0);
-            console.log(wins);
-            console.log(losses);
             const options = assetArray
                 .map((asset, i) => {
                 var _a;
@@ -73,10 +71,12 @@ module.exports = {
             if (firstAsset) {
                 thumbNail = firstAsset;
             }
-            const hoot = userData.hoot ? userData.hoot.toString() : '0';
-            const yaoWins = userData.yaoWins ? userData.yaoWins.toString() : '0';
+            const hoot = userData.hoot ? userData.hoot : 0;
+            const yaoWins = userData.yaoWins ? userData.yaoWins : 0;
+            const yaoLosses = userData.yaoLosses ? userData.yaoLosses : 0;
+            const yaoKos = userData.yaoKos ? userData.yaoKos : 0;
             // discord username
-            fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot }, { name: 'Games won', value: yaoWins });
+            fields.push({ name: 'Username', value: user.username }, { name: 'Hoot owned', value: hoot.toString() }, { name: 'Games won', value: yaoWins.toString() }, { name: 'Games lost', value: yaoLosses.toString() }, { name: 'Total KOs', value: yaoKos.toString() });
             const row = new discord_js_1.ActionRowBuilder().addComponents(selectMenu);
             const embed = (0, embeds_2.default)(embeds_1.default.profile, channelId, {
                 thumbNail,
