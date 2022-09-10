@@ -12,6 +12,12 @@ const embeds_1 = __importDefault(require("../embeds"));
 const __1 = require("..");
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const settings_1 = require("../utils/settings");
+/**
+ * Runs main game logic incrementally
+ * Loops through each player and triggers specific or randopm attack
+ * Updated embed to show attack and current player HP, update game state stats
+ * @param channel
+ */
 async function runGame(channel) {
     const { id: channelId } = channel;
     try {

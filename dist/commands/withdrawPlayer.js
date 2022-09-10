@@ -7,6 +7,11 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('withdraw-player')
         .setDescription('Withdraw an active player'),
+    /**
+     * Withdraws a players current registered asset from the waiting room
+     * @param interaction {ButtonInteraction}
+     * @returns
+     */
     async execute(interaction) {
         try {
             if (!interaction.isButton())

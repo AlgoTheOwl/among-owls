@@ -11,6 +11,11 @@ module.exports = {
     .setName('clear-timeout')
     .setDescription('clear all timeouts'),
   enabled: process.env.CLEAR_TIMEOUT_ENABLED,
+  /**
+   * Allows an admin to clear asset timeouts
+   * @param interaction
+   * @returns
+   */
   async execute(interaction: Interaction) {
     if (interaction.type !== InteractionType.ApplicationCommand) return
 

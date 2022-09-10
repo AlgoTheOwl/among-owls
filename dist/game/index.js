@@ -15,6 +15,12 @@ const __1 = require("..");
 // Schemas
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const settings_1 = require("../utils/settings");
+/**
+ * Starts waiting room in specific channel
+ * Watches for updates to game states and edits embed
+ * Sends "megatron" image to channel before embed
+ * @param channel {TextChannel}
+ */
 const startWaitingRoom = async (channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
@@ -52,6 +58,11 @@ const startWaitingRoom = async (channel) => {
     (0, runGame_1.default)(channel);
 };
 exports.startWaitingRoom = startWaitingRoom;
+/**
+ * Sends select menu with other players to users to select random or specific victim
+ * @param players KeyedPlayers
+ * @param channel
+ */
 const sendVictimSelectMenu = async (players, channel) => {
     const playerArr = Object.values(players);
     const victims = playerArr

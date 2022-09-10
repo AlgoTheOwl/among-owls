@@ -21,3 +21,5 @@ export default class Player {
     this.kos = 0
   }
 }
+
+export type KeyedPlayers = { [key: string]: Player }

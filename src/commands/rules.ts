@@ -7,6 +7,11 @@ module.exports = {
     .setName('rules')
     .setDescription('see game rules'),
   enabled: true,
+  /**
+   * Sends game rules to client
+   * @param interaction {Interaction}
+   * @returns {void}
+   */
   async execute(interaction: Interaction) {
     if (interaction.type !== InteractionType.ApplicationCommand) return
 

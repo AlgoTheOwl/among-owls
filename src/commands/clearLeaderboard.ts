@@ -12,6 +12,11 @@ module.exports = {
     .setName('clear-leaderboard')
     .setDescription('clear the leaderboard standings'),
   enabled: true,
+  /**
+   * Allows admins to clear leaderboard standings
+   * @param interaction {Interaction}
+   * @returns {void}
+   */
   async execute(interaction: Interaction) {
     if (interaction.type !== InteractionType.ApplicationCommand) return
 
@@ -30,7 +35,10 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true })
 
     try {
-      await collections.users.updateMany({}, { $set: { yaoWins: 0 } })
+      await collections.users.updateMany(
+        {},
+        { $set: { yaoWins: 0, yaoLosses: 0, yaoKos: 0 } }
+      )
     } catch (error) {
       console.log(error)
     }

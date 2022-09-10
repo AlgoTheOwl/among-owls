@@ -22,6 +22,14 @@ const defaultEmbedValues = {
     },
     rawEmbed: false,
 };
+/**
+ * Takes embed type and returns Discord message embed object for easy use within commands
+ * TODO: move all "options" and async operations into doEmbed function to reduce clutter at command level
+ * @param type
+ * @param channelId
+ * @param options
+ * @returns {MessagePayload | InteractionReplyOptions | EmbedBuilder | MessageOptions}
+ */
 function doEmbed(type, channelId, options) {
     let data = {};
     let components = [];

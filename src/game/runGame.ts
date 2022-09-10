@@ -18,6 +18,12 @@ import embeds from '../constants/embeds'
 import { TextChannel } from 'discord.js'
 import { getSettings } from '../utils/settings'
 
+/**
+ * Runs main game logic incrementally
+ * Loops through each player and triggers specific or randopm attack
+ * Updated embed to show attack and current player HP, update game state stats
+ * @param channel {TextChannel}
+ */
 export default async function runGame(channel: TextChannel) {
   const { id: channelId } = channel
   try {

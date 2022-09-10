@@ -8,6 +8,11 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('select-victim')
     .setDescription('Choose a new victim to attack'),
+  /**
+   * Allows active player to select another player to target throughout the game
+   * @param interaction {SelectMenuInteraction}
+   * @returns {void}
+   */
   async execute(interaction: SelectMenuInteraction) {
     const { channelId } = interaction
     const game = games[channelId]

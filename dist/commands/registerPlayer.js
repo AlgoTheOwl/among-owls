@@ -19,6 +19,11 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('register-player')
         .setDescription('Register an active player'),
+    /**
+     * Select menu command that registers a chosen asset into battle
+     * @param interaction {SelectMenuInteraction}
+     * @returns {void}
+     */
     async execute(interaction) {
         try {
             if (!interaction.isSelectMenu())

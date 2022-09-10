@@ -46,6 +46,9 @@ export const client: Client = new Client({
   ],
 })
 
+/**
+ * Listener for server start
+ */
 client.once('ready', async () => {
   try {
     main()
@@ -56,6 +59,10 @@ client.once('ready', async () => {
   }
 })
 
+/**
+ * Main game function
+ * Connects to db, fetches txnData from blockchain and starts games in specified channels
+ */
 const main = async () => {
   await connectToDatabase()
   await setupTxns()
@@ -64,6 +71,10 @@ const main = async () => {
   console.log('Ye Among AOWLs - Server ready')
 }
 
+/**
+ * Checks if we have a txnData file, creates one if not
+ * Fetches and reduces txnData from all creator wallets and writes file
+ */
 const setupTxns = async () => {
   let update = true
   if (!fs.existsSync('dist/txnData/txnData.json')) {
@@ -76,6 +87,9 @@ const setupTxns = async () => {
   fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 }
 
+/**
+ * Parses command files and readies them for use in client
+ */
 const setupCommands = () => {
   client.commands = new Collection()
 
@@ -91,12 +105,17 @@ const setupCommands = () => {
   }
 }
 
+/**
+ * Fetches channel settings from DB
+ * Starts game for each object entered
+ */
 const startGames = async () => {
   const channelSettings = (await collections.settings
     .find({})
     .toArray()) as WithId<Settings>[]
-  // start game for each channel
+
   asyncForEach(channelSettings, async (settings: Settings) => {
+    // TODO: Test to make sure each settings object is valid
     const { maxCapacity, channelId } = settings
     const channel = client.channels.cache.get(channelId) as TextChannel
     games[channelId] = new Game({}, false, false, maxCapacity, 0, Date.now())
@@ -104,12 +123,9 @@ const startGames = async () => {
   })
 }
 
-/*
- *****************
- * COMMAND SERVER *
- *****************
+/**
+ * Main command listener
  */
-
 client.on('interactionCreate', async (interaction: any) => {
   try {
     let command

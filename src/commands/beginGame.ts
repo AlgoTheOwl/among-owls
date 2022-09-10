@@ -12,12 +12,18 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('begin-game')
     .setDescription('begin the game'),
+  /**
+   * Triggers start of game if there are enough players
+   * @param interaction {ButtonInteraction}
+   * @returns {void``}
+   */
   async execute(interaction: ButtonInteraction) {
     const { user, channelId } = interaction
     const { minCapacity } = await getSettings(channelId)
     const game = games[channelId]
     const playerArr = Object.values(game.players)
 
+    // Allow admins to trigger game start even if not registered in game
     if (!game.players[user.id]) {
       const isAdmin = confirmRole(adminId, interaction, user.id)
       if (!isAdmin) {
@@ -28,6 +34,7 @@ module.exports = {
       }
     }
 
+    // Trigger game and let channel know who started it
     if (playerArr.length >= minCapacity) {
       game.waitingRoom = false
       interaction.reply({

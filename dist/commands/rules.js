@@ -8,6 +8,11 @@ module.exports = {
         .setName('rules')
         .setDescription('see game rules'),
     enabled: true,
+    /**
+     * Sends game rules to client
+     * @param interaction {Interaction}
+     * @returns {void}
+     */
     async execute(interaction) {
         if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;

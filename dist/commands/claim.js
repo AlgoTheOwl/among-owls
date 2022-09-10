@@ -12,6 +12,11 @@ module.exports = {
         .setName('claim')
         .setDescription('claim your hoot!'),
     enabled: true,
+    /**
+     * Allows user to initiate transfer of Hoot token to own wallet
+     * @param interaction {Interaction}
+     * @returns {void}
+     */
     async execute(interaction) {
         if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;

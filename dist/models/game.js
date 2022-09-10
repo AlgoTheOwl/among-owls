@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// TODO: Add getters and setters, use proper OOP practices for game
 class Game {
     constructor(players, active, win, coolDown, rounds, startTime, embed, attackEngaged, waitingRoom, stopped, megatron, arena, update) {
         this.players = players;

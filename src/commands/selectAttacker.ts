@@ -18,6 +18,11 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('select-attacker')
     .setDescription(`Pick which AOWL you'd like to compete`),
+  /**
+   * Sends a select menu to user to select an AOWL for registratiion
+   * @param interaction {Interaction}
+   * @returns {void}
+   */
   async execute(interaction: ButtonInteraction) {
     try {
       const {

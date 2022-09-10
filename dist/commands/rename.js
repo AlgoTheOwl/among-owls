@@ -15,6 +15,13 @@ module.exports = {
         .setDescription('enter a new name for your AOWL')
         .setRequired(true)),
     enabled: true,
+    /**
+     * Command that allows user to rename their chosen AOWL
+     * Selected AOWL can be represented by an AOWL currently registered in a game
+     * OR the current AOWL a user has selected in their profile
+     * @param interaction {Interaction}
+     * @returns {void}
+     */
     async execute(interaction) {
         if (!interaction.isChatInputCommand())
             return;

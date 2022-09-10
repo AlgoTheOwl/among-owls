@@ -18,9 +18,9 @@ import Encounter from '../models/encounter'
 import Game from '../models/game'
 
 /**
- * Handle game state when win occurs
- * @param player
- * @param channel
+ * Update game and user state when win occurs
+ * @param player last player standing
+ * @param channel {TextChannel}
  */
 export const handleWin = async (player: Player, channel: TextChannel) => {
   const { id: channelId } = channel
@@ -63,7 +63,7 @@ export const handleWin = async (player: Player, channel: TextChannel) => {
 }
 
 /**
- * Update user state in accordance with game result
+ * Loop through each player and update corresponding user entry in db
  * @param players
  * @param assetCooldown
  * @param hootOnWin
@@ -120,7 +120,7 @@ const endGameMutation = async (
 }
 
 /**
- * Adds encounter to database
+ * Adds encounter {record of game} to database
  * @param game
  * @param winnerId
  * @param winningAssetId

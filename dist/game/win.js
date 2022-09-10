@@ -18,9 +18,9 @@ const __1 = require("..");
 const settings_1 = require("../utils/settings");
 const encounter_1 = __importDefault(require("../models/encounter"));
 /**
- * Handle game state when win occurs
- * @param player
- * @param channel
+ * Update game and user state when win occurs
+ * @param player last player standing
+ * @param channel {TextChannel}
  */
 const handleWin = async (player, channel) => {
     const { id: channelId } = channel;
@@ -56,7 +56,7 @@ const handleWin = async (player, channel) => {
 };
 exports.handleWin = handleWin;
 /**
- * Update user state in accordance with game result
+ * Loop through each player and update corresponding user entry in db
  * @param players
  * @param assetCooldown
  * @param hootOnWin
@@ -91,7 +91,7 @@ const endGameMutation = async (players, assetCooldown, hootOnWin) => {
     });
 };
 /**
- * Adds encounter to database
+ * Adds encounter {record of game} to database
  * @param game
  * @param winnerId
  * @param winningAssetId

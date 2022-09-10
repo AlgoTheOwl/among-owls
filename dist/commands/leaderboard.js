@@ -8,6 +8,11 @@ module.exports = {
         .setName('leaderboard')
         .setDescription('show global leaderboard for AOWL games'),
     enabled: true,
+    /**
+     * Sends a menu that allows a user to select between several leaderboard options
+     * @param interaction
+     * @returns
+     */
     async execute(interaction) {
         if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;

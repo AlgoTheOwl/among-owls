@@ -14,6 +14,12 @@ module.exports = {
         .setDescription('enter the your wallet address')
         .setRequired(true)),
     enabled: true,
+    /**
+     * Command that commences registration when a user enters their wallet address
+     * User must be opted in to OPT_IN_ASSET_ID for this command to work
+     * @param interaction {Interaction}
+     * @returns {void}
+     */
     async execute(interaction) {
         if (!interaction.isChatInputCommand())
             return;

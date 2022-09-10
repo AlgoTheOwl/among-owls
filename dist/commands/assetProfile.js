@@ -15,6 +15,12 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('asset-profile')
         .setDescription('view an asset profile'),
+    /**
+     * Returns data from individual user asset
+     * Triggered from select menu after entering /profile command
+     * @param interaction {SelecMenuInteraction}
+     * @returns {void}
+     */
     async execute(interaction) {
         if (!interaction.isSelectMenu())
             return;

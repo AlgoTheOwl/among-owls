@@ -37,8 +37,3 @@ export interface EmbedReply {
   components?: MessageActionRowComponent[]
   files?: Attachment[]
 }
-
-export interface Intervals {
-  autoGameInterval: ReturnType<typeof setInterval> | null
-  playerTimeouts: { [key: string]: ReturnType<typeof setTimeout> }
-}
