@@ -115,25 +115,19 @@ const keyNfts = (nftArr) => {
     return keyedNfts;
 };
 /**
- *
+ * Finds user and refreshes asset holdings if after refresh date
  * @param discordId
  * @param channelId
  * @returns {User}
  */
 const findOrRefreshUser = async (discordId, channelId, interaction) => {
-    // find user
     let user;
-    const dbUser = (await database_service_1.collections.users.findOne({
+    user = (await database_service_1.collections.users.findOne({
         discordId,
     }));
-    if (!dbUser) {
-        return;
-    }
-    user = dbUser;
-    if (dbUser.holdingsRefreshDate < Date.now() || !dbUser) {
+    if (user.holdingsRefreshDate < Date.now()) {
         interaction.editReply('Updating your nft holdings...');
-        const { username, address } = dbUser;
-        console.log(`refreshing ${username}`);
+        const { username, address } = user;
         // update user assets and add new holdingsRefreshDate
         const { registeredUser } = await (0, exports.processRegistration)(username, discordId, address, channelId);
         if (registeredUser) {

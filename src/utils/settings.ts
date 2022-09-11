@@ -5,7 +5,6 @@ export type Settings = {
   channelName: string
   hp: number
   damageRange: number
-  damagePerAowl: number
   minCapacity: number
   maxCapacity: number
   assetCooldown: number
@@ -22,8 +21,6 @@ const fallbackSettings = {
   channelName: 'testChannel1',
   hp: 420,
   damageRange: 150,
-  // Score modifier
-  damagePerAowl: 5,
   // Minimum players needed to start a game
   minCapacity: 2,
   // Max amount of players allowed to join
