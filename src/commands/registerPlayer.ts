@@ -9,11 +9,8 @@ import { WithId } from 'mongodb'
 import User from '../models/user'
 import Player from '../models/player'
 // Helpers
-import {
-  downloadFile,
-  updateGame,
-  checkIfRegisteredPlayer,
-} from '../utils/helpers'
+import { updateGame, checkIfRegisteredPlayer } from '../utils/gameplay'
+import { downloadAssetImage } from '../utils/fileSystem'
 import fs from 'fs'
 // Globals
 import { games } from '../index'
@@ -23,6 +20,11 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('register-player')
     .setDescription('Register an active player'),
+  /**
+   * Select menu command that registers a chosen asset into battle
+   * @param interaction {SelectMenuInteraction}
+   * @returns {void}
+   */
   async execute(interaction: SelectMenuInteraction) {
     try {
       if (!interaction.isSelectMenu()) return
@@ -34,7 +36,7 @@ module.exports = {
 
       const assetId = values[0]
       const { username, id } = user
-      const { imageDir, hp, maxCapacity } = await getSettings(channelId)
+      const { hp, maxCapacity } = await getSettings(channelId)
 
       // Check if user is another game
       if (checkIfRegisteredPlayer(games, assetId, id)) {
@@ -52,12 +54,15 @@ module.exports = {
       ) {
         await interaction.deferReply({ ephemeral: true })
 
-        const { assets, address, _id, coolDowns } =
+        const { assets, address, _id, coolDowns, holdingsRefreshDate } =
           (await collections.users.findOne({
             discordId: user.id,
           })) as WithId<User>
 
         const asset = assets[assetId]
+
+        if (holdingsRefreshDate < Date.now()) {
+        }
 
         if (!asset) {
           return
@@ -77,12 +82,12 @@ module.exports = {
 
         try {
           // Create file for channel and download image
-          const path = `${imageDir}/${channelId}`
+          const path = `dist/nftAssets/${channelId}`
           if (!fs.existsSync(path)) {
             fs.mkdir(path, (err) => {})
           }
 
-          localPath = await downloadFile(asset, path, username)
+          localPath = await downloadAssetImage(asset, path, username)
         } catch (error) {
           console.log('****** ERROR DOWNLOADING ******', error)
         }
@@ -114,7 +119,7 @@ module.exports = {
           )
         }
 
-        game.players[id] = new Player(username, id, address, gameAsset, _id, hp)
+        game.players[id] = new Player(username, id, address, gameAsset, hp)
 
         await interaction.editReply(
           `${asset.alias || asset.assetName} has entered the game`

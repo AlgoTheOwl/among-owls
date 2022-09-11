@@ -24,6 +24,12 @@ module.exports = {
     .setName('profile')
     .setDescription('view your profile'),
   enabled: true,
+  /**
+   * Sends users profile to client
+   * Includes dropdown menu that allows user to trigger asset-profile command
+   * @param interaction {Interactioon}
+   * @returns {void}
+   */
   async execute(interaction: Interaction) {
     try {
       if (interaction.type !== InteractionType.ApplicationCommand) return

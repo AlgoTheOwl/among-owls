@@ -10,7 +10,8 @@ const database_service_1 = require("../database/database.service");
 const asset_1 = __importDefault(require("../models/asset"));
 const player_1 = __importDefault(require("../models/player"));
 // Helpers
-const helpers_1 = require("../utils/helpers");
+const gameplay_1 = require("../utils/gameplay");
+const fileSystem_1 = require("../utils/fileSystem");
 const fs_1 = __importDefault(require("fs"));
 // Globals
 const index_1 = require("../index");
@@ -19,6 +20,11 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('register-player')
         .setDescription('Register an active player'),
+    /**
+     * Select menu command that registers a chosen asset into battle
+     * @param interaction {SelectMenuInteraction}
+     * @returns {void}
+     */
     async execute(interaction) {
         try {
             if (!interaction.isSelectMenu())
@@ -29,9 +35,9 @@ module.exports = {
                 return;
             const assetId = values[0];
             const { username, id } = user;
-            const { imageDir, hp, maxCapacity } = await (0, settings_1.getSettings)(channelId);
+            const { hp, maxCapacity } = await (0, settings_1.getSettings)(channelId);
             // Check if user is another game
-            if ((0, helpers_1.checkIfRegisteredPlayer)(index_1.games, assetId, id)) {
+            if ((0, gameplay_1.checkIfRegisteredPlayer)(index_1.games, assetId, id)) {
                 return interaction.reply({
                     ephemeral: true,
                     content: `You can't register with the same AOWL in two games at a time`,
@@ -42,10 +48,12 @@ module.exports = {
             if (Object.values(game.players).length < maxCapacity ||
                 game.players[id]) {
                 await interaction.deferReply({ ephemeral: true });
-                const { assets, address, _id, coolDowns } = (await database_service_1.collections.users.findOne({
+                const { assets, address, _id, coolDowns, holdingsRefreshDate } = (await database_service_1.collections.users.findOne({
                     discordId: user.id,
                 }));
                 const asset = assets[assetId];
+                if (holdingsRefreshDate < Date.now()) {
+                }
                 if (!asset) {
                     return;
                 }
@@ -60,11 +68,11 @@ module.exports = {
                 let localPath;
                 try {
                     // Create file for channel and download image
-                    const path = `${imageDir}/${channelId}`;
+                    const path = `dist/nftAssets/${channelId}`;
                     if (!fs_1.default.existsSync(path)) {
                         fs_1.default.mkdir(path, (err) => { });
                     }
-                    localPath = await (0, helpers_1.downloadFile)(asset, path, username);
+                    localPath = await (0, fileSystem_1.downloadAssetImage)(asset, path, username);
                 }
                 catch (error) {
                     console.log('****** ERROR DOWNLOADING ******', error);
@@ -78,9 +86,9 @@ module.exports = {
                     !game.players[id]) {
                     return interaction.editReply('Sorry, the game is at capacity, please wait until the next round');
                 }
-                game.players[id] = new player_1.default(username, id, address, gameAsset, _id, hp);
+                game.players[id] = new player_1.default(username, id, address, gameAsset, hp);
                 await interaction.editReply(`${asset.alias || asset.assetName} has entered the game`);
-                (0, helpers_1.updateGame)(channelId);
+                (0, gameplay_1.updateGame)(channelId);
             }
             else {
                 interaction.reply({

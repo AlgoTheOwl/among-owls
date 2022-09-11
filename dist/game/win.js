@@ -11,6 +11,8 @@ const embeds_1 = __importDefault(require("../constants/embeds"));
 const database_service_1 = require("../database/database.service");
 // Helpers
 const helpers_1 = require("../utils/helpers");
+const gameplay_1 = require("../utils/gameplay");
+const fileSystem_1 = require("../utils/fileSystem");
 const embeds_2 = __importDefault(require("../embeds"));
 const _1 = require(".");
 // Globals
@@ -18,20 +20,21 @@ const __1 = require("..");
 const settings_1 = require("../utils/settings");
 const encounter_1 = __importDefault(require("../models/encounter"));
 /**
- * Handle game state when win occurs
- * @param player
- * @param channel
+ * Update game and user state when win occurs
+ * Restart game in channel
+ * @param player last player standing
+ * @param channel {TextChannel}
  */
 const handleWin = async (player, channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
-    const { imageDir, hootSettings, assetCooldown } = await (0, settings_1.getSettings)(channelId);
+    const { hootSettings, assetCooldown } = await (0, settings_1.getSettings)(channelId);
     const { hootOnWin } = hootSettings;
     game.active = false;
     player.win = true;
     // Increment score and hoot of winning player
     const winningUser = (await database_service_1.collections.users.findOne({
-        _id: player.userId,
+        discordId: player.discordId,
     }));
     // Render death imagery
     const attachment = new discord_js_1.AttachmentBuilder('src/images/death.gif', {
@@ -45,9 +48,9 @@ const handleWin = async (player, channel) => {
     addEncounter(game, winningUser._id, player.asset.assetId, channelId);
     // Reset state for new game
     endGameMutation(playerArr, assetCooldown, hootOnWin);
-    (0, helpers_1.resetGame)(false, channelId);
+    (0, gameplay_1.resetGame)(false, channelId);
     (0, settings_1.clearSettings)(channelId);
-    (0, helpers_1.emptyDir)(imageDir);
+    (0, fileSystem_1.rmDir)(`dist/nftAssets/${channelId}`);
     // Wait a couple of seconds before rendering winning embed
     await (0, helpers_1.wait)(2000);
     await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { player, hootOnWin }));
@@ -56,18 +59,18 @@ const handleWin = async (player, channel) => {
 };
 exports.handleWin = handleWin;
 /**
- * Update user state in accordance with game result
+ * Loop through each player and update corresponding user entry in db
  * @param players
  * @param assetCooldown
  * @param hootOnWin
  */
 const endGameMutation = async (players, assetCooldown, hootOnWin) => {
     await (0, helpers_1.asyncForEach)(players, async (player) => {
-        const { userId, asset, win, kos } = player;
+        const { asset, win, kos, discordId } = player;
         const assetId = asset.assetId.toString();
         const coolDownDoneDate = Date.now() + assetCooldown * 60000;
         const user = (await database_service_1.collections.users.findOne({
-            _id: userId,
+            discordId,
         }));
         // Provide fallbacks for null values
         const userYaoWins = user.yaoWins || 0;
@@ -87,11 +90,11 @@ const endGameMutation = async (players, assetCooldown, hootOnWin) => {
             yaoWins,
             yaoLosses,
             yaoKos });
-        await database_service_1.collections.users.findOneAndReplace({ _id: userId }, userData);
+        await database_service_1.collections.users.findOneAndReplace({ discordId }, userData);
     });
 };
 /**
- * Adds encounter to database
+ * Adds encounter {record of game} to database
  * @param game
  * @param winnerId
  * @param winningAssetId

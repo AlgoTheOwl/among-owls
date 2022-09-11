@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Discord
 const discord_js_1 = require("discord.js");
 const builders_1 = require("@discordjs/builders");
-// Data
-const database_service_1 = require("../database/database.service");
+// Helpers
+const registration_1 = require("../utils/registration");
 // Globals
 const __1 = require("..");
 const settings_1 = require("../utils/settings");
@@ -12,6 +12,11 @@ module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('select-attacker')
         .setDescription(`Pick which AOWL you'd like to compete`),
+    /**
+     * Sends a select menu to user to select an AOWL for registratiion
+     * @param interaction {Interaction}
+     * @returns {void}
+     */
     async execute(interaction) {
         try {
             const { user: { id }, channelId, } = interaction;
@@ -24,21 +29,19 @@ module.exports = {
                 });
             }
             await interaction.deferReply({ ephemeral: true });
-            const data = (await database_service_1.collections.users.findOne({
-                discordId: id,
-            }));
-            if (data === null) {
+            const user = await (0, registration_1.findOrRefreshUser)(id, channelId, interaction);
+            if (!user) {
                 return interaction.editReply({
                     content: 'You are not registered. Use the /register command',
                 });
             }
-            const assetData = (data === null || data === void 0 ? void 0 : data.assets) ? Object.values(data.assets) : [];
+            const assetData = (user === null || user === void 0 ? void 0 : user.assets) ? Object.values(user.assets) : [];
             if (!assetData.length) {
                 return interaction.editReply({
                     content: 'You have no AOWLs to select!',
                 });
             }
-            const options = Object.values(data.assets)
+            const options = Object.values(user.assets)
                 .map((asset, i) => {
                 var _a;
                 if (i < maxAssets) {

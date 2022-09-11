@@ -1,19 +1,10 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
-// Data
-import { collections } from '../database/database.service'
 // Helpers
-import { determineOwnership } from '../utils/algorand'
-import { addRole } from '../utils/helpers'
+import { addRole } from '../utils/discord'
+import { processRegistration } from '../utils/registration'
 // Schemas
-import { RegistrationResult } from '../types/user'
-import User from '../models/user'
-import { WithId } from 'mongodb'
 import { Interaction } from 'discord.js'
-import Asset from '../models/asset'
-// Globals
-const optInAssetId: number = Number(process.env.OPT_IN_ASSET_ID)
-const unitName: string = process.env.UNIT_NAME
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -26,11 +17,16 @@ module.exports = {
         .setRequired(true)
     ),
   enabled: true,
+  /**
+   * Command that commences registration when a user enters their wallet address
+   * User must be opted in to OPT_IN_ASSET_ID for this command to work
+   * @param interaction {Interaction}
+   * @returns {void}
+   */
   async execute(interaction: Interaction) {
     if (!interaction.isChatInputCommand()) return
 
-    const { user, options } = interaction
-    const maxAssets = 20
+    const { user, options, channelId } = interaction
 
     // TODO: add ability to register for different games here
     const address = options.getString('address')
@@ -56,7 +52,7 @@ module.exports = {
         username,
         id,
         address,
-        maxAssets
+        channelId
       )
       // add permissions if succesful
       if (registeredUser && asset) {
@@ -69,81 +65,4 @@ module.exports = {
       })
     }
   },
-}
-
-export const processRegistration = async (
-  username: string,
-  discordId: string,
-  address: string,
-  maxAssets: number
-): Promise<RegistrationResult> => {
-  try {
-    // Attempt to find user in db
-    let user = (await collections.users?.findOne({
-      discordId,
-    })) as WithId<User>
-
-    // Check to see if wallet has opt-in asset
-    // Retreive assetIds from specific collections
-    const { walletOwned, nftsOwned, hootOwned } = await determineOwnership(
-      address,
-      maxAssets
-    )
-
-    const keyedNfts: { [key: string]: Asset } = {}
-    nftsOwned.forEach((nft) => {
-      keyedNfts[nft.assetId] = nft
-    })
-
-    if (!nftsOwned?.length) {
-      return {
-        status: `You have no ${unitName}s in this wallet. Please try again with a different address`,
-      }
-    }
-
-    if (!walletOwned) {
-      return {
-        status: `Looks like you haven't opted in to to asset ${optInAssetId}. Please opt in on Rand Gallery by using this link: https://www.randgallery.com/algo-collection/?address=${optInAssetId}`,
-      }
-    }
-
-    // If user doesn't exist, add to db and grab instance
-    if (!user) {
-      const userEntry = new User(
-        username,
-        discordId,
-        address,
-        keyedNfts,
-        hootOwned
-      )
-      const { acknowledged, insertedId } = await collections.users?.insertOne(
-        userEntry
-      )
-
-      if (acknowledged) {
-        user = (await collections.users?.findOne({
-          _id: insertedId,
-        })) as WithId<User>
-      } else {
-        return {
-          status: 'Something went wrong during registration, please try again',
-        }
-      }
-    } else {
-      await collections.users.findOneAndUpdate(
-        { _id: user._id },
-        { $set: { assets: keyedNfts, address: address } }
-      )
-    }
-
-    return {
-      status: `Registration complete! Enjoy the game.`,
-      registeredUser: user,
-    }
-  } catch (error) {
-    console.log('ERROR::', error)
-    return {
-      status: 'Something went wrong during registration, please try again',
-    }
-  }
 }

@@ -6,20 +6,23 @@ import {
 } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 // Data
-import { collections } from '../database/database.service'
 // Schemas
-import User from '../models/user'
-import { WithId } from 'mongodb'
 import Asset from '../models/asset'
+// Helpers
+import { findOrRefreshUser } from '../utils/registration'
 // Globals
 import { games } from '..'
-import { getSyntheticTrailingComments } from 'typescript'
 import { getSettings } from '../utils/settings'
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('select-attacker')
     .setDescription(`Pick which AOWL you'd like to compete`),
+  /**
+   * Sends a select menu to user to select an AOWL for registratiion
+   * @param interaction {Interaction}
+   * @returns {void}
+   */
   async execute(interaction: ButtonInteraction) {
     try {
       const {
@@ -41,17 +44,15 @@ module.exports = {
 
       await interaction.deferReply({ ephemeral: true })
 
-      const data = (await collections.users.findOne({
-        discordId: id,
-      })) as WithId<User>
+      const user = await findOrRefreshUser(id, channelId, interaction)
 
-      if (data === null) {
+      if (!user) {
         return interaction.editReply({
           content: 'You are not registered. Use the /register command',
         })
       }
 
-      const assetData = data?.assets ? Object.values(data.assets) : []
+      const assetData = user?.assets ? Object.values(user.assets) : []
 
       if (!assetData.length) {
         return interaction.editReply({
@@ -59,7 +60,7 @@ module.exports = {
         })
       }
 
-      const options = Object.values(data.assets)
+      const options = Object.values(user.assets)
         .map((asset: Asset, i: number) => {
           if (i < maxAssets) {
             const label = asset.alias || asset.assetName

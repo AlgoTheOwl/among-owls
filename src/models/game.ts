@@ -1,5 +1,6 @@
 import Player from './player'
 
+// TODO: Add getters and setters, use proper OOP practices for game
 export default class Game {
   constructor(
     public players: { [key: string]: Player },

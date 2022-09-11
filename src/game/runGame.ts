@@ -1,12 +1,7 @@
 // Helpers
-import {
-  asyncForEach,
-  doDamage,
-  getWinningPlayer,
-  mapPlayersForEmbed,
-  resetGame,
-  wait,
-} from '../utils/helpers'
+import { asyncForEach, mapPlayersForEmbed, wait } from '../utils/helpers'
+import { getWinningPlayer, resetGame } from '../utils/gameplay'
+import { doDamage } from '../utils/attack'
 import { getRandomVictimId, getAttackString } from '../utils/attack'
 import { handleWin } from './win'
 import doEmbed from '../embeds'
@@ -18,6 +13,12 @@ import embeds from '../constants/embeds'
 import { TextChannel } from 'discord.js'
 import { getSettings } from '../utils/settings'
 
+/**
+ * Runs main game logic incrementally
+ * Loops through each player and triggers specific or randopm attack
+ * Updated embed to show attack and current player HP, update game state stats
+ * @param channel {TextChannel}
+ */
 export default async function runGame(channel: TextChannel) {
   const { id: channelId } = channel
   try {

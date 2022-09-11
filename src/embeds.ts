@@ -16,7 +16,6 @@ import embeds from './constants/embeds'
 import { games } from '.'
 // Helpers
 import { mapPlayersForEmbed, normalizeIpfsUrl } from './utils/helpers'
-import { getSettings } from './utils/settings'
 
 const defaultEmbedValues: EmbedData = {
   title: '🔥 Ye Among AOWLs 🔥',
@@ -31,16 +30,19 @@ const defaultEmbedValues: EmbedData = {
   rawEmbed: false,
 }
 
+/**
+ * Takes embed type and returns Discord message embed object for easy use within commands
+ * TODO: move all "options" and async operations into doEmbed function to reduce clutter at command level
+ * @param type
+ * @param channelId
+ * @param options
+ * @returns {MessagePayload | InteractionReplyOptions | EmbedBuilder | MessageOptions}
+ */
 export default function doEmbed(
   type: string,
   channelId: string,
   options?: any
-):
-  | string
-  | MessagePayload
-  | InteractionReplyOptions
-  | EmbedBuilder
-  | MessageOptions {
+): MessagePayload | InteractionReplyOptions | EmbedBuilder | MessageOptions {
   let data: EmbedData = {}
   let components = []
   const game = games[channelId]

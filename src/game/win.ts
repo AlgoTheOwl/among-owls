@@ -8,7 +8,9 @@ import embeds from '../constants/embeds'
 // Data
 import { collections } from '../database/database.service'
 // Helpers
-import { resetGame, emptyDir, asyncForEach, wait } from '../utils/helpers'
+import { asyncForEach, wait } from '../utils/helpers'
+import { resetGame } from '../utils/gameplay'
+import { rmDir } from '../utils/fileSystem'
 import doEmbed from '../embeds'
 import { startWaitingRoom } from '.'
 // Globals
@@ -18,14 +20,15 @@ import Encounter from '../models/encounter'
 import Game from '../models/game'
 
 /**
- * Handle game state when win occurs
- * @param player
- * @param channel
+ * Update game and user state when win occurs
+ * Restart game in channel
+ * @param player last player standing
+ * @param channel {TextChannel}
  */
 export const handleWin = async (player: Player, channel: TextChannel) => {
   const { id: channelId } = channel
   const game = games[channelId]
-  const { imageDir, hootSettings, assetCooldown } = await getSettings(channelId)
+  const { hootSettings, assetCooldown } = await getSettings(channelId)
   const { hootOnWin } = hootSettings
 
   game.active = false
@@ -33,7 +36,7 @@ export const handleWin = async (player: Player, channel: TextChannel) => {
 
   // Increment score and hoot of winning player
   const winningUser = (await collections.users.findOne({
-    _id: player.userId,
+    discordId: player.discordId,
   })) as WithId<User>
 
   // Render death imagery
@@ -54,7 +57,7 @@ export const handleWin = async (player: Player, channel: TextChannel) => {
   endGameMutation(playerArr, assetCooldown, hootOnWin)
   resetGame(false, channelId)
   clearSettings(channelId)
-  emptyDir(imageDir)
+  rmDir(`dist/nftAssets/${channelId}`)
   // Wait a couple of seconds before rendering winning embed
   await wait(2000)
   await game.arena.edit(doEmbed(embeds.win, channelId, { player, hootOnWin }))
@@ -63,7 +66,7 @@ export const handleWin = async (player: Player, channel: TextChannel) => {
 }
 
 /**
- * Update user state in accordance with game result
+ * Loop through each player and update corresponding user entry in db
  * @param players
  * @param assetCooldown
  * @param hootOnWin
@@ -74,11 +77,11 @@ const endGameMutation = async (
   hootOnWin: number
 ) => {
   await asyncForEach(players, async (player: Player) => {
-    const { userId, asset, win, kos } = player
+    const { asset, win, kos, discordId } = player
     const assetId = asset.assetId.toString()
     const coolDownDoneDate = Date.now() + assetCooldown * 60000
     const user = (await collections.users.findOne({
-      _id: userId,
+      discordId,
     })) as WithId<User>
 
     // Provide fallbacks for null values
@@ -115,12 +118,12 @@ const endGameMutation = async (
       yaoKos,
     }
 
-    await collections.users.findOneAndReplace({ _id: userId }, userData)
+    await collections.users.findOneAndReplace({ discordId }, userData)
   })
 }
 
 /**
- * Adds encounter to database
+ * Adds encounter {record of game} to database
  * @param game
  * @param winnerId
  * @param winningAssetId

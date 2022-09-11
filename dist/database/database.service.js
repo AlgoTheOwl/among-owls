@@ -30,18 +30,18 @@ const mongoDB = __importStar(require("mongodb"));
 exports.collections = {};
 let db;
 exports.db = db;
-// Initialize Connection
+/**
+ * Connects to mongoDb instance
+ */
 async function connectToDatabase() {
     const client = new mongoDB.MongoClient(process.env.DB_CONN_STRING);
     await client.connect();
     exports.db = db = client.db(process.env.DB_NAME);
     const usersCollection = db.collection(process.env.USERS_COLLECTION_NAME);
     const settingsCollections = db.collection(process.env.SETTINGS_COLLECTION_NAME);
-    const assetsCollection = db.collection(process.env.ASSETS_COLLECTION_NAME);
     const encountersCollection = db.collection(process.env.ENCOUNTERS_COLLECTION_NAME);
     exports.collections.users = usersCollection;
     exports.collections.settings = settingsCollections;
-    exports.collections.assets = assetsCollection;
     exports.collections.encounters = encountersCollection;
     console.log(`Successfully connected to database: ${db.databaseName}`);
 }

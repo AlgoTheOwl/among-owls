@@ -11,13 +11,13 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 // Helpers
 const database_service_1 = require("./database/database.service");
+const algorand_1 = require("./utils/algorand");
 // Globals
 const database_service_2 = require("./database/database.service");
 // Schema
 const game_1 = __importDefault(require("./models/game"));
 // Helpers
 const game_2 = require("./game");
-const algorand_1 = require("./utils/algorand");
 const helpers_1 = require("./utils/helpers");
 const token = process.env.DISCORD_TOKEN;
 const creatorAddressOne = process.env.CREATOR_ADDRESS_ONE;
@@ -39,6 +39,9 @@ exports.client = new discord_js_1.Client({
         discord_js_1.GatewayIntentBits.GuildMessages,
     ],
 });
+/**
+ * Listener for server start
+ */
 exports.client.once('ready', async () => {
     try {
         main();
@@ -49,22 +52,20 @@ exports.client.once('ready', async () => {
         main();
     }
 });
+/**
+ * Main game function
+ * Connects to db, fetches txnData from blockchain and starts games in specified channels
+ */
 const main = async () => {
     await (0, database_service_1.connectToDatabase)();
-    await setupTxns();
+    await (0, algorand_1.setupTxns)();
     setupCommands();
     startGames();
     console.log('Ye Among AOWLs - Server ready');
 };
-const setupTxns = async () => {
-    let update = true;
-    if (!node_fs_1.default.existsSync('dist/txnData/txnData.json')) {
-        update = false;
-        node_fs_1.default.writeFileSync('dist/txnData/txnData.json', '');
-    }
-    const txnData = await (0, algorand_1.convergeTxnData)(exports.creatorAddressArr, update);
-    node_fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
-};
+/**
+ * Parses command files and readies them for use in client
+ */
 const setupCommands = () => {
     exports.client.commands = new discord_js_1.Collection();
     const commandsPath = node_path_1.default.join(__dirname, 'commands');
@@ -77,22 +78,24 @@ const setupCommands = () => {
         exports.client.commands.set(command.data.name, command);
     }
 };
+/**
+ * Fetches channel settings from DB
+ * Starts game for each object entered
+ */
 const startGames = async () => {
     const channelSettings = (await database_service_2.collections.settings
         .find({})
         .toArray());
-    // start game for each channel
     (0, helpers_1.asyncForEach)(channelSettings, async (settings) => {
+        // TODO: Test to make sure each settings object is valid
         const { maxCapacity, channelId } = settings;
         const channel = exports.client.channels.cache.get(channelId);
         exports.games[channelId] = new game_1.default({}, false, false, maxCapacity, 0, Date.now());
         (0, game_2.startWaitingRoom)(channel);
     });
 };
-/*
- *****************
- * COMMAND SERVER *
- *****************
+/**
+ * Main command listener
  */
 exports.client.on('interactionCreate', async (interaction) => {
     try {

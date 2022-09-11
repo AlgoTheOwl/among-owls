@@ -4,7 +4,7 @@ import { Interaction, InteractionType } from 'discord.js'
 // Data
 import { collections } from '../database/database.service'
 // Helpers
-import { confirmRole } from '../utils/helpers'
+import { validateUserRole } from '../utils/discord'
 
 const roleId = process.env.ADMIN_ID
 module.exports = {
@@ -12,6 +12,11 @@ module.exports = {
     .setName('clear-leaderboard')
     .setDescription('clear the leaderboard standings'),
   enabled: true,
+  /**
+   * Allows admins to clear leaderboard standings
+   * @param interaction {Interaction}
+   * @returns {void}
+   */
   async execute(interaction: Interaction) {
     if (interaction.type !== InteractionType.ApplicationCommand) return
 
@@ -19,7 +24,7 @@ module.exports = {
       user: { id },
     } = interaction
 
-    const hasRole = confirmRole(roleId, interaction, id)
+    const hasRole = validateUserRole(roleId, interaction, id)
 
     if (!hasRole) {
       return interaction.reply({
@@ -30,7 +35,10 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true })
 
     try {
-      await collections.users.updateMany({}, { $set: { yaoWins: 0 } })
+      await collections.users.updateMany(
+        {},
+        { $set: { yaoWins: 0, yaoLosses: 0, yaoKos: 0 } }
+      )
     } catch (error) {
       console.log(error)
     }

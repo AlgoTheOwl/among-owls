@@ -21,6 +21,11 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('leaderboard-select')
     .setDescription('show leaderboards'),
+  /**
+   * Sends specified leaderboard to client
+   * @param interaction {SelectMenuInteraction}
+   * @returns {void}
+   */
   async execute(interaction: SelectMenuInteraction) {
     if (!interaction.isSelectMenu()) return
     try {

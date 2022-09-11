@@ -7,16 +7,23 @@ import {
   TextChannel,
 } from 'discord.js'
 // Helpers
-import { resetGame, wait } from '../utils/helpers'
+import { wait } from '../utils/helpers'
+import { resetGame } from '../utils/gameplay'
 import doEmbed from '../embeds'
 import runGame from './runGame'
 // Globals
 import { games } from '..'
 // Schemas
 import embeds from '../constants/embeds'
-import Player from '../models/player'
+import Player, { KeyedPlayers } from '../models/player'
 import { getSettings } from '../utils/settings'
 
+/**
+ * Starts waiting room in specific channel
+ * Watches for updates to game states and edits embed
+ * Sends "megatron" image to channel before embed
+ * @param channel {TextChannel}
+ */
 export const startWaitingRoom = async (channel: TextChannel): Promise<void> => {
   const { id: channelId } = channel
   const game = games[channelId]
@@ -67,8 +74,13 @@ export const startWaitingRoom = async (channel: TextChannel): Promise<void> => {
   runGame(channel)
 }
 
+/**
+ * Sends select menu with other players to users to select random or specific victim
+ * @param players KeyedPlayers
+ * @param channel
+ */
 const sendVictimSelectMenu = async (
-  players: { [key: string]: Player },
+  players: KeyedPlayers,
   channel: TextChannel
 ) => {
   const playerArr = Object.values(players)

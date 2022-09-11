@@ -12,7 +12,6 @@ export default class Player {
     public discordId: string,
     public address: string,
     public asset: Asset,
-    public userId: ObjectId,
     public hp: number,
     public victimId?: string // public win?: boolean
   ) {
@@ -22,3 +21,5 @@ export default class Player {
     this.kos = 0
   }
 }
+
+export type KeyedPlayers = { [key: string]: Player }

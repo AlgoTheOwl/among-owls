@@ -5,7 +5,7 @@ const builders_1 = require("@discordjs/builders");
 // Globals
 const __1 = require("..");
 const database_service_1 = require("../database/database.service");
-const helpers_1 = require("../utils/helpers");
+const gameplay_1 = require("../utils/gameplay");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('rename')
@@ -15,6 +15,13 @@ module.exports = {
         .setDescription('enter a new name for your AOWL')
         .setRequired(true)),
     enabled: true,
+    /**
+     * Command that allows user to rename their chosen AOWL
+     * Selected AOWL can be represented by an AOWL currently registered in a game
+     * OR the current AOWL a user has selected in their profile
+     * @param interaction {Interaction}
+     * @returns {void}
+     */
     async execute(interaction) {
         if (!interaction.isChatInputCommand())
             return;
@@ -59,7 +66,7 @@ module.exports = {
                 content: `Your AOWL is now named ${name}`,
                 ephemeral: true,
             });
-            (0, helpers_1.updateGame)(channelId);
+            (0, gameplay_1.updateGame)(channelId);
         }
     },
 };

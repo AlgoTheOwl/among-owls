@@ -8,6 +8,7 @@ exports.startWaitingRoom = void 0;
 const discord_js_1 = require("discord.js");
 // Helpers
 const helpers_1 = require("../utils/helpers");
+const gameplay_1 = require("../utils/gameplay");
 const embeds_1 = __importDefault(require("../embeds"));
 const runGame_1 = __importDefault(require("./runGame"));
 // Globals
@@ -15,12 +16,18 @@ const __1 = require("..");
 // Schemas
 const embeds_2 = __importDefault(require("../constants/embeds"));
 const settings_1 = require("../utils/settings");
+/**
+ * Starts waiting room in specific channel
+ * Watches for updates to game states and edits embed
+ * Sends "megatron" image to channel before embed
+ * @param channel {TextChannel}
+ */
 const startWaitingRoom = async (channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
     const { maxCapacity } = await (0, settings_1.getSettings)(channelId);
     let capacity = maxCapacity;
-    (0, helpers_1.resetGame)(false, channelId);
+    (0, gameplay_1.resetGame)(false, channelId);
     game.megatron = await channel.send((0, embeds_1.default)(embeds_2.default.waitingRoom, channelId));
     // Do waiting room
     game.waitingRoom = true;
@@ -52,6 +59,11 @@ const startWaitingRoom = async (channel) => {
     (0, runGame_1.default)(channel);
 };
 exports.startWaitingRoom = startWaitingRoom;
+/**
+ * Sends select menu with other players to users to select random or specific victim
+ * @param players KeyedPlayers
+ * @param channel
+ */
 const sendVictimSelectMenu = async (players, channel) => {
     const playerArr = Object.values(players);
     const victims = playerArr
