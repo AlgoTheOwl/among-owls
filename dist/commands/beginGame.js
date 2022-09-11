@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
 // Globals
 const __1 = require("..");
-const helpers_1 = require("../utils/helpers");
+const discord_1 = require("../utils/discord");
 const settings_1 = require("../utils/settings");
 const adminId = process.env.ADMIN_ID;
 module.exports = {
@@ -23,7 +23,7 @@ module.exports = {
         const playerArr = Object.values(game.players);
         // Allow admins to trigger game start even if not registered in game
         if (!game.players[user.id]) {
-            const isAdmin = (0, helpers_1.confirmRole)(adminId, interaction, user.id);
+            const isAdmin = (0, discord_1.validateUserRole)(adminId, interaction, user.id);
             if (!isAdmin) {
                 return interaction.reply({
                     content: 'You need to be registered in gameplay to start the game',

@@ -5,7 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // Helpers
 const helpers_1 = require("../utils/helpers");
+const gameplay_1 = require("../utils/gameplay");
 const attack_1 = require("../utils/attack");
+const attack_2 = require("../utils/attack");
 const win_1 = require("./win");
 const embeds_1 = __importDefault(require("../embeds"));
 // Globals
@@ -44,10 +46,10 @@ async function runGame(channel) {
                         victim = game.players[player.victimId];
                     }
                     else {
-                        victim = game.players[(0, attack_1.getRandomVictimId)(discordId, channelId)];
+                        victim = game.players[(0, attack_2.getRandomVictimId)(discordId, channelId)];
                     }
                     if (victim) {
-                        const damage = (0, helpers_1.doDamage)(damageRange);
+                        const damage = (0, attack_1.doDamage)(damageRange);
                         victim.hp -= damage;
                         if (victim.hp <= 0 && attacker) {
                             victim.dead = true;
@@ -55,7 +57,7 @@ async function runGame(channel) {
                             player.kos++;
                         }
                         // HANDLE WIN
-                        const winningPlayer = (0, helpers_1.getWinningPlayer)(playerArr);
+                        const winningPlayer = (0, gameplay_1.getWinningPlayer)(playerArr);
                         isWin = !!winningPlayer;
                         if (isWin && winningPlayer && game.active) {
                             (0, win_1.handleWin)(winningPlayer, channel);
@@ -63,7 +65,7 @@ async function runGame(channel) {
                         // REFRESH EMBED
                         const attackField = {
                             name: 'ATTACK',
-                            value: (0, attack_1.getAttackString)(attacker.asset.alias || attacker.asset.assetName, victim.username, damage),
+                            value: (0, attack_2.getAttackString)(attacker.asset.alias || attacker.asset.assetName, victim.username, damage),
                         };
                         const fields = [
                             ...(0, helpers_1.mapPlayersForEmbed)(playerArr, 'game'),
@@ -81,7 +83,7 @@ async function runGame(channel) {
     }
     catch (error) {
         console.log('****** ERROR RUNNNINGS GAME ******', error);
-        (0, helpers_1.resetGame)(false, channelId);
+        (0, gameplay_1.resetGame)(false, channelId);
     }
 }
 exports.default = runGame;

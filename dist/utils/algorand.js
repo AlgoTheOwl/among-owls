@@ -3,35 +3,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convergeTxnData = exports.updateTransactions = exports.searchForTransactions = exports.claimHoot = exports.findAsset = exports.isAssetCollectionAsset = exports.getAssetIdArray = exports.determineOwnership = void 0;
+exports.convergeTxnData = exports.fetchRecentTransaction = exports.searchForTransactions = exports.setupTxns = exports.findAsset = exports.isAssetCollectionAsset = exports.getAssetIdArray = exports.determineOwnership = void 0;
 const asset_1 = __importDefault(require("../models/asset"));
 const helpers_1 = require("./helpers");
 const algosdk_1 = __importDefault(require("algosdk"));
 const fs_1 = __importDefault(require("fs"));
-// import txnDataJson from '../txnData/txnData.json'
 const __1 = require("..");
-const algoNode = process.env.ALGO_NODE;
 const pureStakeApi = process.env.PURESTAKE_API;
 const algoIndexerNode = process.env.ALGO_INDEXER_NODE;
 const optInAssetId = Number(process.env.OPT_IN_ASSET_ID);
 const unitPrefix = process.env.UNIT_NAME;
-const hootAccountMnemonic = process.env.HOOT_SOURCE_MNEMONIC;
 const token = {
     'X-API-Key': pureStakeApi,
 };
-const server = algoNode;
 const indexerServer = algoIndexerNode;
 const port = '';
-const algodClient = new algosdk_1.default.Algodv2(token, server, port);
 const algoIndexer = new algosdk_1.default.Indexer(token, indexerServer, port);
+/**
+ * Grabs users Algo acocunt assets and returns all instances of collection assets
+ * Authenticates wallet by ensuring wallet has opted in to game token
+ * Tracks users Hoot token amount
+ * @param address
+ * @param maxAssets
+ * @returns {{walletOwned: boolean, nftsOwned: Asset[], hootOwned: number}}
+ */
 const determineOwnership = async function (address, maxAssets) {
     try {
-        if (!fs_1.default.existsSync('dist/txnData/txnData.json')) {
-            fs_1.default.writeFileSync('dist/txnData/txnData.json', '');
-        }
-        // update transactions
-        const txnData = await (0, exports.convergeTxnData)(__1.creatorAddressArr, true);
-        fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
+        await (0, exports.setupTxns)();
         let { assets } = await algoIndexer
             .lookupAccountAssets(address)
             .limit(10000)
@@ -93,6 +91,11 @@ const determineOwnership = async function (address, maxAssets) {
     }
 };
 exports.determineOwnership = determineOwnership;
+/**
+ * Using data from transaction record of creator wallet, produces
+ * unique array of all assets created by said wallet
+ * @returns {Array}
+ */
 const getAssetIdArray = () => {
     const assetIdArr = [];
     const txnData = getTxnData();
@@ -111,8 +114,19 @@ const getAssetIdArray = () => {
     return assetIdArr;
 };
 exports.getAssetIdArray = getAssetIdArray;
+/**
+ * Searches array of collection assets for match of assetId passed to function
+ * @param assetId
+ * @param assetIdArr
+ * @returns {Boolean}
+ */
 const isAssetCollectionAsset = (assetId, assetIdArr) => assetIdArr.includes(assetId);
 exports.isAssetCollectionAsset = isAssetCollectionAsset;
+/**
+ * Finds Asset data on Algo blockchain
+ * @param assetId
+ * @returns {Promise<AlgoAssetData>}
+ */
 const findAsset = async (assetId) => {
     try {
         const assetData = await algoIndexer.searchForAssets().index(assetId).do();
@@ -124,25 +138,25 @@ const findAsset = async (assetId) => {
     }
 };
 exports.findAsset = findAsset;
-const claimHoot = async (amount, receiverAddress) => {
-    try {
-        const params = await algodClient.getTransactionParams().do();
-        const { sk, addr: senderAddress } = algosdk_1.default.mnemonicToSecretKey(hootAccountMnemonic);
-        const revocationTarget = undefined;
-        const closeRemainderTo = undefined;
-        const note = undefined;
-        const assetId = optInAssetId;
-        let xtxn = algosdk_1.default.makeAssetTransferTxnWithSuggestedParams(senderAddress, receiverAddress, closeRemainderTo, revocationTarget, amount, note, assetId, params);
-        const rawSignedTxn = xtxn.signTxn(sk);
-        let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-        return await algosdk_1.default.waitForConfirmation(algodClient, xtx.txId, 4);
+/**
+ * Checks if we have a txnData file, creates one if not
+ * Fetches and reduces txnData from all creator wallets and writes file
+ */
+const setupTxns = async () => {
+    let update = true;
+    if (!fs_1.default.existsSync('dist/txnData/txnData.json')) {
+        update = false;
+        fs_1.default.writeFileSync('dist/txnData/txnData.json', '');
     }
-    catch (error) {
-        console.log('****** ERROR CLAIMING HOOT', error);
-    }
+    const txnData = await (0, exports.convergeTxnData)(__1.creatorAddressArr, update);
+    fs_1.default.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData));
 };
-exports.claimHoot = claimHoot;
-// Finds all transactions from address
+exports.setupTxns = setupTxns;
+/**
+ * Finds all transactions from address
+ * @param address
+ * @returns {Promise<TxnData>}
+ */
 const searchForTransactions = async (address) => {
     const type = 'acfg';
     const txns = (await algoIndexer
@@ -153,7 +167,13 @@ const searchForTransactions = async (address) => {
     return txns;
 };
 exports.searchForTransactions = searchForTransactions;
-const updateTransactions = async (accountAddress, currentRound) => {
+/**
+ * Grabs all transactions from an account address since a specific round
+ * @param accountAddress
+ * @param currentRound
+ * @returns {Promise<TxnData>}
+ */
+const fetchRecentTransaction = async (accountAddress, currentRound) => {
     const type = 'acfg';
     return (await algoIndexer
         .searchForTransactions()
@@ -162,15 +182,20 @@ const updateTransactions = async (accountAddress, currentRound) => {
         .minRound(currentRound)
         .do());
 };
-exports.updateTransactions = updateTransactions;
-// Fetches all data and reduces it to one object
+exports.fetchRecentTransaction = fetchRecentTransaction;
+/**
+ * Fetches all data and reduces it to one object
+ * @param creatorAddresses
+ * @param update
+ * @returns {Promise<TxnData>}
+ */
 const convergeTxnData = async (creatorAddresses, update) => {
     const updateCalls = [];
     const txnData = getTxnData();
     creatorAddresses.forEach((address) => {
         if (update) {
             const currentRound = txnData['current-round'];
-            updateCalls.push((0, exports.updateTransactions)(address, currentRound));
+            updateCalls.push((0, exports.fetchRecentTransaction)(address, currentRound));
         }
         else {
             updateCalls.push((0, exports.searchForTransactions)(address));
@@ -185,6 +210,11 @@ const convergeTxnData = async (creatorAddresses, update) => {
     return reduceTxnData(reduceArr);
 };
 exports.convergeTxnData = convergeTxnData;
+/**
+ * Reduce operation for each TxnData object
+ * @param txnDataArray
+ * @returns {TxnData}
+ */
 const reduceTxnData = (txnDataArray) => {
     const reducedData = txnDataArray.reduce((prevTxnData, txnData) => {
         // select the most recent round
@@ -198,11 +228,15 @@ const reduceTxnData = (txnDataArray) => {
     });
     return reducedData;
 };
+/**
+ * Grabs and parses transaction data locally
+ * @returns {TxnData | undefined}
+ */
 const getTxnData = () => {
     try {
         return JSON.parse(fs_1.default.readFileSync('dist/txnData/txnData.json', 'utf-8'));
     }
-    catch (e) {
-        ///
+    catch (error) {
+        console.log('****** NO TXN DATA PRESENT ******');
     }
 };

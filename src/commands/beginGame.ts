@@ -3,7 +3,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { ButtonInteraction } from 'discord.js'
 // Globals
 import { games } from '..'
-import { confirmRole } from '../utils/helpers'
+import { validateUserRole } from '../utils/discord'
 import { getSettings } from '../utils/settings'
 
 const adminId = process.env.ADMIN_ID
@@ -25,7 +25,7 @@ module.exports = {
 
     // Allow admins to trigger game start even if not registered in game
     if (!game.players[user.id]) {
-      const isAdmin = confirmRole(adminId, interaction, user.id)
+      const isAdmin = validateUserRole(adminId, interaction, user.id)
       if (!isAdmin) {
         return interaction.reply({
           content: 'You need to be registered in gameplay to start the game',

@@ -11,13 +11,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 // Helpers
 import { connectToDatabase } from './database/database.service'
+import { setupTxns } from './utils/algorand'
 // Globals
 import { collections } from './database/database.service'
 // Schema
 import Game from './models/game'
 // Helpers
 import { startWaitingRoom } from './game'
-import { convergeTxnData } from './utils/algorand'
 import { wait, asyncForEach } from './utils/helpers'
 import { WithId } from 'mongodb'
 import { Settings } from './utils/settings'
@@ -69,22 +69,6 @@ const main = async () => {
   setupCommands()
   startGames()
   console.log('Ye Among AOWLs - Server ready')
-}
-
-/**
- * Checks if we have a txnData file, creates one if not
- * Fetches and reduces txnData from all creator wallets and writes file
- */
-const setupTxns = async () => {
-  let update = true
-  if (!fs.existsSync('dist/txnData/txnData.json')) {
-    update = false
-    fs.writeFileSync('dist/txnData/txnData.json', '')
-  }
-
-  const txnData = await convergeTxnData(creatorAddressArr, update)
-
-  fs.writeFileSync('dist/txnData/txnData.json', JSON.stringify(txnData))
 }
 
 /**

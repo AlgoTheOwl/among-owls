@@ -9,11 +9,8 @@ import { WithId } from 'mongodb'
 import User from '../models/user'
 import Player from '../models/player'
 // Helpers
-import {
-  downloadFile,
-  updateGame,
-  checkIfRegisteredPlayer,
-} from '../utils/helpers'
+import { updateGame, checkIfRegisteredPlayer } from '../utils/gameplay'
+import { downloadAssetImage } from '../utils/fileSystem'
 import fs from 'fs'
 // Globals
 import { games } from '../index'
@@ -90,7 +87,7 @@ module.exports = {
             fs.mkdir(path, (err) => {})
           }
 
-          localPath = await downloadFile(asset, path, username)
+          localPath = await downloadAssetImage(asset, path, username)
         } catch (error) {
           console.log('****** ERROR DOWNLOADING ******', error)
         }

@@ -6,7 +6,7 @@ import { games } from '..'
 import { collections } from '../database/database.service'
 import User from '../models/user'
 import { WithId } from 'mongodb'
-import { updateGame } from '../utils/helpers'
+import { updateGame } from '../utils/gameplay'
 import Asset from '../models/asset'
 
 module.exports = {

@@ -5,7 +5,7 @@ const builders_1 = require("@discordjs/builders");
 // Globals
 const __1 = require("..");
 const database_service_1 = require("../database/database.service");
-const helpers_1 = require("../utils/helpers");
+const gameplay_1 = require("../utils/gameplay");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('rename')
@@ -66,7 +66,7 @@ module.exports = {
                 content: `Your AOWL is now named ${name}`,
                 ephemeral: true,
             });
-            (0, helpers_1.updateGame)(channelId);
+            (0, gameplay_1.updateGame)(channelId);
         }
     },
 };

@@ -11,6 +11,8 @@ const embeds_1 = __importDefault(require("../constants/embeds"));
 const database_service_1 = require("../database/database.service");
 // Helpers
 const helpers_1 = require("../utils/helpers");
+const gameplay_1 = require("../utils/gameplay");
+const fileSystem_1 = require("../utils/fileSystem");
 const embeds_2 = __importDefault(require("../embeds"));
 const _1 = require(".");
 // Globals
@@ -46,9 +48,9 @@ const handleWin = async (player, channel) => {
     addEncounter(game, winningUser._id, player.asset.assetId, channelId);
     // Reset state for new game
     endGameMutation(playerArr, assetCooldown, hootOnWin);
-    (0, helpers_1.resetGame)(false, channelId);
+    (0, gameplay_1.resetGame)(false, channelId);
     (0, settings_1.clearSettings)(channelId);
-    (0, helpers_1.emptyDir)(channelId);
+    (0, fileSystem_1.rmDir)(`dist/nftAssets/${channelId}`);
     // Wait a couple of seconds before rendering winning embed
     await (0, helpers_1.wait)(2000);
     await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { player, hootOnWin }));

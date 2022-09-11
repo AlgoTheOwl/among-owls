@@ -6,7 +6,7 @@ const discord_js_1 = require("discord.js");
 // Data
 const database_service_1 = require("../database/database.service");
 // Helpers
-const helpers_1 = require("../utils/helpers");
+const discord_1 = require("../utils/discord");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('clear-timeout')
@@ -21,7 +21,7 @@ module.exports = {
         if (interaction.type !== discord_js_1.InteractionType.ApplicationCommand)
             return;
         await interaction.deferReply({ ephemeral: true });
-        const isAdmin = await (0, helpers_1.confirmRole)(process.env.ADMIN_ID, interaction, interaction.user.id);
+        const isAdmin = await (0, discord_1.validateUserRole)(process.env.ADMIN_ID, interaction, interaction.user.id);
         if (!isAdmin) {
             interaction.editReply('Only admins can use this command');
         }

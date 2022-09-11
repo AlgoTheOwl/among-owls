@@ -6,7 +6,7 @@ const discord_js_1 = require("discord.js");
 // Data
 const database_service_1 = require("../database/database.service");
 // Helpers
-const algorand_1 = require("../utils/algorand");
+const token_1 = require("../utils/token");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('claim')
@@ -38,7 +38,7 @@ module.exports = {
                 });
             }
             await database_service_1.collections.users.findOneAndUpdate({ discordId: user.id }, { $set: { hoot: 0 } });
-            const status = await (0, algorand_1.claimHoot)(hoot, address);
+            const status = await (0, token_1.claimHoot)(hoot, address);
             if (status) {
                 return interaction.editReply(`Congrats, you've just received ${hoot} HOOT!`);
             }

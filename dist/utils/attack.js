@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRandomVictimId = exports.getAttackString = void 0;
+exports.doDamage = exports.getRandomVictimId = exports.getAttackString = void 0;
 const helpers_1 = require("../utils/helpers");
 const __1 = require("..");
 const attackStrings = [
@@ -10,6 +10,13 @@ const attackStrings = [
     'HMPH!. {assetName} throws a spear at\n {victimName} for {damage} damage',
     'SL-SL-SL-IIICE!. {assetName} slices and\n dices you {victimName} for {damage} damage',
 ];
+/**
+ * Returns random attack string injected with user info
+ * @param assetName
+ * @param victimName
+ * @param damage
+ * @returns {string}
+ */
 const getAttackString = (assetName, victimName, damage) => {
     return attackStrings[(0, helpers_1.randomNumber)(0, attackStrings.length)]
         .replace('{assetName}', assetName)
@@ -17,6 +24,12 @@ const getAttackString = (assetName, victimName, damage) => {
         .replace('{damage}', damage.toString());
 };
 exports.getAttackString = getAttackString;
+/**
+ *
+ * @param attackerId
+ * @param channelId
+ * @returns {string}
+ */
 const getRandomVictimId = (attackerId, channelId) => {
     var _a;
     const game = __1.games[channelId];
@@ -25,3 +38,12 @@ const getRandomVictimId = (attackerId, channelId) => {
     return (_a = filteredPlayerArray[randomIndex]) === null || _a === void 0 ? void 0 : _a.discordId;
 };
 exports.getRandomVictimId = getRandomVictimId;
+/**
+ * Returns RNG damage within a range
+ * @param damageRange
+ * @returns {number}
+ */
+const doDamage = (damageRange) => {
+    return Math.floor(Math.random() * damageRange);
+};
+exports.doDamage = doDamage;

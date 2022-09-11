@@ -4,7 +4,7 @@ import { Interaction, InteractionType } from 'discord.js'
 // Data
 import { collections } from '../database/database.service'
 // Helpers
-import { confirmRole } from '../utils/helpers'
+import { validateUserRole } from '../utils/discord'
 
 const roleId = process.env.ADMIN_ID
 module.exports = {
@@ -24,7 +24,7 @@ module.exports = {
       user: { id },
     } = interaction
 
-    const hasRole = confirmRole(roleId, interaction, id)
+    const hasRole = validateUserRole(roleId, interaction, id)
 
     if (!hasRole) {
       return interaction.reply({

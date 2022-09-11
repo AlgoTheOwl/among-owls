@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
 const index_1 = require("../index");
-const helpers_1 = require("../utils/helpers");
+const gameplay_1 = require("../utils/gameplay");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('withdraw-player')
@@ -29,7 +29,7 @@ module.exports = {
                     ephemeral: true,
                     content: `${player.asset.alias || player.asset.assetName} removed`,
                 });
-                (0, helpers_1.updateGame)(channelId);
+                (0, gameplay_1.updateGame)(channelId);
             }
             else {
                 interaction.reply({

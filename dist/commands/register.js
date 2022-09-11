@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Discord
 const builders_1 = require("@discordjs/builders");
 // Helpers
-const helpers_1 = require("../utils/helpers");
-const register_1 = require("../utils/register");
+const discord_1 = require("../utils/discord");
+const registration_1 = require("../utils/registration");
 module.exports = {
     data: new builders_1.SlashCommandBuilder()
         .setName('register')
@@ -39,10 +39,10 @@ module.exports = {
             ephemeral: true,
         });
         if (address) {
-            const { status, registeredUser, asset } = await (0, register_1.processRegistration)(username, id, address, channelId);
+            const { status, registeredUser, asset } = await (0, registration_1.processRegistration)(username, id, address, channelId);
             // add permissions if succesful
             if (registeredUser && asset) {
-                (0, helpers_1.addRole)(interaction, process.env.REGISTERED_ID, registeredUser);
+                (0, discord_1.addRole)(interaction, process.env.REGISTERED_ID, registeredUser);
             }
             await interaction.followUp({
                 ephemeral: true,

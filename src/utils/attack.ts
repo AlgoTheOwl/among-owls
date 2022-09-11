@@ -9,6 +9,13 @@ const attackStrings = [
   'SL-SL-SL-IIICE!. {assetName} slices and\n dices you {victimName} for {damage} damage',
 ]
 
+/**
+ * Returns random attack string injected with user info
+ * @param assetName
+ * @param victimName
+ * @param damage
+ * @returns {string}
+ */
 export const getAttackString = (
   assetName: string,
   victimName: string,
@@ -20,6 +27,12 @@ export const getAttackString = (
     .replace('{damage}', damage.toString())
 }
 
+/**
+ *
+ * @param attackerId
+ * @param channelId
+ * @returns {string}
+ */
 export const getRandomVictimId = (
   attackerId: string,
   channelId: string
@@ -30,4 +43,13 @@ export const getRandomVictimId = (
   )
   const randomIndex = Math.floor(Math.random() * filteredPlayerArray.length)
   return filteredPlayerArray[randomIndex]?.discordId as string
+}
+
+/**
+ * Returns RNG damage within a range
+ * @param damageRange
+ * @returns {number}
+ */
+export const doDamage = (damageRange: number): number => {
+  return Math.floor(Math.random() * damageRange)
 }

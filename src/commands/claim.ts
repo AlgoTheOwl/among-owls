@@ -7,7 +7,7 @@ import User from '../models/user'
 // Data
 import { collections } from '../database/database.service'
 // Helpers
-import { claimHoot } from '../utils/algorand'
+import { claimHoot } from '../utils/token'
 
 module.exports = {
   data: new SlashCommandBuilder()

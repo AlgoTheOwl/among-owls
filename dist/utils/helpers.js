@@ -1,55 +1,34 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkIfRegisteredPlayer = exports.updateGame = exports.normalizeIpfsUrl = exports.isIpfs = exports.getUsersFromPlayers = exports.doDamage = exports.resetGame = exports.randomSort = exports.getWinningPlayer = exports.randomNumber = exports.getPlayerArray = exports.getNumberSuffix = exports.confirmRole = exports.removeRole = exports.addRole = exports.emptyDir = exports.mapPlayersForEmbed = exports.downloadFile = exports.asyncForEach = exports.wait = void 0;
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const axios_1 = __importDefault(require("axios"));
-const embeds_1 = __importDefault(require("../embeds"));
-const __1 = require("..");
-const embeds_2 = __importDefault(require("../constants/embeds"));
-const database_service_1 = require("../database/database.service");
+exports.normalizeIpfsUrl = exports.isIpfs = exports.randomSort = exports.randomNumber = exports.getNumberSuffix = exports.mapPlayersForEmbed = exports.asyncForEach = exports.wait = void 0;
+const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/';
+/**
+ * Wait asycronously
+ * @param duration
+ */
 const wait = async (duration) => {
     await new Promise((res) => {
         setTimeout(res, duration);
     });
 };
 exports.wait = wait;
+/**
+ * Loop for async operations
+ * @param array
+ * @param callback
+ */
 const asyncForEach = async (array, callback) => {
     for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array);
     }
 };
 exports.asyncForEach = asyncForEach;
-const ipfsGateway = process.env.IPFS_GATEWAY || 'https://dweb.link/ipfs/';
-const downloadFile = async (asset, directory, username) => {
-    try {
-        const { assetUrl } = asset;
-        if (assetUrl) {
-            const url = (0, exports.normalizeIpfsUrl)(assetUrl);
-            const path = `${directory}/${username
-                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
-                .trim()}.jpg`;
-            const writer = fs_1.default.createWriteStream(path);
-            const res = await axios_1.default.get(url, {
-                responseType: 'stream',
-            });
-            res.data.pipe(writer);
-            return new Promise((resolve, reject) => {
-                writer.on('finish', () => {
-                    return resolve(path);
-                });
-                writer.on('error', (err) => console.log(err));
-            });
-        }
-    }
-    catch (error) {
-        console.log('ERROR:', error);
-    }
-};
-exports.downloadFile = downloadFile;
+/**
+ * Maps out entered players for embed fields
+ * @param playerArr
+ * @param type
+ * @returns {{ name: string; value: string }[]}
+ */
 const mapPlayersForEmbed = (playerArr, type) => playerArr.map((player) => {
     let value;
     if (player.dead || player.hp <= 0) {
@@ -67,56 +46,11 @@ const mapPlayersForEmbed = (playerArr, type) => playerArr.map((player) => {
     };
 });
 exports.mapPlayersForEmbed = mapPlayersForEmbed;
-const emptyDir = (channelId) => {
-    try {
-        const dirContents = fs_1.default.readdirSync(`dist/nftAssets/`);
-        dirContents.forEach((filePath) => {
-            const fullPath = path_1.default.join(`dist/nftAssets/${channelId}`, filePath);
-            const stat = fs_1.default.statSync(fullPath);
-            if (stat.isDirectory()) {
-                if (fs_1.default.readdirSync(fullPath).length)
-                    (0, exports.emptyDir)(fullPath);
-                fs_1.default.rmdirSync(fullPath);
-            }
-            else
-                fs_1.default.unlinkSync(fullPath);
-        });
-    }
-    catch (error) {
-        console.log('****** ERROR DELETING IMAGE DIR ******', error);
-    }
-};
-exports.emptyDir = emptyDir;
-const addRole = async (interaction, roleId, user) => {
-    var _a, _b;
-    try {
-        const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.id === roleId);
-        const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === user.discordId);
-        role && (await (member === null || member === void 0 ? void 0 : member.roles.add(role.id)));
-    }
-    catch (error) {
-        console.log('****** ERROR ADDING ROLE ******', error);
-    }
-};
-exports.addRole = addRole;
-const removeRole = async (interaction, roleId, discordId) => {
-    var _a, _b;
-    try {
-        const role = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.roles.cache.find((role) => role.id === roleId);
-        const member = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.members.cache.find((member) => member.id === discordId);
-        role && (await (member === null || member === void 0 ? void 0 : member.roles.remove(role.id)));
-    }
-    catch (error) {
-        console.log('****** ERROR DELETING ROLE ******', error);
-    }
-};
-exports.removeRole = removeRole;
-const confirmRole = (roleId, interaction, discordId) => {
-    var _a;
-    const member = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.members.cache.find((member) => member.id === discordId);
-    return member === null || member === void 0 ? void 0 : member.roles.cache.has(roleId);
-};
-exports.confirmRole = confirmRole;
+/**
+ * Returns readable number suffix
+ * @param num
+ * @returns {string}
+ */
 const getNumberSuffix = (num) => {
     if (num === 1)
         return '1st';
@@ -128,15 +62,14 @@ const getNumberSuffix = (num) => {
         return `${num}th`;
 };
 exports.getNumberSuffix = getNumberSuffix;
-const getPlayerArray = (players) => Object.values(players);
-exports.getPlayerArray = getPlayerArray;
+/**
+ * Prooducs random number within range
+ * @param min
+ * @param max
+ * @returns {number}
+ */
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 exports.randomNumber = randomNumber;
-const getWinningPlayer = (playerArr) => {
-    const activePlayers = playerArr.filter((player) => !player.dead);
-    return activePlayers.length === 1 ? activePlayers[0] : undefined;
-};
-exports.getWinningPlayer = getWinningPlayer;
 const randomSort = (arr) => {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * i);
@@ -147,39 +80,18 @@ const randomSort = (arr) => {
     return arr;
 };
 exports.randomSort = randomSort;
-const resetGame = (stopped = false, channelId) => {
-    var _a;
-    const game = __1.games[channelId];
-    game.players = {};
-    game.active = false;
-    game.win = false;
-    game.waitingRoom = false;
-    game.attackEngaged = false;
-    game.stopped = false;
-    game.megatron = undefined;
-    if (stopped) {
-        game.stopped = true;
-        stopped && ((_a = game === null || game === void 0 ? void 0 : game.embed) === null || _a === void 0 ? void 0 : _a.edit((0, embeds_1.default)(embeds_2.default.stopped, channelId)));
-    }
-};
-exports.resetGame = resetGame;
-const doDamage = (damageRange) => {
-    return Math.floor(Math.random() * damageRange);
-};
-exports.doDamage = doDamage;
-const getUsersFromPlayers = async (players) => {
-    const users = [];
-    await (0, exports.asyncForEach)(players, async (player) => {
-        const user = (await database_service_1.collections.users.findOne({
-            discordId: player.discordId,
-        }));
-        users.push(user);
-    });
-    return users;
-};
-exports.getUsersFromPlayers = getUsersFromPlayers;
+/**
+ * Determines if url is an IPFS locater
+ * @param url
+ * @returns
+ */
 const isIpfs = (url) => (url === null || url === void 0 ? void 0 : url.slice(0, 4)) === 'ipfs';
 exports.isIpfs = isIpfs;
+/**
+ * Converst IPFS url to http url for consumption in game
+ * @param url
+ * @returns
+ */
 const normalizeIpfsUrl = (url) => {
     if ((0, exports.isIpfs)(url)) {
         const ifpsHash = url.slice(7);
@@ -190,22 +102,3 @@ const normalizeIpfsUrl = (url) => {
     }
 };
 exports.normalizeIpfsUrl = normalizeIpfsUrl;
-const updateGame = (channelId) => {
-    const game = __1.games[channelId];
-    game.update = true;
-    setTimeout(() => {
-        game.update = false;
-    }, 3000);
-};
-exports.updateGame = updateGame;
-const checkIfRegisteredPlayer = (games, assetId, discordId) => {
-    let gameCount = 0;
-    const gameArray = Object.values(games);
-    gameArray.forEach((game) => {
-        var _a, _b;
-        if (((_b = (_a = game.players[discordId]) === null || _a === void 0 ? void 0 : _a.asset) === null || _b === void 0 ? void 0 : _b.assetId) === Number(assetId))
-            gameCount++;
-    });
-    return gameCount >= 1;
-};
-exports.checkIfRegisteredPlayer = checkIfRegisteredPlayer;

@@ -8,7 +8,9 @@ import embeds from '../constants/embeds'
 // Data
 import { collections } from '../database/database.service'
 // Helpers
-import { resetGame, emptyDir, asyncForEach, wait } from '../utils/helpers'
+import { asyncForEach, wait } from '../utils/helpers'
+import { resetGame } from '../utils/gameplay'
+import { rmDir } from '../utils/fileSystem'
 import doEmbed from '../embeds'
 import { startWaitingRoom } from '.'
 // Globals
@@ -55,7 +57,7 @@ export const handleWin = async (player: Player, channel: TextChannel) => {
   endGameMutation(playerArr, assetCooldown, hootOnWin)
   resetGame(false, channelId)
   clearSettings(channelId)
-  emptyDir(channelId)
+  rmDir(`dist/nftAssets/${channelId}`)
   // Wait a couple of seconds before rendering winning embed
   await wait(2000)
   await game.arena.edit(doEmbed(embeds.win, channelId, { player, hootOnWin }))

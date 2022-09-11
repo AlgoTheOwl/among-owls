@@ -7,7 +7,8 @@ import {
   TextChannel,
 } from 'discord.js'
 // Helpers
-import { resetGame, wait } from '../utils/helpers'
+import { wait } from '../utils/helpers'
+import { resetGame } from '../utils/gameplay'
 import doEmbed from '../embeds'
 import runGame from './runGame'
 // Globals

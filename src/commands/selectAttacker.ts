@@ -9,7 +9,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 // Schemas
 import Asset from '../models/asset'
 // Helpers
-import { findOrRefreshUser } from '../utils/register'
+import { findOrRefreshUser } from '../utils/registration'
 // Globals
 import { games } from '..'
 import { getSettings } from '../utils/settings'

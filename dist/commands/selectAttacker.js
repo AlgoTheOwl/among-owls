@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const builders_1 = require("@discordjs/builders");
 // Helpers
-const register_1 = require("../utils/register");
+const registration_1 = require("../utils/registration");
 // Globals
 const __1 = require("..");
 const settings_1 = require("../utils/settings");
@@ -29,7 +29,7 @@ module.exports = {
                 });
             }
             await interaction.deferReply({ ephemeral: true });
-            const user = await (0, register_1.findOrRefreshUser)(id, channelId, interaction);
+            const user = await (0, registration_1.findOrRefreshUser)(id, channelId, interaction);
             if (!user) {
                 return interaction.editReply({
                     content: 'You are not registered. Use the /register command',

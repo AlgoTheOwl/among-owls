@@ -1,12 +1,7 @@
 // Helpers
-import {
-  asyncForEach,
-  doDamage,
-  getWinningPlayer,
-  mapPlayersForEmbed,
-  resetGame,
-  wait,
-} from '../utils/helpers'
+import { asyncForEach, mapPlayersForEmbed, wait } from '../utils/helpers'
+import { getWinningPlayer, resetGame } from '../utils/gameplay'
+import { doDamage } from '../utils/attack'
 import { getRandomVictimId, getAttackString } from '../utils/attack'
 import { handleWin } from './win'
 import doEmbed from '../embeds'

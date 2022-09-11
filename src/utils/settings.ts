@@ -51,7 +51,7 @@ let settings: { [key: string]: Settings } = {}
  * Cache fetched settings for further use
  * Provide fallback settings if needed
  * @param channelId
- * @returns
+ * @returns {Promise<Settings>}
  */
 export const getSettings = async (channelId: string): Promise<Settings> => {
   if (settings[channelId]) {

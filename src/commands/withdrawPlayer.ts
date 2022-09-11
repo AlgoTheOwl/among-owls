@@ -3,7 +3,7 @@ import { ButtonInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 import { games } from '../index'
-import { updateGame } from '../utils/helpers'
+import { updateGame } from '../utils/gameplay'
 
 module.exports = {
   data: new SlashCommandBuilder()

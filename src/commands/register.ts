@@ -1,8 +1,8 @@
 // Discord
 import { SlashCommandBuilder } from '@discordjs/builders'
 // Helpers
-import { addRole } from '../utils/helpers'
-import { processRegistration } from '../utils/register'
+import { addRole } from '../utils/discord'
+import { processRegistration } from '../utils/registration'
 // Schemas
 import { Interaction } from 'discord.js'
 

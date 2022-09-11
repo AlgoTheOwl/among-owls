@@ -33,7 +33,7 @@ let settings = {};
  * Cache fetched settings for further use
  * Provide fallback settings if needed
  * @param channelId
- * @returns
+ * @returns {Promise<Settings>}
  */
 const getSettings = async (channelId) => {
     if (settings[channelId]) {
