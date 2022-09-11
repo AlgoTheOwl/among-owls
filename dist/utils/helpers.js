@@ -29,22 +29,25 @@ exports.asyncForEach = asyncForEach;
  * @param type
  * @returns {{ name: string; value: string }[]}
  */
-const mapPlayersForEmbed = (playerArr, type) => playerArr.map((player) => {
-    let value;
-    if (player.dead || player.hp <= 0) {
-        value = '💀';
-    }
-    else {
-        value =
-            type === 'game'
-                ? `HP: ${player.hp}`
-                : `${player.asset.alias || player.asset.assetName}`;
-    }
-    return {
-        name: player.username,
-        value,
-    };
-});
+const mapPlayersForEmbed = (playerArr, type) => {
+    const fields = playerArr.map((player) => {
+        let value;
+        if (player.dead || player.hp <= 0) {
+            value = '💀';
+        }
+        else {
+            value =
+                type === 'game'
+                    ? `HP: ${player.hp}`
+                    : `${player.asset.alias || player.asset.assetName}`;
+        }
+        return {
+            name: player.username,
+            value,
+        };
+    });
+    return (0, exports.randomSort)(fields);
+};
 exports.mapPlayersForEmbed = mapPlayersForEmbed;
 /**
  * Returns readable number suffix

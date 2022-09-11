@@ -35,8 +35,8 @@ export const asyncForEach = async (
 export const mapPlayersForEmbed = (
   playerArr: Player[],
   type: string
-): { name: string; value: string }[] =>
-  playerArr.map((player) => {
+): { name: string; value: string }[] => {
+  const fields = playerArr.map((player) => {
     let value
     if (player.dead || player.hp <= 0) {
       value = '💀'
@@ -51,6 +51,8 @@ export const mapPlayersForEmbed = (
       value,
     }
   })
+  return randomSort(fields)
+}
 
 /**
  * Returns readable number suffix
