@@ -16,7 +16,7 @@ const settings_1 = require("../utils/settings");
  * Runs main game logic incrementally
  * Loops through each player and triggers specific or randopm attack
  * Updated embed to show attack and current player HP, update game state stats
- * @param channel
+ * @param channel {TextChannel}
  */
 async function runGame(channel) {
     const { id: channelId } = channel;

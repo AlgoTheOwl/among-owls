@@ -34,7 +34,7 @@ module.exports = {
                 return;
             const assetId = values[0];
             const { username, id } = user;
-            const { imageDir, hp, maxCapacity } = await (0, settings_1.getSettings)(channelId);
+            const { hp, maxCapacity } = await (0, settings_1.getSettings)(channelId);
             // Check if user is another game
             if ((0, helpers_1.checkIfRegisteredPlayer)(index_1.games, assetId, id)) {
                 return interaction.reply({
@@ -67,7 +67,7 @@ module.exports = {
                 let localPath;
                 try {
                     // Create file for channel and download image
-                    const path = `${imageDir}/${channelId}`;
+                    const path = `dist/nftAssets/${channelId}`;
                     if (!fs_1.default.existsSync(path)) {
                         fs_1.default.mkdir(path, (err) => { });
                     }

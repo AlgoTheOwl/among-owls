@@ -19,13 +19,14 @@ import Game from '../models/game'
 
 /**
  * Update game and user state when win occurs
+ * Restart game in channel
  * @param player last player standing
  * @param channel {TextChannel}
  */
 export const handleWin = async (player: Player, channel: TextChannel) => {
   const { id: channelId } = channel
   const game = games[channelId]
-  const { imageDir, hootSettings, assetCooldown } = await getSettings(channelId)
+  const { hootSettings, assetCooldown } = await getSettings(channelId)
   const { hootOnWin } = hootSettings
 
   game.active = false
@@ -54,7 +55,7 @@ export const handleWin = async (player: Player, channel: TextChannel) => {
   endGameMutation(playerArr, assetCooldown, hootOnWin)
   resetGame(false, channelId)
   clearSettings(channelId)
-  emptyDir(imageDir)
+  emptyDir(channelId)
   // Wait a couple of seconds before rendering winning embed
   await wait(2000)
   await game.arena.edit(doEmbed(embeds.win, channelId, { player, hootOnWin }))

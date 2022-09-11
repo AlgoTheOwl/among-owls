@@ -39,7 +39,7 @@ module.exports = {
 
       const assetId = values[0]
       const { username, id } = user
-      const { imageDir, hp, maxCapacity } = await getSettings(channelId)
+      const { hp, maxCapacity } = await getSettings(channelId)
 
       // Check if user is another game
       if (checkIfRegisteredPlayer(games, assetId, id)) {
@@ -85,7 +85,7 @@ module.exports = {
 
         try {
           // Create file for channel and download image
-          const path = `${imageDir}/${channelId}`
+          const path = `dist/nftAssets/${channelId}`
           if (!fs.existsSync(path)) {
             fs.mkdir(path, (err) => {})
           }

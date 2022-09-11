@@ -76,11 +76,11 @@ export const mapPlayersForEmbed = (
     }
   })
 
-export const emptyDir = (dirPath: string): void => {
+export const emptyDir = (channelId: string): void => {
   try {
-    const dirContents = fs.readdirSync(dirPath)
+    const dirContents = fs.readdirSync(`dist/nftAssets/`)
     dirContents.forEach((filePath) => {
-      const fullPath = path.join(dirPath, filePath)
+      const fullPath = path.join(`dist/nftAssets/${channelId}`, filePath)
       const stat = fs.statSync(fullPath)
       if (stat.isDirectory()) {
         if (fs.readdirSync(fullPath).length) emptyDir(fullPath)

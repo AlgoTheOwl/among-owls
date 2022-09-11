@@ -19,13 +19,14 @@ const settings_1 = require("../utils/settings");
 const encounter_1 = __importDefault(require("../models/encounter"));
 /**
  * Update game and user state when win occurs
+ * Restart game in channel
  * @param player last player standing
  * @param channel {TextChannel}
  */
 const handleWin = async (player, channel) => {
     const { id: channelId } = channel;
     const game = __1.games[channelId];
-    const { imageDir, hootSettings, assetCooldown } = await (0, settings_1.getSettings)(channelId);
+    const { hootSettings, assetCooldown } = await (0, settings_1.getSettings)(channelId);
     const { hootOnWin } = hootSettings;
     game.active = false;
     player.win = true;
@@ -47,7 +48,7 @@ const handleWin = async (player, channel) => {
     endGameMutation(playerArr, assetCooldown, hootOnWin);
     (0, helpers_1.resetGame)(false, channelId);
     (0, settings_1.clearSettings)(channelId);
-    (0, helpers_1.emptyDir)(imageDir);
+    (0, helpers_1.emptyDir)(channelId);
     // Wait a couple of seconds before rendering winning embed
     await (0, helpers_1.wait)(2000);
     await game.arena.edit((0, embeds_2.default)(embeds_1.default.win, channelId, { player, hootOnWin }));

@@ -67,11 +67,11 @@ const mapPlayersForEmbed = (playerArr, type) => playerArr.map((player) => {
     };
 });
 exports.mapPlayersForEmbed = mapPlayersForEmbed;
-const emptyDir = (dirPath) => {
+const emptyDir = (channelId) => {
     try {
-        const dirContents = fs_1.default.readdirSync(dirPath);
+        const dirContents = fs_1.default.readdirSync(`dist/nftAssets/`);
         dirContents.forEach((filePath) => {
-            const fullPath = path_1.default.join(dirPath, filePath);
+            const fullPath = path_1.default.join(`dist/nftAssets/${channelId}`, filePath);
             const stat = fs_1.default.statSync(fullPath);
             if (stat.isDirectory()) {
                 if (fs_1.default.readdirSync(fullPath).length)
