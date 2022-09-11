@@ -20,11 +20,10 @@ const settings_1 = require("../utils/settings");
  * Updated embed to show attack and current player HP, update game state stats
  * @param channel {TextChannel}
  */
-async function runGame(channel) {
+async function runGame(channel, playerArr) {
     const { id: channelId } = channel;
     try {
         const game = __1.games[channelId];
-        const playerArr = Object.values(game.players);
         const { damageRange } = await (0, settings_1.getSettings)(channelId);
         let isWin = false;
         // MAIN GAME LOOP

@@ -1,5 +1,10 @@
 // Helpers
-import { asyncForEach, mapPlayersForEmbed, wait } from '../utils/helpers'
+import {
+  asyncForEach,
+  mapPlayersForEmbed,
+  randomSort,
+  wait,
+} from '../utils/helpers'
 import { getWinningPlayer, resetGame } from '../utils/gameplay'
 import { doDamage } from '../utils/attack'
 import { getRandomVictimId, getAttackString } from '../utils/attack'
@@ -19,11 +24,13 @@ import { getSettings } from '../utils/settings'
  * Updated embed to show attack and current player HP, update game state stats
  * @param channel {TextChannel}
  */
-export default async function runGame(channel: TextChannel) {
+export default async function runGame(
+  channel: TextChannel,
+  playerArr: Player[]
+) {
   const { id: channelId } = channel
   try {
     const game = games[channelId]
-    const playerArr = Object.values(game.players)
     const { damageRange } = await getSettings(channelId)
 
     let isWin = false

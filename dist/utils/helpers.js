@@ -46,7 +46,7 @@ const mapPlayersForEmbed = (playerArr, type) => {
             value,
         };
     });
-    return (0, exports.randomSort)(fields);
+    return fields;
 };
 exports.mapPlayersForEmbed = mapPlayersForEmbed;
 /**

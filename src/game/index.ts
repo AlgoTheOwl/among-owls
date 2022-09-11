@@ -7,7 +7,7 @@ import {
   TextChannel,
 } from 'discord.js'
 // Helpers
-import { wait } from '../utils/helpers'
+import { randomSort, wait } from '../utils/helpers'
 import { resetGame } from '../utils/gameplay'
 import doEmbed from '../embeds'
 import runGame from './runGame'
@@ -71,7 +71,9 @@ export const startWaitingRoom = async (channel: TextChannel): Promise<void> => {
 
   await sendVictimSelectMenu(game.players, channel)
 
-  runGame(channel)
+  const randomlySortedPlayerArr = randomSort(Object.values(game.players))
+
+  runGame(channel, randomlySortedPlayerArr)
 }
 
 /**

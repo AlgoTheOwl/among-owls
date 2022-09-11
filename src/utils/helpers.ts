@@ -51,7 +51,7 @@ export const mapPlayersForEmbed = (
       value,
     }
   })
-  return randomSort(fields)
+  return fields
 }
 
 /**

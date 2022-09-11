@@ -56,7 +56,8 @@ const startWaitingRoom = async (channel) => {
     game.active = true;
     game.arena = await channel.send((0, embeds_1.default)(embeds_2.default.activeGame, channelId));
     await sendVictimSelectMenu(game.players, channel);
-    (0, runGame_1.default)(channel);
+    const randomlySortedPlayerArr = (0, helpers_1.randomSort)(Object.values(game.players));
+    (0, runGame_1.default)(channel, randomlySortedPlayerArr);
 };
 exports.startWaitingRoom = startWaitingRoom;
 /**
