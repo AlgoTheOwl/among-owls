@@ -48,12 +48,10 @@ module.exports = {
             if (Object.values(game.players).length < maxCapacity ||
                 game.players[id]) {
                 await interaction.deferReply({ ephemeral: true });
-                const { assets, address, _id, coolDowns, holdingsRefreshDate } = (await database_service_1.collections.users.findOne({
+                const { assets, address, _id, coolDowns } = (await database_service_1.collections.users.findOne({
                     discordId: user.id,
                 }));
                 const asset = assets[assetId];
-                if (holdingsRefreshDate < Date.now()) {
-                }
                 if (!asset) {
                     return;
                 }

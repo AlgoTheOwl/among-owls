@@ -54,15 +54,12 @@ module.exports = {
       ) {
         await interaction.deferReply({ ephemeral: true })
 
-        const { assets, address, _id, coolDowns, holdingsRefreshDate } =
+        const { assets, address, _id, coolDowns } =
           (await collections.users.findOne({
             discordId: user.id,
           })) as WithId<User>
 
         const asset = assets[assetId]
-
-        if (holdingsRefreshDate < Date.now()) {
-        }
 
         if (!asset) {
           return

@@ -1,11 +1,11 @@
 {
   "name": "among-aowls",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node -r dotenv/config dist/index.js",
-    "dev": "nodemon -r --no-warning dotenv/config dist/index.js",
+    "start": "node --no-warnings -r dotenv/config dist/index.js",
+    "dev": "nodemon --no-warnings -r dotenv/config dist/index.js",
     "commands": "node -r dotenv/config dist/deployCommands.js"
   },
   "keywords": [],
