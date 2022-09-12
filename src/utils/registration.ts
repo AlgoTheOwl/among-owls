@@ -152,17 +152,16 @@ export const findOrRefreshUser = async (
   discordId: string,
   channelId: string,
   interaction: ButtonInteraction
-): Promise<User | undefined> => {
+): Promise<User> => {
   let user
 
   user = (await collections.users.findOne({
     discordId,
   })) as WithId<User>
 
-  if (user.holdingsRefreshDate < Date.now()) {
+  if (user?.holdingsRefreshDate < Date.now() || !user) {
     interaction.editReply('Updating your nft holdings...')
     const { username, address } = user
-    // update user assets and add new holdingsRefreshDate
     const { registeredUser } = await processRegistration(
       username,
       discordId,

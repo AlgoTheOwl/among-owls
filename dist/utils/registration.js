@@ -124,10 +124,9 @@ const findOrRefreshUser = async (discordId, channelId, interaction) => {
     user = (await database_service_1.collections.users.findOne({
         discordId,
     }));
-    if (user.holdingsRefreshDate < Date.now()) {
+    if ((user === null || user === void 0 ? void 0 : user.holdingsRefreshDate) < Date.now() || !user) {
         interaction.editReply('Updating your nft holdings...');
         const { username, address } = user;
-        // update user assets and add new holdingsRefreshDate
         const { registeredUser } = await (0, exports.processRegistration)(username, discordId, address, channelId);
         if (registeredUser) {
             user = registeredUser;
