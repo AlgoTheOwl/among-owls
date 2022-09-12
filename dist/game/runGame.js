@@ -72,6 +72,7 @@ async function runGame(channel, playerArr) {
                         ].filter(Boolean);
                         await game.arena.edit((0, embeds_1.default)(embeds_2.default.activeGame, channelId, { fields }));
                         if (isWin) {
+                            // STOP GAME LOOP
                             return;
                         }
                     }

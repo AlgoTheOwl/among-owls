@@ -66,7 +66,6 @@ const processRegistration = async (username, discordId, address, channelId) => {
                     assets: mergedAssets,
                     address: address,
                     holdingsRefreshDate,
-                    hoot: hootOwned,
                 },
             });
         }

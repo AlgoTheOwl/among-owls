@@ -95,6 +95,7 @@ export default async function runGame(
               doEmbed(embeds.activeGame, channelId, { fields })
             )
             if (isWin) {
+              // STOP GAME LOOP
               return
             }
           }

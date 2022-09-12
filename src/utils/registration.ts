@@ -90,7 +90,6 @@ export const processRegistration = async (
             assets: mergedAssets,
             address: address,
             holdingsRefreshDate,
-            hoot: hootOwned,
           },
         }
       )
